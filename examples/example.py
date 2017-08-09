@@ -8,7 +8,7 @@ klin = np.loadtxt("test_data/klin.txt")
 Plin = np.loadtxt("test_data/plin.txt")
 
 NR = 1000
-R = np.logspace(-2, 2.1, NR, base=10)
+R = np.logspace(-2, 2.6, NR, base=10)
 M = 1e14 
 c = 5
 om = 0.3
@@ -34,4 +34,11 @@ plt.loglog(R, xi_nfw)
 plt.loglog(R, xi_mm)
 plt.loglog(R, xi_2halo)
 plt.loglog(R, xi_hm, ls='--')
+#plt.show()
+plt.clf()
+
+Rp = np.logspace(-2, 2, NR, base=10)
+Sigma = np.zeros_like(Rp)
+clusterwl.deltasigma.calc_Sigma_at_R(Rp, R, xi_hm, M, c, om, Sigma)
+plt.loglog(Rp, Sigma)
 plt.show()

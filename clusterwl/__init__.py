@@ -11,3 +11,4 @@ _lib = _ffi.dlopen(lib_file)
 
 from .xi import *
 from .bias import *
+from .deltasigma import *
