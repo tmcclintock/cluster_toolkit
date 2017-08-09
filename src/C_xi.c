@@ -26,6 +26,7 @@ int calc_xi_2halo(int NR, double bias, double*xi_mm, double*xi_2halo){
   for(i = 0; i < NR; i++){
     xi_2halo[i] = bias * xi_mm[i];
   }
+  return 0;
 }
 
 int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm){

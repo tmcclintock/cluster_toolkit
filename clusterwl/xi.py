@@ -11,12 +11,10 @@ def xi_mm_at_R(R, k, P, N=200, step=0.005):
     return clusterwl._lib.xi_mm_at_R(R, dcast(k), dcast(P), len(k), N, step)
 
 def calc_xi_nfw(R, M, c, om, xi, delta=200):
-    if type(R) == int: return xi_nfe_at_R(R, M, c, om, delta)
     clusterwl._lib.calc_xi_nfw(dcast(R), len(R), M, c, delta, om, dcast(xi))
     return
 
 def calc_xi_mm(R, k, P, xi, N=200, step=0.005):
-    if type(R) == int: return xi_mm_at_r(R, k, P, N, step)
     clusterwl._lib.calc_xi_mm(dcast(R), len(R), dcast(k), dcast(P), len(k), dcast(xi), N, step)
     return
 

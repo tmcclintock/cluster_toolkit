@@ -10,3 +10,4 @@ for file_name in glob.glob(os.path.join(include_dir,'*.h')):
 _lib = _ffi.dlopen(lib_file)
 
 from .xi import *
+from .bias import *
