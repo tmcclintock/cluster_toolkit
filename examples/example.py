@@ -10,13 +10,14 @@ R = np.logspace(-2, 2.1, NR, base=10)
 M = 1e14 
 c = 5
 om = 0.3
-delta = 200
 xi_nfw = np.zeros_like(R)
 xi_mm = np.zeros_like(R)
 xi_2halo = np.zeros_like(R)
 xi_hm = np.zeros_like(R)
 
-clusterwl.xi.calc_xi_nfw(R, M, c, delta, om, xi_nfw)
+print clusterwl.xi.xi_nfw_at_R(R[0], M, c, om)
+print clusterwl.xi.xi_mm_at_R(R[0], k, P)
+clusterwl.xi.calc_xi_nfw(R, M, c, om, xi_nfw)
 clusterwl.xi.calc_xi_mm(R, k, P, xi_mm)
 clusterwl.xi.calc_xi_2halo(2, xi_mm, xi_2halo)
 clusterwl.xi.calc_xi_hm(xi_nfw, xi_2halo, xi_hm)

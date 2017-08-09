@@ -4,15 +4,20 @@ from ctypes import c_double, c_int, POINTER
 def dcast(x):
     return clusterwl._ffi.cast('double*', x.ctypes.data)
 
-def calc_xi_nfw(R, M, c, delta, om, xi):
-    NR = len(R)
-    clusterwl._lib.calc_xi_nfw(dcast(R), NR, M, c, delta, om, dcast(xi))
+def xi_nfw_at_R(R, M, c, om, delta=200):
+    return clusterwl._lib.xi_nfw_at_R(R, M, c, delta, om)
+
+def xi_mm_at_R(R, k, P, N=200, step=0.005):
+    return clusterwl._lib.xi_mm_at_R(R, dcast(k), dcast(P), len(k), N, step)
+
+def calc_xi_nfw(R, M, c, om, xi, delta=200):
+    if type(R) == int: return xi_nfe_at_R(R, M, c, om, delta)
+    clusterwl._lib.calc_xi_nfw(dcast(R), len(R), M, c, delta, om, dcast(xi))
     return
 
 def calc_xi_mm(R, k, P, xi, N=200, step=0.005):
-    NR = len(R)
-    Nk = len(k)
-    clusterwl._lib.calc_xi_mm(dcast(R), NR, dcast(k), dcast(P), Nk, dcast(xi), N, step)
+    if type(R) == int: return xi_mm_at_r(R, k, P, N, step)
+    clusterwl._lib.calc_xi_mm(dcast(R), len(R), dcast(k), dcast(P), len(k), dcast(xi), N, step)
     return
 
 def calc_xi_2halo(bias, xi_mm, xi_2halo):

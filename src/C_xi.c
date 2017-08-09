@@ -6,16 +6,18 @@
 #define rhomconst 2.775808e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
 
-int calc_xi_nfw(double*R, int NR, double Mass, double concentration, int delta, double om, double*xi_nfw){
-  int i;
+double xi_nfw_at_R(double R, double Mass, double conc, int delta, double om){
   double rhom = om*rhomconst;//SM h^2/Mpc^3
   double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double Rscale = Rdelta/concentration;
-  double fc = log(1.+concentration)-concentration/(1.+concentration);
-  
-  for(i = 0; i < NR; i++)
-    xi_nfw[i] = Mass/(4.*M_PI*Rscale*Rscale*Rscale*fc)/(R[i]/Rscale*(1+R[i]/Rscale)*(1+R[i]/Rscale))/rhom - 1.0;
+  double Rscale = Rdelta/conc;
+  double fc = log(1.+conc)-conc/(1.+conc); 
+  return Mass/(4.*M_PI*Rscale*Rscale*Rscale*fc)/(R/Rscale*(1+R/Rscale)*(1+R/Rscale))/rhom - 1.0;
+}
 
+int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om, double*xi_nfw){
+  int i;
+  for(i = 0; i < NR; i++)
+    xi_nfw[i] = xi_nfw_at_R(R[i], Mass, conc, delta, om);
   return 0;
 }
 
@@ -36,12 +38,11 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm){
 }
 
 double get_P(double,double,double*,double*,int,gsl_spline*,gsl_interp_accel*);
-double calc_corr_at_R(double,double*,double*,int,int,double);
 
 int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, double h){
   int i;
   for(i=0;i<NR;i++){
-    xi[i] = calc_corr_at_R(R[i],k,P,Nk,N,h);
+    xi[i] = xi_mm_at_R(R[i],k,P,Nk,N,h);
   }
   return 0;
 }
@@ -65,7 +66,7 @@ double get_P(double x,double R,double*k,double*P,int Nk,gsl_spline*Pspl,gsl_inte
   return gsl_spline_eval(Pspl,ki,acc);
 }
 
-double calc_corr_at_R(double R,double*k,double*P,int Nk,int N,double h){
+double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   double zero,psi,x,t,dpsi,f,PIsinht;
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;

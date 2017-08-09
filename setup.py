@@ -9,7 +9,7 @@ sources = glob.glob(os.path.join('src','*.c'))
 print('sources = ',sources)
 headers = glob.glob(os.path.join('include','*.h'))
 print('headers = ',headers)
-ext=Extension("clusterwl._clusterwl", sources, depends=headers, include_dirs=['include'],extra_compile_args=[os.path.expandvars("-I${GSLI}")],extra_link_args=[os.path.expandvars("-L${GSLL}"),"-lgslcblas","-lgsl","-lm"])
+ext=Extension("clusterwl._clusterwl", sources, depends=headers, include_dirs=['include'], extra_compile_args=[os.path.expandvars("-I${GSLI}")], extra_link_args=[os.path.expandvars("-L${GSLL}"),"-lgslcblas","-lgsl"])
 
 dist = setup(name="clusterwl",
              author="Tom McClintock",
