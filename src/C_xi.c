@@ -38,7 +38,7 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm){
   return 0;
 }
 
-double get_P(double,double,double*,double*,int,gsl_spline*,gsl_interp_accel*);
+double get_P(double, double, double*, double*, int, gsl_spline*, gsl_interp_accel*);
 
 int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, double h){
   int i;
@@ -50,7 +50,7 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
 
 ///////Functions for calc_xi_mm
 //The power spectrum
-double get_P(double x,double R,double*k,double*P,int Nk,gsl_spline*Pspl,gsl_interp_accel*acc){
+double get_P(double x, double R, double*k, double*P, int Nk, gsl_spline*Pspl, gsl_interp_accel*acc){
   double ki = x/R;
   double kmin = k[0];
   double kmax = k[Nk-1];

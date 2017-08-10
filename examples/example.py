@@ -8,7 +8,7 @@ klin = np.loadtxt("test_data/klin.txt")
 Plin = np.loadtxt("test_data/plin.txt")
 
 NR = 1000
-R = np.logspace(-2, 2.6, NR, base=10)
+R = np.logspace(-2, 3, NR, base=10) #Xi_hm MUST be evaluated to higher than BAO
 M = 1e14 
 c = 5
 om = 0.3
@@ -21,10 +21,7 @@ Marr = np.logspace(12, 16, NR, base=10)
 biases = np.zeros_like(Marr)
 clusterwl.bias.calc_bias_at_M(Marr, k, P, om, biases, 500)
 
-print clusterwl.xi.xi_nfw_at_R(R[0], M, c, om)
-print clusterwl.xi.xi_mm_at_R(R[0], k, P)
 bias = clusterwl.bias.bias_at_M(M, klin, Plin, om)
-print "b(%.2e) = %.3f"%(M, bias)
 clusterwl.xi.calc_xi_nfw(R, M, c, om, xi_nfw)
 clusterwl.xi.calc_xi_mm(R, k, P, xi_mm)
 clusterwl.xi.calc_xi_2halo(bias, xi_mm, xi_2halo)
@@ -34,11 +31,24 @@ plt.loglog(R, xi_nfw)
 plt.loglog(R, xi_mm)
 plt.loglog(R, xi_2halo)
 plt.loglog(R, xi_hm, ls='--')
-#plt.show()
+plt.show()
 plt.clf()
 
-Rp = np.logspace(-2, 2, NR, base=10)
-Sigma = np.zeros_like(Rp)
+Rp = np.logspace(-2, 2.4, NR, base=10)
+Sigma  = np.zeros_like(Rp)
+Sigma_nfw = np.zeros_like(Rp)
+DeltaSigma = np.zeros_like(Rp)
+DeltaSigma_nfw = np.zeros_like(Rp)
+
 clusterwl.deltasigma.calc_Sigma_at_R(Rp, R, xi_hm, M, c, om, Sigma)
-plt.loglog(Rp, Sigma)
+clusterwl.deltasigma.calc_Sigma_nfw_at_R(Rp, M, c, om, Sigma_nfw)
+clusterwl.deltasigma.calc_DeltaSigma_at_R(Rp, Rp, Sigma, M, c, om, DeltaSigma)
+clusterwl.deltasigma.calc_DeltaSigma_at_R(Rp, Rp, Sigma_nfw, M, c, om, DeltaSigma_nfw)
+
+plt.loglog(Rp, Sigma, ls="--", label=r"$\Sigma$")
+plt.loglog(Rp, Sigma_nfw, label=r"$\Sigma_{nfw}$")
+plt.loglog(Rp, DeltaSigma, label=r"$\Delta\Sigma$")
+plt.loglog(Rp, DeltaSigma_nfw, label=r"$\Delta\Sigma_{nfw}$")
+plt.legend()
+plt.subplots_adjust(wspace=0.01)
 plt.show()
