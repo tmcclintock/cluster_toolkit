@@ -41,8 +41,8 @@ double integrand(double lk, void*params){
 ///////////// linar matter variance functions /////////////
 
 double sigma2_at_R(double R, double*k, double*P, int Nk){
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
-  gsl_spline_init(spline,k,P,Nk);
+  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nk);
+  gsl_spline_init(spline, k, P, Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   integrand_params *params = malloc(sizeof(integrand_params));
@@ -52,8 +52,8 @@ double sigma2_at_R(double R, double*k, double*P, int Nk){
   gsl_function F;
   F.function = &integrand;
   F.params = params;
-  double result,abserr;
-  gsl_integration_qag(&F, log(k[0]), log(k[Nk-1]), BIAS_TOL ,BIAS_TOL/10., workspace_size, 6, workspace, &result, &abserr);
+  double result, err;
+  gsl_integration_qag(&F, log(k[0]), log(k[Nk-1]), BIAS_TOL ,BIAS_TOL/10., workspace_size, 6, workspace, &result, &err);
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
