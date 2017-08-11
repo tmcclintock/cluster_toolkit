@@ -128,6 +128,41 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
 
 /////////////////// SIGMA(R) CONVOLUTION BELOW /////////////
 
+double exp_radial_integrand(double lRc, void*params){
+  integrand_params*pars = (integrand_params*)params;
+  double Rc = exp(lRc);
+  double Rc2 = Rc*Rc;
+  double rmin = pars->rmin,rmax = pars->rmax;
+  double Rp2 = pars->Rp2;
+  double Rmis = pars->Rmis;
+  double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
+  double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
+  double Sigma = 0;
+  if(arg < rmin){
+    Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
+  }else if(arg < rmax){
+    gsl_spline*spline = pars->spline;
+    gsl_interp_accel*acc = pars->acc;
+    Sigma = gsl_spline_eval(spline, arg, acc);
+  }
+  return Rc*exp(-Rc/Rmis) * Sigma; //normalized outside
+}
+
+double exp_angular_integrand(double theta, void*params){
+  integrand_params*pars = (integrand_params*)params;
+  double Rmis = pars->Rmis;
+  double cos_theta = cos(theta);
+  pars->Rp_cos_theta_2 = pars->Rp*cos_theta*2;
+  double lrmin = pars->lrmin, lrmax = pars->lrmax;
+  gsl_integration_workspace*workspace = pars->workspace2;
+  gsl_function F;
+  F.function = &exp_radial_integrand;
+  F.params = pars;
+  double result, err;
+  gsl_integration_qag(&F, lrmin-10, lrmax, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
+  return result/Rmis;
+}
+
 double g2d_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
@@ -138,8 +173,6 @@ double g2d_radial_integrand(double lRc, void*params){
   double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
   double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
   double answer = 0;
-  /*Note: P_miscentering is a 2D gaussian.
-    This is the Rc/Rmis^2 * exp() term.*/
   if(arg < rmin){
     answer = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }else if(arg < rmax){
@@ -147,7 +180,7 @@ double g2d_radial_integrand(double lRc, void*params){
     gsl_interp_accel*acc = pars->acc;
     answer = gsl_spline_eval(spline, arg, acc);
   }
-  return Rc2 * exp(-0.5 * Rc2/Rmis2) * answer;
+  return Rc2 * exp(-0.5 * Rc2/Rmis2) * answer; //normalized outside
 }
 
 double g2d_angular_integrand(double theta, void*params){
@@ -166,7 +199,7 @@ double g2d_angular_integrand(double theta, void*params){
 }
 
 //2D Gaussian kernel
-double Sigma_mis_g2d_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis){
+double Sigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch){
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_spline_init(spline, Rs, Sigma, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -190,7 +223,10 @@ double Sigma_mis_g2d_at_R(double R, double*Rs, double*Sigma, int Ns, double M, d
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
   gsl_function F;
-  F.function=&g2d_angular_integrand;
+  if(integrand_switch == 0)
+    F.function=&g2d_angular_integrand;
+  else if(integrand_switch == 1)
+    F.function=&exp_angular_integrand;
   F.params=params;
   double result, err;
   gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
@@ -198,11 +234,15 @@ double Sigma_mis_g2d_at_R(double R, double*Rs, double*Sigma, int Ns, double M, d
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
-  return result/=M_PI; //Factor of PI from the angular integral
+  //NOTE: the angular integral is normalized by 1/2pi
+  //but it is symmetric about from 0 to pi and then pi to 2pi,
+  //so the integral is only over 0 to pi and then multiplied by 2
+  //hence here we only divide by pi
+  return result/=M_PI; 
 }
 
 //2D Gaussian kernel
-int Sigma_mis_g2d_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, double*Sigma_mis){
+int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch, double*Sigma_mis){
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_spline_init(spline, Rs, Sigma, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -224,7 +264,10 @@ int Sigma_mis_g2d_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, do
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
   gsl_function F;
-  F.function=&g2d_angular_integrand;
+  if(integrand_switch == 0)
+    F.function=&g2d_angular_integrand;
+  else if(integrand_switch == 1)
+    F.function=&exp_angular_integrand;
   F.params=params;
   double result, err;
   int i;
