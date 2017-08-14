@@ -12,10 +12,11 @@ R = np.logspace(-2, 3, NR, base=10) #Xi_hm MUST be evaluated to higher than BAO
 M = 1e14 
 c = 5
 om = 0.3
-xi_nfw = np.zeros_like(R)
-xi_mm = np.zeros_like(R)
-xi_2halo = np.zeros_like(R)
-xi_hm = np.zeros_like(R)
+xi_nfw   = clusterwl.xi.xi_nfw_at_R(R, M, c, om)
+xi_mm    = clusterwl.xi.xi_mm_at_R(R, k, P)
+bias = clusterwl.bias.bias_at_M(M, klin, Plin, om)
+xi_2halo = clusterwl.xi.xi_2halo(bias, xi_mm)
+xi_hm    = clusterwl.xi.xi_hm(xi_nfw, xi_2halo)
 
 def plot_bias():
     NM = 1000
@@ -25,19 +26,12 @@ def plot_bias():
     plt.loglog(Marr, biases)
     plt.show()
 
-bias = clusterwl.bias.bias_at_M(M, klin, Plin, om)
-clusterwl.xi.calc_xi_nfw(R, M, c, om, xi_nfw)
-clusterwl.xi.calc_xi_mm(R, k, P, xi_mm)
-clusterwl.xi.calc_xi_2halo(bias, xi_mm, xi_2halo)
-clusterwl.xi.calc_xi_hm(xi_nfw, xi_2halo, xi_hm)
-
 def plot_xi():
     plt.loglog(R, xi_nfw)
     plt.loglog(R, xi_mm)
     plt.loglog(R, xi_2halo)
     plt.loglog(R, xi_hm, ls='--')
     plt.show()
-
 
 Rp = np.logspace(-2, 2.4, NR, base=10)
 Sigma  = np.zeros_like(Rp)
@@ -85,5 +79,5 @@ def plot_DeltaSigma():
 
 if __name__ == "__main__":
     plot_xi()
-    plot_Sigma()
-    plot_DeltaSigma()
+    #plot_Sigma()
+    #plot_DeltaSigma()
