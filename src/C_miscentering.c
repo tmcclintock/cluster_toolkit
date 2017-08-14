@@ -145,12 +145,12 @@ double exp_radial_integrand(double lRc, void*params){
     gsl_interp_accel*acc = pars->acc;
     Sigma = gsl_spline_eval(spline, arg, acc);
   }
-  return Rc*exp(-Rc/Rmis) * Sigma; //normalized outside
+  return Rc2*exp(-Rc/Rmis) * Sigma; //normalized outside
 }
 
 double exp_angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
-  double Rmis = pars->Rmis;
+  double Rmis2 = pars->Rmis2;
   double cos_theta = cos(theta);
   pars->Rp_cos_theta_2 = pars->Rp*cos_theta*2;
   double lrmin = pars->lrmin, lrmax = pars->lrmax;
@@ -160,7 +160,7 @@ double exp_angular_integrand(double theta, void*params){
   F.params = pars;
   double result, err;
   gsl_integration_qag(&F, lrmin-10, lrmax, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
-  return result/Rmis;
+  return result/Rmis2;
 }
 
 double g2d_radial_integrand(double lRc, void*params){

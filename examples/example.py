@@ -84,5 +84,5 @@ def plot_DeltaSigma():
     plt.show()
 
 if __name__ == "__main__":
-    #plot_Sigma()
+    plot_Sigma()
     plot_DeltaSigma()
