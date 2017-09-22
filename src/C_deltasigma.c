@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define TOL 1e-6
+#define TOL 1e-5
 #define workspace_size 8000
 #define ulim 5.0
 #define rhomconst 2.775808e+11
