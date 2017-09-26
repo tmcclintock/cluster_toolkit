@@ -13,4 +13,5 @@ from .xi import *
 from .bias import *
 from .deltasigma import *
 from .miscentering import *
+from .averaging import *
 from .massfunction import *
