@@ -41,14 +41,13 @@ DeltaSigma_nfw = clusterwl.deltasigma.DeltaSigma_at_R(Rp, Rp, Sigma_nfw, M, c, o
 Rmis = 0.25 #Mpc/h
 Sigma_g2d  = np.zeros_like(Rp)
 Sigma_exp  = np.zeros_like(Rp)
-Sigma_single  = np.zeros_like(Rp)
+Sigma_single  = clusterwl.miscentering.Sigma_mis_single_at_R(Rp, Rp, Sigma, M, c, om, Rmis)
 DeltaSigma_g2d = np.zeros_like(Rp)
 DeltaSigma_exp = np.zeros_like(Rp)
 DeltaSigma_single = np.zeros_like(Rp)
 
 clusterwl.miscentering.calc_Sigma_mis_at_R(Rp, Rp, Sigma, M, c, om, Rmis, Sigma_g2d)
 clusterwl.miscentering.calc_Sigma_mis_at_R(Rp, Rp, Sigma, M, c, om, Rmis, Sigma_exp, kernel="exponential")
-clusterwl.miscentering.calc_Sigma_mis_single_at_R(Rp, Rp, Sigma, M, c, om, Rmis, Sigma_single)
 clusterwl.miscentering.calc_DeltaSigma_mis_at_R(Rp, Rp, Sigma_g2d, DeltaSigma_g2d)
 clusterwl.miscentering.calc_DeltaSigma_mis_at_R(Rp, Rp, Sigma_exp, DeltaSigma_exp)
 clusterwl.miscentering.calc_DeltaSigma_mis_at_R(Rp, Rp, Sigma_single, DeltaSigma_single)
@@ -58,7 +57,7 @@ def plot_Sigma():
     plt.loglog(Rp, Sigma_g2d, ls=":", label=r"$\Sigma_{mis}^{g2d}$")
     plt.loglog(Rp, Sigma_exp, ls=":", label=r"$\Sigma_{mis}^{exp}$")
     plt.loglog(Rp, Sigma_nfw, ls="--", label=r"$\Sigma_{nfw}$")
-    #plt.loglog(Rp, Sigma_single, ls=":", label=r"$\Sigma(R_{mis})$")
+    plt.loglog(Rp, Sigma_single, ls=":", label=r"$\Sigma(R_{mis})$")
     plt.legend()
     plt.show()
 
@@ -67,7 +66,7 @@ def plot_DeltaSigma():
     plt.loglog(Rp, DeltaSigma_g2d, ls=":", label=r"$\Delta\Sigma_{mis}^{g2d}$")
     plt.loglog(Rp, DeltaSigma_exp, ls=":", label=r"$\Delta\Sigma_{mis}^{exp}$")
     plt.loglog(Rp, DeltaSigma_nfw, ls="--", label=r"$\Delta\Sigma_{nfw}$")
-    #plt.loglog(Rp, DeltaSigma_single, ls=":", label=r"$\Delta\Sigma(R_{mis})$")
+    plt.loglog(Rp, DeltaSigma_single, ls=":", label=r"$\Delta\Sigma(R_{mis})$")
     plt.legend()
     plt.show()
 
