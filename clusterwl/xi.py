@@ -19,7 +19,7 @@ def xi_nfw_at_R(R, M, c, om, delta=200):
     xi_nfw (float or array like): NFW correlation function
 
     """
-    if type(R) is list or np.ndarray:
+    if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
         clusterwl._lib.calc_xi_nfw(_dcast(R), len(R), M, c, delta, om, _dcast(xi))
         return xi
@@ -40,7 +40,7 @@ def xi_mm_at_R(R, k, P, N=200, step=0.005):
     xi_mm (float or array like): Matter-matter correlation function
 
     """
-    if type(R) is list or np.ndarray:
+    if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
         clusterwl._lib.calc_xi_mm(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(xi), N, step)
         return xi

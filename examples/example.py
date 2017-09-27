@@ -21,8 +21,7 @@ xi_hm    = clusterwl.xi.xi_hm(xi_nfw, xi_2halo)
 def plot_bias():
     NM = 1000
     Marr = np.logspace(12, 16, NM, base=10)
-    biases = np.zeros_like(Marr)
-    clusterwl.bias.calc_bias_at_M(Marr, klin, Plin, om, biases, 500)
+    biases = clusterwl.bias.bias_at_M(Marr, klin, Plin, om, 500)
     plt.loglog(Marr, biases)
     plt.show()
 
@@ -78,6 +77,7 @@ def plot_DeltaSigma():
     plt.show()
 
 if __name__ == "__main__":
+    plot_bias()
     #plot_xi()
     #plot_Sigma()
     plot_DeltaSigma()
