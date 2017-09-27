@@ -33,15 +33,10 @@ def plot_xi():
     plt.show()
 
 Rp = np.logspace(-2, 2.4, NR, base=10)
-Sigma  = np.zeros_like(Rp)
-Sigma_nfw = np.zeros_like(Rp)
-DeltaSigma = np.zeros_like(Rp)
-DeltaSigma_nfw = np.zeros_like(Rp)
-
-clusterwl.deltasigma.calc_Sigma_at_R(Rp, R, xi_hm, M, c, om, Sigma)
-clusterwl.deltasigma.calc_Sigma_nfw_at_R(Rp, M, c, om, Sigma_nfw)
-clusterwl.deltasigma.calc_DeltaSigma_at_R(Rp, Rp, Sigma, M, c, om, DeltaSigma)
-clusterwl.deltasigma.calc_DeltaSigma_at_R(Rp, Rp, Sigma_nfw, M, c, om, DeltaSigma_nfw)
+Sigma  = clusterwl.deltasigma.Sigma_at_R(Rp, R, xi_hm, M, c, om)
+Sigma_nfw = clusterwl.deltasigma.Sigma_nfw_at_R(Rp, M, c, om)
+DeltaSigma = clusterwl.deltasigma.DeltaSigma_at_R(Rp, Rp, Sigma, M, c, om)
+DeltaSigma_nfw = clusterwl.deltasigma.DeltaSigma_at_R(Rp, Rp, Sigma_nfw, M, c, om)
 
 Rmis = 0.25 #Mpc/h
 Sigma_g2d  = np.zeros_like(Rp)
@@ -77,7 +72,7 @@ def plot_DeltaSigma():
     plt.show()
 
 if __name__ == "__main__":
-    plot_bias()
+    #plot_bias()
     #plot_xi()
-    #plot_Sigma()
+    plot_Sigma()
     plot_DeltaSigma()
