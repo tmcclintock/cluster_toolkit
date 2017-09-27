@@ -1,3 +1,7 @@
+"""clsuterwl
+
+You can find docstrings for each of the package contents by inspecting help(clusterwl.PACKAGENAME). The package names include: xi, bias, deltasigma, and miscentering.
+"""
 import os, cffi, glob
 
 clusterwl_dir = os.path.dirname(__file__)
