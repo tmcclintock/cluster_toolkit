@@ -1,6 +1,7 @@
 #include "C_xi.h"
 
 #include "gsl/gsl_spline.h"
+#include "gsl/gsl_sf_gamma.h"
 #include <math.h>
 
 #define rhomconst 2.775808e+11
@@ -20,6 +21,34 @@ int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om
     xi_nfw[i] = xi_nfw_at_R(R[i], Mass, conc, delta, om);
   return 0;
 }
+
+double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
+  double rhom;
+  double Rdelta;
+  if (rhos < 0){
+    //Calculate from Mass
+    rhom = om*rhomconst;//SM h^2/Mpc^3
+    Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  }
+  rhom = 0;
+  Rdelta = 0;
+
+  return 0;
+}
+
+int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*xi_einasto){
+  if (rhos < 0){
+    //Calculate from Mass
+    double rhom = om*rhomconst;//SM h^2/Mpc^3
+    double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  }
+  int i;
+  for(i = 0; i < NR; i++)
+    xi_einasto[i] = xi_einasto_at_R(R[i], Mass, rhos, rs, alpha, delta, om);
+
+  return 0;
+}
+
 
 int calc_xi_2halo(int NR, double bias, double*xi_mm, double*xi_2halo){
   int i;

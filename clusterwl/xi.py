@@ -26,15 +26,17 @@ def xi_nfw_at_R(R, M, c, om, delta=200):
     else:
         return clusterwl._lib.xi_nfw_at_R(R, M, c, delta, om)
 
-def xi_einasto_at_R(R, M, c, alpha, om):
+def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     """Einasto halo profile.
 
     Args:
     R (float or array like): 3d distances from halo center in Mpc/h comoving
-    M (float): Mass in Msun/h
-    c (float): Concentration
+    M (float): Mass in Msun/h; not used if rhos is specified
+    rhos (float): Scale density in Msun h/pc^2 comoving; optional
+    rs (float): Scale radius
     alpha (float): Profile exponent
     om (float): Omega_matter, matter fraction of the density
+    delta (int): Overdensity, default is 200
 
     Returns:
     xi_einasto (float or array like): Einasto halo profile.
@@ -43,7 +45,7 @@ def xi_einasto_at_R(R, M, c, alpha, om):
     if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
         print "Einasto profile in development"
-        #clusterwl._lib.calc_xi_einasto(_dcast(R), len(R), M, c, alpha, om, _dcast(xi))
+        #clusterwl._lib.calc_xi_einasto(_dcast(R), len(R), M, rhos, rs, alpha, om, _dcast(xi))
         return xi
     else:
         print "Einasto profile in development"
