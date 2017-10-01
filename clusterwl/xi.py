@@ -6,17 +6,17 @@ def _dcast(x):
     return clusterwl._ffi.cast('double*', x.ctypes.data)
 
 def xi_nfw_at_R(R, M, c, om, delta=200):
-    """NFW correlation function.
+    """NFW halo profile.
 
     Args:
     R (float or array like): 3d distances from halo center in Mpc/h comoving
     M (float): Mass in Msun/h
-    c (float): concentration
+    c (float): Concentration
     om (float): Omega_matter, matter fraction of the density
     delta (int; optional): Overdensity, default is 200
 
     Returns:
-    xi_nfw (float or array like): NFW correlation function
+    xi_nfw (float or array like): NFW halo profile.
 
     """
     if type(R) is list or type(R) is np.ndarray:
@@ -25,6 +25,29 @@ def xi_nfw_at_R(R, M, c, om, delta=200):
         return xi
     else:
         return clusterwl._lib.xi_nfw_at_R(R, M, c, delta, om)
+
+def xi_einasto_at_R(R, M, c, alpha, om):
+    """Einasto halo profile.
+
+    Args:
+    R (float or array like): 3d distances from halo center in Mpc/h comoving
+    M (float): Mass in Msun/h
+    c (float): Concentration
+    alpha (float): Profile exponent
+    om (float): Omega_matter, matter fraction of the density
+
+    Returns:
+    xi_einasto (float or array like): Einasto halo profile.
+
+    """
+    if type(R) is list or type(R) is np.ndarray:
+        xi = np.zeros_like(R)
+        print "Einasto profile in development"
+        #clusterwl._lib.calc_xi_einasto(_dcast(R), len(R), M, c, alpha, om, _dcast(xi))
+        return xi
+    else:
+        print "Einasto profile in development"
+        return 0
 
 def xi_mm_at_R(R, k, P, N=200, step=0.005):
     """Matter-matter correlation function.
