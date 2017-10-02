@@ -44,12 +44,10 @@ def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     """
     if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
-        print "Einasto profile in development"
-        #clusterwl._lib.calc_xi_einasto(_dcast(R), len(R), M, rhos, rs, alpha, om, _dcast(xi))
+        clusterwl._lib.calc_xi_einasto(_dcast(R), len(R), M, rhos, rs, alpha, delta, om, _dcast(xi))
         return xi
     else:
-        print "Einasto profile in development"
-        return 0
+        return clusterwl._lib.xi_einasto_at_R(R, M, rhos, rs, alpha, delta, om)
 
 def xi_mm_at_R(R, k, P, N=200, step=0.005):
     """Matter-matter correlation function.

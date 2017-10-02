@@ -3,6 +3,7 @@
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_sf_gamma.h"
 #include <math.h>
+#include <stdio.h>
 
 #define rhomconst 2.775808e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
@@ -23,24 +24,35 @@ int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om
 }
 
 double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
-  double rhom;
-  double Rdelta;
+  double x;
+  double rhom = om*rhomconst;//SM h^2/Mpc^3;
   if (rhos < 0){
-    //Calculate from Mass
-    rhom = om*rhomconst;//SM h^2/Mpc^3
-    Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+    //Calculate rhos from Mass
+    // Rdelta in Mpc/h comoving
+    double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
+    x = 2./alpha * pow(Rdelta/rs, alpha); // Mpc/h comoving
+    double a = 3./alpha;
+    double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
+    double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
+    double den = 3. * rs*rs*rs * gam;
+    rhos = num/den;
   }
-  rhom = 0;
-  Rdelta = 0;
-
-  return 0;
+  x = 2./alpha * pow(R/rs, alpha);
+  return rhos/rhom * exp(-x) - 1;
 }
 
 int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*xi_einasto){
   if (rhos < 0){
-    //Calculate from Mass
+    //Calculate rhos from Mass
     double rhom = om*rhomconst;//SM h^2/Mpc^3
-    double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+    // Rdelta in Mpc/h comoving
+    double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
+    double x = 2./alpha * pow(Rdelta/rs, alpha); 
+    double a = 3./alpha;
+    double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
+    double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
+    double den = 3. * rs*rs*rs * gam;
+    rhos = num/den;
   }
   int i;
   for(i = 0; i < NR; i++)
