@@ -21,7 +21,17 @@ xi_ein   = clusterwl.xi.xi_einasto_at_R(R, M, rs, alpha, om)
 xi_mm    = clusterwl.xi.xi_mm_at_R(R, k, P)
 bias = clusterwl.bias.bias_at_M(M, klin, Plin, om)
 xi_2halo = clusterwl.xi.xi_2halo(bias, xi_mm)
-xi_hm    = clusterwl.xi.xi_hm(xi_nfw, xi_2halo)
+xi_hm_nfw    = clusterwl.xi.xi_hm(xi_nfw, xi_2halo)
+xi_hm_ein    = clusterwl.xi.xi_hm(xi_ein, xi_2halo)
+
+
+Rp = np.logspace(-2, 2.4, NR, base=10)
+Sigma_nfw  = clusterwl.deltasigma.Sigma_at_R(Rp, R, xi_hm_nfw, M, c, om)
+Sigma_ein  = clusterwl.deltasigma.Sigma_at_R(Rp, R, xi_hm_ein, M, c, om)
+
+DeltaSigma_nfw = clusterwl.deltasigma.DeltaSigma_at_R(Rp, Rp, Sigma_nfw, M, c, om)
+DeltaSigma_ein = clusterwl.deltasigma.DeltaSigma_at_R(Rp, Rp, Sigma_ein, M, c, om)
+
 
 
 def plot_xi():
@@ -30,11 +40,23 @@ def plot_xi():
     #plt.loglog(R, xi_mm)
     plt.loglog(R, xi_2halo, label="2h")
     #plt.loglog(R, xi_hm, ls='--')
-    plt.legend(loc=0)
+    plt.legend(loc = 0)
     plt.show()
 
+def plot_Sigma():
+    plt.loglog(Rp, Sigma_nfw, ls="--", label=r"nfw")
+    plt.loglog(Rp, Sigma_ein, ls="--", label=r"ein")
+    plt.legend(loc = 0)
+    plt.show()
+
+def plot_DeltaSigma():
+    plt.loglog(Rp, DeltaSigma_nfw, ls="--", label=r"nfw")
+    plt.loglog(Rp, DeltaSigma_ein, ls="--", label=r"ein")
+    plt.legend(loc = 0)
+    plt.show()
+
+
 if __name__ == "__main__":
-    #plot_bias()
     plot_xi()
-    #plot_Sigma()
-    #plot_DeltaSigma()
+    plot_Sigma()
+    plot_DeltaSigma()
