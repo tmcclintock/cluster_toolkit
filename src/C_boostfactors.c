@@ -18,11 +18,9 @@ double boost_nfw_at_R(double R, double B0, double Rs){
 }
 
 int boost_factor_nfw_at_R_arr(double*R, int NR, double B0, double Rs, double*boost){
-  printf("B0 %f   Rs %f\n", B0, Rs);
   int i;
   for(i = 0; i < NR; i++){
     boost[i] = boost_nfw_at_R(R[i], B0, Rs);
-    printf("R %f   boost %f\n", R[i], boost[i]);
   }
   return 0;
 }

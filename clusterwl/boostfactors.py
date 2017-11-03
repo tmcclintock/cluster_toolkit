@@ -18,7 +18,6 @@ def boost_nfw_at_R(R, B0, Rs):
     """
     if type(R) is list or type(R) is np.ndarray:
         boost = np.zeros_like(R)
-        print B0, Rs
         clusterwl._lib.boost_factor_nfw_at_R_arr(_dcast(R), len(R), B0, Rs, _dcast(boost))
         return boost
     else:
