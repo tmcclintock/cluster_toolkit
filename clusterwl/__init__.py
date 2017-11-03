@@ -1,6 +1,6 @@
 """clsuterwl
 
-You can find docstrings for each of the package contents by inspecting help(clusterwl.PACKAGENAME). The package names include: xi, bias, deltasigma, and miscentering.
+You can find docstrings for each of the package contents by inspecting help(clusterwl.PACKAGENAME). The package names include: xi, bias, deltasigma, miscentering, and boostfactors.
 """
 import os, cffi, glob
 
@@ -19,3 +19,4 @@ from .deltasigma import *
 from .miscentering import *
 from .averaging import *
 from .massfunction import *
+from .boostfactors import *
