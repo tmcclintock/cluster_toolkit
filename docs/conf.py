@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Cluster_WL documentation build configuration file, created by
+# cluster_toolkit documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 14 09:17:38 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Cluster_WL'
+project = u'cluster_toolkit'
 copyright = u'2017, Tom McClintock'
 author = u'Tom McClintock'
 
@@ -115,7 +115,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Cluster_WLdoc'
+htmlhelp_basename = 'cluster_toolkitdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -142,7 +142,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Cluster_WL.tex', u'Cluster\\_WL Documentation',
+    (master_doc, 'cluster_toolkit.tex', u'Cluster\\_WL Documentation',
      u'Tom McClintock', 'manual'),
 ]
 
@@ -152,7 +152,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cluster_wl', u'Cluster_WL Documentation',
+    (master_doc, 'cluster_wl', u'cluster_toolkit Documentation',
      [author], 1)
 ]
 
@@ -163,8 +163,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Cluster_WL', u'Cluster_WL Documentation',
-     author, 'Cluster_WL', 'One line description of project.',
+    (master_doc, 'cluster_toolkit', u'cluster_toolkit Documentation',
+     author, 'cluster_toolkit', 'One line description of project.',
      'Miscellaneous'),
 ]
 

@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=Cluster_WL
+set SPHINXPROJ=cluster_toolkit
 
 if "%1" == "" goto help
 
