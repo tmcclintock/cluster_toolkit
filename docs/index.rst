@@ -11,7 +11,7 @@ The core functionality of the package includes:
 
  * 3D correlation functions
  * 3D density functions
- * Projected density and differential profiles \Sigma(R)
+ * Projected density and differential profiles :math:`\Sigma(R)`
  * Boost factor models
  * Miscentering affects on projected profiles
 
