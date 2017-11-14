@@ -1,9 +1,9 @@
-import clusterwl
+import cluster_toolkit
 from ctypes import c_double, c_int, POINTER
 import numpy as np
 
 def _dcast(x):
-    return clusterwl._ffi.cast('double*', x.ctypes.data)
+    return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
 
 def boost_nfw_at_R(R, B0, Rs):
     """NFW boost factor model.
@@ -18,7 +18,7 @@ def boost_nfw_at_R(R, B0, Rs):
     """
     if type(R) is list or type(R) is np.ndarray:
         boost = np.zeros_like(R)
-        clusterwl._lib.boost_factor_nfw_at_R_arr(_dcast(R), len(R), B0, Rs, _dcast(boost))
+        cluster_toolkit._lib.boost_factor_nfw_at_R_arr(_dcast(R), len(R), B0, Rs, _dcast(boost))
         return boost
     else:
-        return clusterwl._lib.boost_nfw_at_R(R, B0, Rs)
+        return cluster_toolkit._lib.boost_nfw_at_R(R, B0, Rs)

@@ -1,12 +1,12 @@
 """clsuterwl
 
-You can find docstrings for each of the package contents by inspecting help(clusterwl.PACKAGENAME). The package names include: xi, bias, deltasigma, miscentering, and boostfactors.
+You can find docstrings for each of the package contents by inspecting help(cluster_toolkit.PACKAGENAME). The package names include: xi, bias, deltasigma, miscentering, and boostfactors.
 """
 import os, cffi, glob
 
-clusterwl_dir = os.path.dirname(__file__)
-include_dir = os.path.join(clusterwl_dir,'include')
-lib_file = os.path.join(clusterwl_dir,'_clusterwl.so')
+cluster_toolkit_dir = os.path.dirname(__file__)
+include_dir = os.path.join(cluster_toolkit_dir,'include')
+lib_file = os.path.join(cluster_toolkit_dir,'_cluster_toolkit.so')
 
 _ffi = cffi.FFI()
 for file_name in glob.glob(os.path.join(include_dir,'*.h')):

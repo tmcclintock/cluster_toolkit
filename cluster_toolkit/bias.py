@@ -1,9 +1,9 @@
-import clusterwl
+import cluster_toolkit
 from ctypes import c_double, c_int, POINTER
 import numpy as np
 
 def _dcast(x):
-    return clusterwl._ffi.cast('double*', x.ctypes.data)
+    return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
 
 def sigma2_at_R(R, k, P):
     """RMS variance in top hat sphere of radius R [Mpc/h comoving] of linear power spectrum
@@ -19,10 +19,10 @@ def sigma2_at_R(R, k, P):
     """
     if type(R) is list or np.ndarray:
         s2 = np.zeros_like(R)
-        clusterwl._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))
+        cluster_toolkit._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))
         return s2
     else:
-        return clusterwl._lib.sigma2_at_R(R, _dcast(k), _dcast(P), len(k))
+        return cluster_toolkit._lib.sigma2_at_R(R, _dcast(k), _dcast(P), len(k))
 
 def sigma2_at_M(M, k, P, om):
     """RMS variance in top hat sphere of lagrangian radius R [Mpc/h comoving] corresponding to a mass M [Msun/h] of linear power spectrum
@@ -39,10 +39,10 @@ def sigma2_at_M(M, k, P, om):
     """
     if type(M) is list or np.ndarray:
         s2 = np.zeros_like(M)
-        clusterwl._lib.sigma2_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(s2))
+        cluster_toolkit._lib.sigma2_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(s2))
         return s2
     else:
-        return clusterwl._lib.sigma2_at_M(M, _dcast(k), _dcast(P), len(k), om)
+        return cluster_toolkit._lib.sigma2_at_M(M, _dcast(k), _dcast(P), len(k), om)
 
 def _calc_sigma2_at_R(R, k, P, s2):
     """Direct call to vectorized version of RMS variance in top hat sphere of radius R [Mpc/h comoving] of linear power spectrum
@@ -54,7 +54,7 @@ def _calc_sigma2_at_R(R, k, P, s2):
     sigma2 (array like): RMS variance, populated with the result
 
     """
-    clusterwl._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))
+    cluster_toolkit._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))
     return
 
 def _calc_sigma2_at_M(M, k, P, om, s2):
@@ -68,7 +68,7 @@ def _calc_sigma2_at_M(M, k, P, om, s2):
     sigma2 (array like): RMS variance, populated with the result
 
     """
-    clusterwl._lib.sigma2_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(s2))
+    cluster_toolkit._lib.sigma2_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(s2))
     return
 
 def nu_at_R(R, k, P):
@@ -85,10 +85,10 @@ def nu_at_R(R, k, P):
     """
     if type(R) is list or np.ndarray:
         nu = np.zeros_like(R)
-        clusterwl._lib.nu_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(nu))
+        cluster_toolkit._lib.nu_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(nu))
         return nu
     else:
-        return clusterwl._lib.nu_at_R(R, _dcast(k), _dcast(P), len(k))
+        return cluster_toolkit._lib.nu_at_R(R, _dcast(k), _dcast(P), len(k))
 
 def nu_at_M(M, k, P, om):
     """Peak height of top hat sphere of lagrangian radius R [Mpc/h comoving] corresponding to a mass M [Msun/h] of linear power spectrum
@@ -105,10 +105,10 @@ def nu_at_M(M, k, P, om):
     """
     if type(M) is list or np.ndarray:
         nu = np.zeros_like(M)
-        clusterwl._lib.nu_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(nu))
+        cluster_toolkit._lib.nu_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(nu))
         return nu
     else:
-        return clusterwl._lib.nu_at_M(M, _dcast(k), _dcast(P), len(k), om)
+        return cluster_toolkit._lib.nu_at_M(M, _dcast(k), _dcast(P), len(k), om)
 
 def _calc_nu_at_R(R, k, P, nu):
     """Direct call to vectorized version of peak height of R
@@ -120,7 +120,7 @@ def _calc_nu_at_R(R, k, P, nu):
     nu (array like): RMS variance, populated with the result
 
     """
-    clusterwl._lib.nu_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(nu))
+    cluster_toolkit._lib.nu_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(nu))
     return
 
 def _calc_nu_at_M(M, k, P, om, nu):
@@ -134,7 +134,7 @@ def _calc_nu_at_M(M, k, P, om, nu):
     nu (array like): RMS variance, populated with the result
 
     """
-    clusterwl._lib.nu_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(nu))
+    cluster_toolkit._lib.nu_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(nu))
     return
 
 def bias_at_nu(nu, delta=200):
@@ -150,7 +150,7 @@ def bias_at_nu(nu, delta=200):
     """
     if type(nu) is list or np.ndarray:
         bias = np.zeros_like(nu)
-        clusterwl._lib.bias_at_nu_arr(_dcast(nu), len(nu), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
+        cluster_toolkit._lib.bias_at_nu_arr(_dcast(nu), len(nu), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
         return bias
     else:
         return cluserwl._lib.bias_at_nu(nu, delta)
@@ -170,10 +170,10 @@ def bias_at_R(R, k, P, delta=200):
     """
     if type(R) is list or np.ndarray:
         bias = np.zeros_like(R)
-        clusterwl._lib.bias_at_R_arr(_dcast(R), len(R), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
+        cluster_toolkit._lib.bias_at_R_arr(_dcast(R), len(R), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
         return bias
     else:
-        return clusterwl._lib.bias_at_R(R, delta, _dcast(k), _dcast(P), len(k))
+        return cluster_toolkit._lib.bias_at_R(R, delta, _dcast(k), _dcast(P), len(k))
 
 def bias_at_M(M, k, P, om, delta=200):
     """Tinker 2008 bais at mass M [Msun/h]
@@ -191,10 +191,10 @@ def bias_at_M(M, k, P, om, delta=200):
     """
     if type(M) is list or type(M) is np.ndarray:
         bias = np.zeros_like(M)
-        clusterwl._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), om, _dcast(bias))
+        cluster_toolkit._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), om, _dcast(bias))
         return bias
     else:
-        return clusterwl._lib.bias_at_M(M, delta, _dcast(k), _dcast(P), len(k), om)
+        return cluster_toolkit._lib.bias_at_M(M, delta, _dcast(k), _dcast(P), len(k), om)
 
 def _calc_bias_at_R(R, k, P, bias, delta=200):
     """Direct call to vectorized version of Tinker 2008 bias at R
@@ -206,7 +206,7 @@ def _calc_bias_at_R(R, k, P, bias, delta=200):
     om (float): Matter density fraction
     bias (array like): Bias, populated with the result
     """
-    clusterwl._lib.bias_at_R_arr(_dcast(R), len(R), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
+    cluster_toolkit._lib.bias_at_R_arr(_dcast(R), len(R), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
     return
 
 def _calc_bias_at_M(M, k, P, om, bias, delta=200):
@@ -219,5 +219,5 @@ def _calc_bias_at_M(M, k, P, om, bias, delta=200):
     om (float): Matter density fraction
     bias (array like): Bias, populated with the result
     """
-    clusterwl._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), om, _dcast(bias))
+    cluster_toolkit._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), om, _dcast(bias))
     return
