@@ -6,7 +6,7 @@ def _dcast(x):
     return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
 
 def xi_nfw_at_R(R, M, c, om, delta=200):
-    """NFW halo profile.
+    """NFW halo profile correlation function.
 
     Args:
     R (float or array like): 3d distances from halo center in Mpc/h comoving
@@ -32,7 +32,7 @@ def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     Args:
     R (float or array like): 3d distances from halo center in Mpc/h comoving
     M (float): Mass in Msun/h; not used if rhos is specified
-    rhos (float): Scale density in Msun h/pc^2 comoving; optional
+    rhos (float): Scale density in Msun h^2/Mpc^3 comoving; optional
     rs (float): Scale radius
     alpha (float): Profile exponent
     om (float): Omega_matter, matter fraction of the density
