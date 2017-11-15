@@ -3,6 +3,7 @@ Cluster Toolkit Documentation
 ******************************
 
 Cluster Toolkit is a Python package specifically built for calculating weak lensing signals from galaxy clusters and cluster cosmology.
+It consists of a Python front end wrapped around a well optimized backend in C, merged with cffi.
 The core functionality of the package includes:
 
  * 3D density functions :math:`\rho(r)`
@@ -29,4 +30,4 @@ Getting Started
 
    installation
    density_profiles
-
+   correlation_functions
