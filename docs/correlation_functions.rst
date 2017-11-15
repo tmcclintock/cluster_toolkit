@@ -60,4 +60,17 @@ In this model, the free parameters are the scale radius :math:`r_s`, :math:`\alp
    Omega_m = 0.3
    xi_ein = xi.xi_einasto_at_R(radii, mass, r_scale, alpha , Omega_m)
 
-We can see the difference between these two profiles here:
+Matter-matter Correlation Function
+=============================================
+
+in progress
+
+Halo-matter Correlation Function
+=============================================
+
+in progress
+
+1-halo + 2-halo Terms
+=============================================
+
+in progress
