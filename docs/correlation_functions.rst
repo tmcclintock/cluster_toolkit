@@ -26,7 +26,7 @@ The NFW profile (`arxiv <https://arxiv.org/abs/astro-ph/9508025>`_) is a 3D corr
 The free parameters are the cluster mass :math:`M_\Delta` and concentration :math:`c_\Delta = r_\Delta/r_s`. In this module we choose to define the density with respect to the matter background density :math:`\Omega_m\rho_{crit}`. The scale radius :math:`r_s` is given in :math:`{\rm Mpc}/h`, however the code uses  as an argument instead. As written, because of the choice of units the only cosmological parameter that needs to be passed in is :math:`\Omega_m`. The arguments are identical to the density profile.
 
 .. note::
-   The correlation functions can use :math:`\Delta\neq 200`.
+   The correlation functions can use :math:`\Delta\neq 200` as an argument :code:`delta=200`.
 
 To use this, you would do:
 
