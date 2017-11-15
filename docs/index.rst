@@ -12,8 +12,16 @@ The core functionality of the package includes:
 
 The source code is publically available at https://github.com/tmcclintock/cluster_toolkit.
 
+.. note::
+   Unless stated otherwise, all distances are assumed to be :math:`{\rm Mpc}/h` comoving and masses :math:`{\rm M}_\odot/h`.
+
+***************
+Getting Started
+***************
+
 .. toctree::
    :maxdepth: 1
 
    installation
+   density_profiles
 
