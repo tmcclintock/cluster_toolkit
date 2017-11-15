@@ -40,7 +40,7 @@ The Einasto profile (`ADS <http://adsabs.harvard.edu/abs/1965TrAlm...5...87E>`_)
    
    \rho_{ein}(r) \propto \rho_s\exp\left(-\frac{2}{\alpha}\left(\frac{r}{r_s}\right)^\alpha\right)
 
-In this model, the free parameters are the scale radius :math:`r_s`, :math:`alpha`, and the cluster mass :math:`M_\Delta`. The scale density :math:`\rho_s` is calculated internally, or can be passed in instead of mass. To use this, you would do:
+In this model, the free parameters are the scale radius :math:`r_s`, :math:`\alpha`, and the cluster mass :math:`M_\Delta`. The scale density :math:`\rho_s` is calculated internally, or can be passed in instead of mass. To use this, you would do:
 
 .. code::
 
