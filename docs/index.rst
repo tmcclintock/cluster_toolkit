@@ -10,6 +10,7 @@ The core functionality of the package includes:
  * 3D correlation functions :math:`\xi(r)`
  * Halo bias models :math:`b(M)`
  * Projected density and differential profiles :math:`\Sigma(R)` and :math:`\Delta\Sigma`
+ * Radially averaged profiles :math:`\overline{\Delta\Sigma}`
  * Boost factor models :math:`\mathcal{B} = (1-f_{\rm cl})^{-1}`
  * Miscentering affects on projected profiles :math:`f_{\rm mis}`
  * Halo mass functions :math:`\frac{dn}{dM}(M,z)` (in development)
@@ -33,3 +34,4 @@ Getting Started
    correlation_functions
    halo_bias
    projected_density_profiles
+   averaged_profiles
