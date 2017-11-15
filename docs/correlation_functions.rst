@@ -6,9 +6,13 @@ Cluster density profiles are closely related to the correlation function
 
 .. math::
    
-   \langle\rho(r)\rangle = \rho_0(1+\xi(r))
+   \langle\rho_h(r)\rangle = \bar{\rho}(1+\xi_{hm}(r))
 
-This module makes various correlation functions available. The correlation functions for the NFW and Einasto profiles can also be computed directly from the density profiles by inverting the above equation.
+That is, the average density of halos some distance :math:`r` from the center of the halo is proportional to mean density of the universe and the *halo-matter* correlation function, or the tendency to find matter near halos. This module makes various correlation functions available. The correlation functions for the NFW and Einasto profiles can also be computed directly from the density profiles by inverting the above equation.
+
+.. note::
+
+   By definition :math:`\int {\rm d}V \xi(\vec{r}) = 0`.
 
 NFW Profile
 ===========
@@ -60,6 +64,17 @@ In this model, the free parameters are the scale radius :math:`r_s`, :math:`\alp
    Omega_m = 0.3
    xi_ein = xi.xi_einasto_at_R(radii, mass, r_scale, alpha , Omega_m)
 
+
+1-halo vs. 2-halo Terms
+=============================================
+
+The NFW and Einasto profiles describe the "1-halo" density of halos, or the density of a halo within its boundary. However, halos tend to be found near other halos, and for this reason the *average density* of halos should have a 2-halo term. In other words, as you move far from the center of a halo (e.g. past the scale radius or :math:`r_{200}` or a splashback radius or any arbitrary boundary) the average density of halos becomes the average density of the matter density field times some bias.
+
+.. math::
+
+   \rho_h(r >> r_s) = \rho_{2-halo}(r)
+
+
 Matter-matter Correlation Function
 =============================================
 
@@ -70,7 +85,3 @@ Halo-matter Correlation Function
 
 in progress
 
-1-halo + 2-halo Terms
-=============================================
-
-in progress
