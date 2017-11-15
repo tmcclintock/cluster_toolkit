@@ -74,14 +74,81 @@ The NFW and Einasto profiles describe the "1-halo" density of halos, or the dens
 
    \rho_h(r >> r_s) = \rho_{2-halo}(r)
 
+or equivalently
+
+.. math::
+
+   \xi_hm(r >> r_s) = \xi_{2-halo}(r).
+
+The two halo term, as detailed below, should be related to the matter density field and a bias. The specific treatment of this is not unanimously agreed upon.
+
 
 Matter-matter Correlation Function
 =============================================
 
-in progress
+The matter-matter correlation function describes the average density of matter.
+
+.. math::
+
+   \rho_m(r) = \bar{\rho}(1+\xi_{mm}(r)
+
+By definition it is related to the matter power spectrum by a Hankel transform
+
+.. math::
+   
+   \xi_{mm}(r) = \frac{1}{2\pi^2}\int_0^\infty {\rm d}k k^2 P(k) \frac{\sin kr}{kr}.
+
+There is not consensus on what power spectrum to use. `Hayashi & White <https://arxiv.org/abs/0709.3933>`_ use the *linear* matter power spectrum, while `Zu et al. <https://arxiv.org/abs/1207.3794>`_ use the *nonlinear* matter power spectrum. Anecdotally, the former is generally better for lower mass halos and the latter is better for higher mass halos. Regardless of what you use, to call this you would do
+
+.. code::
+
+   from cluster_toolkit import xi
+   import numpy as np
+   radii = np.logspace(-2, 3, 100) #Mpc/h comoving
+   #Assume that k and P come from somewhere, e.g. CAMB or CLASS
+   xi_mm = xi.xi_mm_at_R(radii, k, P)
+
+
+2-halo Correlation Function
+=============================================
+
+Halos are *biased* tracers of the matter density field, meaning the 2-halo correlation function is
+
+.. math::
+
+   \xi_{2-halo}(r,M) = b(M)\xi_{mm}(r)
+
+The bias is described in more detail in the bias section of this documentation (in progress). To calculate the 2-halo term you would do
+
+.. code::
+
+   from cluster_toolkit import xi
+   from cluster_toolkit import bias
+   import numpy as np
+   radii = np.logspace(-2, 3, 100) #Mpc/h comoving
+   mass = 1e14 #Msun/h
+   Omega_m = 0.3
+   #Assume that k and P come from somewhere, e.g. CAMB or CLASS
+   xi_mm = xi.xi_mm_at_R(radii, k, P)
+   #Assume that k and P_linear came from somewhere, e.g. CAMB or CLASS
+   bias = bias.bias_at_M(mass, k, P_linear, Omega_m)
+   xi_2halo = xi.xi_2halo(bias, xi_mm)
+
+
 
 Halo-matter Correlation Function
 =============================================
 
-in progress
+At small scales, the correlation function follows the 1-halo term (e.g. NFW or Einasto) while at large scales it follows the 2-halo term. There is no consensus on how to combine the two. `Zu et al. <https://arxiv.org/abs/1207.3794>`_ take the max of the two terms, while `Chang et al. <https://arxiv.org/abs/1710.06808>`_ sum the two. The default behavior of this module is to follow `Zu et al. <https://arxiv.org/abs/1207.3794>`_, and in the near future it will be easy to switch between different options. Mathematically this is
 
+.. math::
+
+   \xi_{hm}(r,M) = \max(\xi_{1-halo},\xi_{2-halo}).
+
+To use this you would do
+
+.. code::
+
+   from cluster_toolkit import xi
+   #Calculate 1-halo and 2-halo terms here
+   xi_hm = xi.xi_hm(xi_1halo, xi_2halo)
