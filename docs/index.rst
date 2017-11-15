@@ -32,3 +32,4 @@ Getting Started
    density_profiles
    correlation_functions
    halo_bias
+   projected_density_profiles
