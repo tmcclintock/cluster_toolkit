@@ -19,7 +19,7 @@ def average_profile_in_bin(Rlow, Rhigh, R, prof):
     """
     return cluster_toolkit._lib.average_profile_in_bin(Rlow, Rhigh, dcat(R), len(R), _dcast(prof))
 
-def average_profile_in_bins(Redges, R, prof, ave_prof):
+def average_profile_in_bins(Redges, R, prof):
     """Calculate the average of some projected profile in a radial bins in Mpc/h comoving
 
     Args:
@@ -29,4 +29,6 @@ def average_profile_in_bins(Redges, R, prof, ave_prof):
     ave_prof (float): Average profile in the radial bins, populated with the result
 
     """
-    return cluster_toolkit._lib.average_profile_in_bins(_dcast(Redges), len(Redges), _dcast(R), len(R), _dcast(prof), _dcast(ave_prof))
+    ave_prof = np.zeros(len(Redges)-1)
+    cluster_toolkit._lib.average_profile_in_bins(_dcast(Redges), len(Redges), _dcast(R), len(R), _dcast(prof), _dcast(ave_prof))
+    return ave_prof
