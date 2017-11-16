@@ -2,13 +2,13 @@
 Halo Bias
 ******************************
 
-Halos, which host galaxies and galaxy clusters, are *biased* tracers of the matter density field.
+Halos, which host galaxies and galaxy clusters, are *biased* tracers of the matter density field. This means at large scales the correlation function is
 
 .. math::
    
-   \langle\rho_h\rangle = \bar{\rho}(1+b\xi_{mm})
+   \xi_{hm}(R) = b\xi_{mm}
 
-This module implements the `Tinker et al. 2010 <https://arxiv.org/abs/1001.3162>`_ halo bias model, which is accurate to 6%.  Other biases will be available in the future. To use this you would do:
+where the bias is a function of mass (and cosmological parameters). This module implements the `Tinker et al. 2010 <https://arxiv.org/abs/1001.3162>`_ halo bias model, which is accurate to 6%.  Other biases will be available in the future. To use this you would do:
 
 .. code::
    
