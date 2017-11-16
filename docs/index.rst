@@ -35,3 +35,4 @@ Getting Started
    halo_bias
    projected_density_profiles
    averaged_profiles
+   boost_factors
