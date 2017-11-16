@@ -17,10 +17,22 @@ double boost_nfw_at_R(double R, double B0, double Rs){
   }
 }
 
-int boost_factor_nfw_at_R_arr(double*R, int NR, double B0, double Rs, double*boost){
+int boost_nfw_at_R_arr(double*R, int NR, double B0, double Rs, double*boost){
   int i;
   for(i = 0; i < NR; i++){
     boost[i] = boost_nfw_at_R(R[i], B0, Rs);
+  }
+  return 0;
+}
+
+double boost_powerlaw_at_R(double R, double B0, double Rs, double alpha){
+  return 1+B0*pow(R/Rs,alpha);
+}
+
+int boost_powerlaw_at_R_arr(double*R, int NR, double B0, double Rs, double alpha, double*boost){
+  int i;
+  for(i = 0; i < NR; i++){
+    boost[i] = boost_powerlaw_at_R(R[i], B0, Rs, alpha);
   }
   return 0;
 }

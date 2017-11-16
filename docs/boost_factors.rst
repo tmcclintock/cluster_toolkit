@@ -13,7 +13,51 @@ where :math:`f_{\rm cl}` is the fraction of cluster members misidentified as bei
 NFW Boost Model
 ==================
 
-In McClintock et al. (in prep.) we model the boost factor with an NFW model.
+In McClintock et al. (in prep.) we model the boost factor with an NFW model:
 
-in progress
+.. math::
 
+   \mathcal{B}(R) = 1+B_0\frac{1-F(x)}{x^2-1}
+
+where :math:`x=R/R_s` and
+
+.. math::
+
+   F(x) = \Biggl \lbrace
+   \begin{eqnarray}
+   \frac{\tan^{-1}\sqrt{x^2-1}}{\sqrt{x^2-1}} : x > 1\\
+   1 : x = 1\\
+   \frac{\tanh^{-1}\sqrt{1-x^2}}{\sqrt{1-x^2}} : x < 1.
+   \end{eqnarray}
+   
+Parameters that need to be specified by the user are :math:`B_0` and the scale radius :math:`R_s`. To use this, you would do:
+
+.. code::
+
+   from cluster_toolkit import boostfactors
+   import numpy as np
+   R = np.logspace(-2, 3, 100) #Mpc/h comoving
+   B0 = 0.1 #Typical value
+   Rs = 1.0 #Mpc/h comoving; typical value
+   B = boostfactors.boost_nfw_at_R(R, B0, Rs)
+
+Powerlaw Boost Model
+=========================
+
+In `Melchior et al. <https://arxiv.org/abs/1610.06890>`_ we used a power law for the boost factor.
+
+.. math::
+
+   \mathcal{B} = 1 + B_0\left(\frac{R}{R_s}\right)^\alpha
+
+Here, the input parameters are :math:`B_0`, the scale radius :math:`R_s`, and the exponent :math:`\alpha`. This is also available in this module:
+
+.. code::
+
+   from cluster_toolkit import boostfactors
+   import numpy as np
+   R = np.logspace(-2, 3, 100) #Mpc/h comoving
+   B0 = 0.1 #Typical value
+   Rs = 1.0 #Mpc/h comoving; typical value
+   alpha = 1.0 #arbitrary
+   B = boostfactors.boost_powerlaw_at_R(R, B0, Rs, alpha)
