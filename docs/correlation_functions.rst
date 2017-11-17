@@ -6,13 +6,13 @@ Cluster density profiles are closely related to the correlation function
 
 .. math::
    
-   \langle\rho_h(r)\rangle = \bar{\rho}(1+\xi_{hm}(r))
+   \rho(r) = \bar{\rho}(1+\xi_{hm}(r))
 
 That is, the average density of halos some distance :math:`r` from the center of the halo is proportional to mean density of the universe and the *halo-matter* correlation function, or the tendency to find matter near halos. This module makes various correlation functions available. The correlation functions for the NFW and Einasto profiles can also be computed directly from the density profiles by inverting the above equation.
 
 .. note::
 
-   By definition :math:`\int {\rm d}V \xi(\vec{r}) = 0`.
+   By definition :math:`\int {\rm d}V\ \xi(\vec{r}) = 0`.
 
 NFW Profile
 ===========
@@ -96,7 +96,7 @@ By definition it is related to the matter power spectrum by a Hankel transform
 
 .. math::
    
-   \xi_{mm}(r) = \frac{1}{2\pi^2}\int_0^\infty {\rm d}k k^2 P(k) \frac{\sin kr}{kr}.
+   \xi_{mm}(r) = \frac{1}{2\pi^2}\int_0^\infty {\rm d}k\ k^2 P(k) \frac{\sin kr}{kr}.
 
 There is not consensus on what power spectrum to use. `Hayashi & White <https://arxiv.org/abs/0709.3933>`_ use the *linear* matter power spectrum, while `Zu et al. <https://arxiv.org/abs/1207.3794>`_ use the *nonlinear* matter power spectrum. Anecdotally, the former is generally better for lower mass halos and the latter is better for higher mass halos. Regardless of what you use, to call this you would do
 
