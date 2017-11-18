@@ -1,5 +1,6 @@
 import cluster_toolkit
 from ctypes import c_double, c_int, POINTER
+import numpy as np
 
 def _dcast(x):
     return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
