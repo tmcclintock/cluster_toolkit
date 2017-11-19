@@ -14,12 +14,16 @@ ext=Extension("cluster_toolkit._cluster_toolkit", sources, depends=headers, incl
 dist = setup(name="cluster_toolkit",
              author="Tom McClintock",
              author_email="tmcclintock89@gmail.com",
-             description="Cluster weak lensing code.",
+             description="Modules for modeling galaxy clusters and related systematics.",
              license="MIT License",
-             url="https://github.com/tmcclintock/Cluster_WL",
+             url="https://github.com/tmcclintock/cluster_toolkit",
              packages=['cluster_toolkit'],
              package_data={'cluster_toolkit' : headers },
-             ext_modules=[ext])
+             ext_modules=[ext],
+             install_requires=['cffi','numpy'],
+             setup_requires=['pytest_runner'],
+             tests_require=['pytest']
+)
 
 #setup.py doesn't put the .so file in the cluster_toolkit directory, 
 #so this bit makes it possible to
