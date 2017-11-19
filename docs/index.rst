@@ -45,4 +45,4 @@ Comprehensive API
 .. toctree::
    :maxdepth: 1
 
-   cluster_toolkit_full_api
+will soon have: cluster_toolkit_full_api

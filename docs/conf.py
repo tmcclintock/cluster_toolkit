@@ -31,9 +31,9 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.todo',
-              'sphinx.ext.mathjax',
-              'sphinx_automodapi.automodapi',
-              'sphinxcontrib.napoleon']
+              'sphinx.ext.mathjax']#,
+              #'sphinx_automodapi.automodapi',
+              #'sphinxcontrib.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

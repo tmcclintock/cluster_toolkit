@@ -2,8 +2,7 @@
 Comprehensive Cluster Toolkit Reference/API
 ******************************************************
 
-.. automodapi:: cluster_toolkit.bias
 
 
 
-in progress
+in progress.. automodapi:: cluster_toolkit.bias
