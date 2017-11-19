@@ -151,10 +151,10 @@ def bias_at_nu(nu, delta=200):
     """
     if type(nu) is list or type(nu) is np.ndarray:
         bias = np.zeros_like(nu)
-        cluster_toolkit._lib.bias_at_nu_arr(_dcast(nu), len(nu), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
+        cluster_toolkit._lib.bias_at_nu_arr(_dcast(nu), len(nu), delta, _dcast(bias))
         return bias
     else:
-        return cluserwl._lib.bias_at_nu(nu, delta)
+        return cluster_toolkit._lib.bias_at_nu(nu, delta)
 
 def bias_at_R(R, k, P, delta=200):
     """Tinker 2008 bais at mass M [Msun/h] corresponding to radius R [Mpc/h comoving]

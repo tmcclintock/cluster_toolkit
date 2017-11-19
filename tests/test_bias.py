@@ -28,9 +28,21 @@ def test_outputs_bias_at_M():
         npt.assert_equal(bias.bias_at_M(M_arr[i], klin, plin, Omega_m), arrout[i])
 
 def test_s2_and_nu_functions():
+    #Test the mass calls
     s2 = bias.sigma2_at_M(Mass, klin, plin, Omega_m)
     nu = bias.nu_at_M(Mass, klin, plin, Omega_m)
     npt.assert_equal(1.686/np.sqrt(s2), nu)
     s2 = bias.sigma2_at_M(M_arr, klin, plin, Omega_m)
     nu = bias.nu_at_M(M_arr, klin, plin, Omega_m)
     npt.assert_array_equal(1.686/np.sqrt(s2), nu)
+    out = bias.bias_at_M(M_arr, klin, plin, Omega_m)
+    out2 = bias.bias_at_nu(nu)
+    npt.assert_array_equal(out, out2)
+    #Now test the R calls
+    R = 1.0 #Mpc/h; arbitrary
+    s2 = bias.sigma2_at_R(R, klin, plin)
+    nu = bias.nu_at_R(R, klin, plin)
+    npt.assert_equal(1.686/np.sqrt(s2), nu)
+    out = bias.bias_at_R(R, klin, plin)
+    out2 = bias.bias_at_nu(nu)
+    npt.assert_array_equal(out, out2)
