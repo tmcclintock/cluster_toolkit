@@ -8,6 +8,10 @@ To install the cluster_toolkit you currently need to build it from source::
   cd cluster_toolkit
   python setup.py install
 
+To run the tests you can do::
+
+  python setup.py test
+  
 Requirements
 ============
 This package has only ever been tested with Python 2.7.x and has some dependencies. The Python dependencies that you can get with pip are:
