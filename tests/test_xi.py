@@ -1,5 +1,6 @@
 import pytest
 from cluster_toolkit import xi
+from os.path import dirname, join
 import numpy as np
 import numpy.testing as npt
 
@@ -11,7 +12,9 @@ conc = 5 #concentration; no units, for NFW
 Rscale = 1.0 #Mph/h; for Einasto
 alpha = 0.19 #typical value; for Einasto
 Omega_m = 0.3 #arbitrary
-
+datapath = "./data_for_testing/"
+knl = np.loadtxt(join(dirname(__file__),datapath+"knl.txt")) #h/Mpc; wavenumber
+pnl = np.loadtxt(join(dirname(__file__),datapath+"pnl.txt")) #[Mpc/h]^3 nonlinear power spectrum
 
 def test_exceptions_xi_nfw_at_R():
     with pytest.raises(TypeError):

@@ -18,7 +18,7 @@ def sigma2_at_R(R, k, P):
     sigma2 (float or array like): RMS variance
 
     """
-    if type(R) is list or np.ndarray:
+    if type(R) is list or type(R) is np.ndarray:
         s2 = np.zeros_like(R)
         cluster_toolkit._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))
         return s2
@@ -38,7 +38,7 @@ def sigma2_at_M(M, k, P, om):
     sigma2 (float or array like): RMS variance
 
     """
-    if type(M) is list or np.ndarray:
+    if type(M) is list or type(M) is np.ndarray:
         s2 = np.zeros_like(M)
         cluster_toolkit._lib.sigma2_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(s2))
         return s2
@@ -84,7 +84,7 @@ def nu_at_R(R, k, P):
     nu (float or array like): Peak height
 
     """
-    if type(R) is list or np.ndarray:
+    if type(R) is list or type(R) is np.ndarray:
         nu = np.zeros_like(R)
         cluster_toolkit._lib.nu_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(nu))
         return nu
@@ -104,7 +104,7 @@ def nu_at_M(M, k, P, om):
     nu (float or array like): Peak height
 
     """
-    if type(M) is list or np.ndarray:
+    if type(M) is list or type(M) is np.ndarray:
         nu = np.zeros_like(M)
         cluster_toolkit._lib.nu_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, _dcast(nu))
         return nu
@@ -149,7 +149,7 @@ def bias_at_nu(nu, delta=200):
     bias (float or array like): Bias
 
     """
-    if type(nu) is list or np.ndarray:
+    if type(nu) is list or type(nu) is np.ndarray:
         bias = np.zeros_like(nu)
         cluster_toolkit._lib.bias_at_nu_arr(_dcast(nu), len(nu), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
         return bias
@@ -169,7 +169,7 @@ def bias_at_R(R, k, P, delta=200):
     bias (float or array like): Bias
 
     """
-    if type(R) is list or np.ndarray:
+    if type(R) is list or type(R) is np.ndarray:
         bias = np.zeros_like(R)
         cluster_toolkit._lib.bias_at_R_arr(_dcast(R), len(R), delta, _dcast(k), _dcast(P), len(k), _dcast(bias))
         return bias

@@ -26,3 +26,11 @@ def test_outputs_bias_at_M():
     arrout = bias.bias_at_M(M_arr, klin, plin, Omega_m)
     for i in range(len(M_arr)):
         npt.assert_equal(bias.bias_at_M(M_arr[i], klin, plin, Omega_m), arrout[i])
+
+def test_s2_and_nu_functions():
+    s2 = bias.sigma2_at_M(Mass, klin, plin, Omega_m)
+    nu = bias.nu_at_M(Mass, klin, plin, Omega_m)
+    npt.assert_equal(1.686/np.sqrt(s2), nu)
+    s2 = bias.sigma2_at_M(M_arr, klin, plin, Omega_m)
+    nu = bias.nu_at_M(M_arr, klin, plin, Omega_m)
+    npt.assert_array_equal(1.686/np.sqrt(s2), nu)
