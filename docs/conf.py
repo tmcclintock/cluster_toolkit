@@ -16,9 +16,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+#import os
+#import sys
+#sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- General configuration ------------------------------------------------
@@ -31,7 +31,9 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.todo',
-    'sphinx.ext.mathjax']
+              'sphinx.ext.mathjax',
+              'sphinx_automodapi.automodapi',
+              'sphinxcontrib.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -166,7 +168,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'cluster_toolkit', u'cluster_toolkit Documentation',
-     author, 'cluster_toolkit', 'One line description of project.',
+     author, 'cluster_toolkit', 'Modules for modeling galaxy clusters and related systematics.',
      'Miscellaneous'),
 ]
 
