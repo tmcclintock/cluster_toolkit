@@ -207,5 +207,10 @@ def a_function(my_arg, another):
 __all__ = [
     'bias_at_M',
     'bias_at_R',
+    'bias_at_nu',
+    'sigma2_at_M',
+    'sigma2_at_R',
+    'nu_at_M',
+    'nu_at_R',
     'a_function'
 ]
