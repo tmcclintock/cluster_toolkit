@@ -38,7 +38,7 @@ extensions = ['sphinx.ext.todo',
               'sphinx.ext.inheritance_diagram',
               'autoapi.sphinx']
 
-#autoapi_modules = {'cluster_toolkit.bias': None, 'cluster_toolkit.xi': None}
+autoapi_modules = {'cluster_toolkit.bias': None, 'cluster_toolkit.xi': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
