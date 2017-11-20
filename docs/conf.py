@@ -24,7 +24,7 @@ class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
             return MagicMock()
-MOCK_MODULES = ['cluster_toolkit._lib',]
+MOCK_MODULES = ['cluster_toolkit._cluster_toolkit', 'cluster_toolkit._lib']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
