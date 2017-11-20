@@ -18,16 +18,16 @@
 #
 import os
 import sys
-#sys.path.insert(0, os.path.abspath('./api'))
+sys.path.insert(0, os.path.abspath('./api'))
 
-#Mock out the module itself
-from mock import Mock as MagicMock
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
-MOCK_MODULES = ['cluster_toolkit/bias','cluster_toolkit/xi']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+#Attempted to mock out the module itself
+#from mock import Mock as MagicMock
+#class Mock(MagicMock):
+#    @classmethod
+#    def __getattr__(cls, name):
+#            return MagicMock()
+#MOCK_MODULES = ['cluster_toolkit/bias','cluster_toolkit/xi']
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 # -- General configuration ------------------------------------------------
