@@ -19,14 +19,13 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../cluster_toolkit/bias.py'))
-from mock import Mock as MagicMock
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
-MOCK_MODULES = ['cluster_toolkit._lib', 'cluster_toolkit._ffi']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
+#from mock import Mock as MagicMock
+#class Mock(MagicMock):
+#    @classmethod
+#    def __getattr__(cls, name):
+#            return MagicMock()
+#MOCK_MODULES = ['cluster_toolkit._lib', 'cluster_toolkit._ffi']
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 # -- General configuration ------------------------------------------------
@@ -40,7 +39,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # ones.
 extensions = ['sphinx.ext.todo',
               'sphinx.ext.mathjax',
-              'sphinx_automodapi.automodapi',
+              'sphinx.ext.autodoc',
               'sphinxcontrib.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -164,7 +163,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cluster_wl', u'cluster_toolkit Documentation',
+    (master_doc, 'cluster_toolkit', u'cluster_toolkit Documentation',
      [author], 1)
 ]
 

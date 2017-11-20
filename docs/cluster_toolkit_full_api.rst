@@ -2,5 +2,5 @@
 Comprehensive Cluster Toolkit Reference/API
 ******************************************************
 
-.. automodapi:: cluster_toolkit.bias
-   :no-inheritance-diagram:
+.. automodule:: cluster_toolkit.bias
+   :members:
