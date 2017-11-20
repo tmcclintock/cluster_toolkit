@@ -186,7 +186,26 @@ def _calc_bias_at_M(M, k, P, om, bias, delta=200):
     cluster_toolkit._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), om, _dcast(bias))
     return
 
+def a_function(my_arg, another):
+    """
+    This is the brief description of my function to test.
+
+    This is a more complete example of my function. It can include doctest,
+    code blocks or any other reST structure.
+
+    >>> a_function(10, [MyClass('a'), MyClass('b')])
+    20
+
+    :param int my_arg: The first argument of the function. Just a number.
+    :param another: The other argument of the important function.
+    :type another: A list of :class:`MyClass`
+    :rtype: int
+    :return: The length of the second argument times the first argument.
+    """
+    return my_arg * len(another)
+
 __all__ = [
     'bias_at_M',
-    'bias_at_R'
+    'bias_at_R',
+    'a_function'
 ]
