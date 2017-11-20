@@ -18,7 +18,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../cluster_toolkit/'))
+sys.path.insert(0, os.path.abspath('../cluster_toolkit/bias.py'))
 from mock import Mock as MagicMock
 class Mock(MagicMock):
     @classmethod
