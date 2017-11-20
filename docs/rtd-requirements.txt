@@ -1,2 +1,2 @@
 sphinxcontrib-napoleon
-cluster_toolkit.bias
+autoapi.sphinx

@@ -17,15 +17,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 #import os
-import sys
+#import sys
 #sys.path.insert(0, os.path.abspath('.'))
-#from mock import Mock as MagicMock
-#class Mock(MagicMock):
-#    @classmethod
-#    def __getattr__(cls, name):
-#            return MagicMock()
-#MOCK_MODULES = ['cluster_toolkit._cluster_toolkit', 'cluster_toolkit._lib']
-#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 
@@ -41,7 +34,11 @@ import sys
 extensions = ['sphinx.ext.todo',
               'sphinx.ext.mathjax',
               'sphinx.ext.autodoc',
-              'sphinxcontrib.napoleon']
+              'sphinxcontrib.napoleon',
+              'sphinx.ext.inheritance_diagram',
+              'autoapi.sphinx']
+
+autoapi_modules = {'cluster_toolkit.bias': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
