@@ -1,2 +1,2 @@
 sphinxcontrib-napoleon
-../cluster_toolkit
+../cluster_toolkit/bias.py
