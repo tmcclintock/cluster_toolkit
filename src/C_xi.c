@@ -131,5 +131,6 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   }
 
   gsl_spline_free(Pspl),gsl_interp_accel_free(acc);
-  return sum/(R*R*R*M_PI*2);
+  return sum/(R*R*R*M_PI*2); //Note: factor of pi picked up in the quadrature rule
+  //See Ogata 2005 for details, especially eq. 5.2
 }
