@@ -18,7 +18,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('./api'))
+#sys.path.insert(0, os.path.abspath('./api'))
 
 #Attempted to mock out the module itself
 #from mock import Mock as MagicMock
@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.abspath('./api'))
 #    @classmethod
 #    def __getattr__(cls, name):
 #            return MagicMock()
-#MOCK_MODULES = ['cluster_toolkit/bias','cluster_toolkit/xi']
+#MOCK_MODULES = ['../cluster_toolkit/__init__.py']
 #sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
@@ -46,7 +46,7 @@ extensions = ['sphinx.ext.todo',
               'sphinx.ext.inheritance_diagram',
               'autoapi.sphinx']
 
-autoapi_modules = {'cluster_toolkit.bias': None, 'cluster_toolkit.xi': None}
+autoapi_modules = {'cluster_toolkit': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -84,7 +84,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../cluster_toolkit/_cluster_toolkit']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

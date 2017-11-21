@@ -29,14 +29,14 @@ Getting Started
 .. toctree::
    :maxdepth: 1
 
-   installation
-   density_profiles
-   correlation_functions
-   halo_bias
-   projected_density_profiles
-   averaged_profiles
-   boostfactors
-   miscentering
+   source/installation
+   source/density_profiles
+   source/correlation_functions
+   source/halo_bias
+   source/projected_density_profiles
+   source/averaged_profiles
+   source/boostfactors
+   source/miscentering
 
 ******************************
 Comprehensive API
@@ -45,4 +45,4 @@ Comprehensive API
 .. toctree::
    :maxdepth: 1
 
-   cluster_toolkit_full_api
+   Comprehensive Cluster Toolkit Reference/API<cluster_toolkit/cluster_toolkit>

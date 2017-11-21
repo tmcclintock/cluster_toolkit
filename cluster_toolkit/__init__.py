@@ -1,6 +1,6 @@
 """cluster_toolkit
 
-You can find docstrings for each of the package contents by inspecting help(cluster_toolkit.PACKAGENAME).
+A module for computing galaxy cluster models.
 """
 import os, cffi, glob
 

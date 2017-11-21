@@ -1,3 +1,6 @@
+"""Correlation functions for matter and halos.
+
+"""
 import cluster_toolkit
 from ctypes import c_double, c_int, POINTER
 import numpy as np

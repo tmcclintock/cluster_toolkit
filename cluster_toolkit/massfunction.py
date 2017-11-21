@@ -1,3 +1,10 @@
+"""Halo mass function.
+
+This module is broken. Do not use.
+
+"""
+
+"""
 import cluster_toolkit
 import numpy as np
 from ctypes import c_double, c_int, POINTER
@@ -18,3 +25,4 @@ def N_in_bins(edges, volume, Marr, dndM):
     N = np.zeros(len(edges)-1)
     cluster_toolkit._lib.N_in_bins(dcast(Marr), dcast(dndM), len(Marr), volume, dcast(edges), len(edges), dcast(N))
     return N
+"""

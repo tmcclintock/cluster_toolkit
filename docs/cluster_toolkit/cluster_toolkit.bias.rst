@@ -34,9 +34,6 @@ Functions
 - :py:func:`nu_at_R`:
   Peak height of top hat sphere of radius R [Mpc/h comoving] of linear power spectrum.
 
-- :py:func:`a_function`:
-  This is the brief description of my function to test.
-
 
 .. autofunction:: bias_at_M
 
@@ -51,5 +48,3 @@ Functions
 .. autofunction:: nu_at_M
 
 .. autofunction:: nu_at_R
-
-.. autofunction:: a_function
