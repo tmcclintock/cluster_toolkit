@@ -36,7 +36,7 @@ if on_rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    MOCK_MODULES = ['cluster_toolkit.averaging']
+    MOCK_MODULES = ['numpy','cluster_toolkit.averaging','cluster_toolkit.bias','cluster_toolkit.boostfactors','cluster_toolkit.deltasigma','cluster_toolkit.density','cluster_toolkit.massfunction','cluster_toolkit.xi','cluster_toolkit']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
