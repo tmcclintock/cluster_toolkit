@@ -97,6 +97,13 @@ language = None
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../cluster_toolkit/_cluster_toolkit']
 
+# If true, '()' will be appended to :func: etc. cross-reference text.
+add_function_parentheses = True
+
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = True
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
