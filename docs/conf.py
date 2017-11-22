@@ -24,6 +24,22 @@ root_path = abspath(join(this_dir, '../'))
 if os.path.isdir(root_path):
     sys.path.insert(0, root_path)
 
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    try:
+        from unittest.mock import MagicMock
+    except ImportError:
+        from mock import Mock as MagicMock
+
+    class Mock(MagicMock):
+        @classmethod
+        def __getattr__(cls, name):
+            return MagicMock()
+
+    MOCK_MODULES = ['numpy']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -42,18 +58,6 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon']
-
-#extensions = ['sphinx.ext.todo',
-#              'sphinx.ext.mathjax',
-#              'sphinx.ext.autodoc',
-#              'sphinx.ext.intersphinx',
-#              'sphinx.ext.ifconfig',
-#              'sphinx.ext.viewcode',
-#              'sphinxcontrib.napoleon',
-#              'sphinx.ext.inheritance_diagram',
-#              'autoapi.sphinx']
-#
-#autoapi_modules = {'cluster_toolkit': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
