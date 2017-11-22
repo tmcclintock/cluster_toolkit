@@ -5,6 +5,8 @@ cluster_toolkit is a module for computing galaxy cluster models.
 import os, cffi, glob
 import numpy as np
 
+__author__ = "Tom McClintock <tmcclintock@email.arizona.edu>"
+
 cluster_toolkit_dir = os.path.dirname(__file__)
 include_dir = os.path.join(cluster_toolkit_dir,'include')
 lib_file = os.path.join(cluster_toolkit_dir,'_cluster_toolkit.so')
