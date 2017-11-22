@@ -39,12 +39,10 @@ Getting Started
    source/miscentering
 
 ******************************
-Comprehensive API
+Reference
 ******************************
 
 .. toctree::
    :maxdepth: 1
 
-   Comprehensive Cluster Toolkit Reference/API<api/modules>
-	      
-Comprehensive Cluster Toolkit Reference/API<cluster_toolkit/cluster_toolkit>
+   Cluster Toolkit Reference/API<api/modules>

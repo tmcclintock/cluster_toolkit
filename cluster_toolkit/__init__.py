@@ -1,7 +1,7 @@
-"""cluster_toolkit
-
-A module for computing galaxy cluster models.
 """
+cluster_toolkit is a module for computing galaxy cluster models.
+"""
+
 import os, cffi, glob
 
 cluster_toolkit_dir = os.path.dirname(__file__)
