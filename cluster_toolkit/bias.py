@@ -2,12 +2,8 @@
 
 """
 import cluster_toolkit
-from ctypes import c_double, c_int
+from _cast import _dcast
 import numpy as np
-
-def _dcast(x):
-    if type(x) is list: x = np.array(x)
-    return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
 
 def bias_at_M(M, k, P, om, delta=200):
     """Tinker 2008 bais at mass M [Msun/h].

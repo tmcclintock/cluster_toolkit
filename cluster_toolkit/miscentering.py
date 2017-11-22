@@ -2,12 +2,8 @@
 
 """
 import cluster_toolkit
-from ctypes import c_double, c_int
+from _cast import _dcast
 import numpy as np
-
-def _dcast(x):
-    if type(x) is list: x = np.array(x)
-    return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
 
 def Sigma_mis_single_at_R(R, Rs, Sigma, M, conc, om, Rmis, delta=200):
     """Miscentered surface mass density [Msun h/pc^2 comoving] of a profile miscentered by an amount Rmis Mpc/h comoving. Units are Msun h/pc^2 comoving.
