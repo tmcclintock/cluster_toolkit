@@ -17,10 +17,10 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join as pjoin
 import sys
 this_dir = dirname(abspath(__file__))
-root_path = abspath(join(this_dir, '../'))
+root_path = abspath(pjoin(this_dir, '../'))
 if os.path.isdir(root_path):
     sys.path.insert(0, root_path)
 
@@ -95,7 +95,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '../cluster_toolkit/_cluster_toolkit']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
