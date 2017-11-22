@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from ctypes import c_double, c_int, POINTER
+from ctypes import c_double, c_int
 import numpy as np
 
 def _dcast(x):
@@ -98,9 +98,3 @@ def _calc_Sigma_mis_at_R(R, Rs, Sigma, M, conc, om, Rmis, Sigma_mis, delta=200, 
     if kernel == "gaussian": integrand_switch = 0
     elif kernel == "exponential": integrand_switch = 1
     return cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rs), _dcast(Sigma), len(Rs), M, conc, delta, om, Rmis, integrand_switch, _dcast(Sigma_mis))
-
-__all__ = [
-    'Sigma_mis_single_at_R',
-    'Sigma_mis_at_R',
-    'DeltaSigma_mis_at_R'
-]

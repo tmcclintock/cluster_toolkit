@@ -47,8 +47,3 @@ def boost_powerlaw_at_R(R, B0, Rs, alpha):
         return boost
     else:
         return cluster_toolkit._lib.boost_powerlaw_at_R(R, B0, Rs, alpha)
-
-__all__ = [
-    'boost_nfw_at_R',
-    'boost_powerlaw_at_R'
-]

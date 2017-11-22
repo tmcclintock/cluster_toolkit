@@ -52,8 +52,3 @@ def rho_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
         return rho
     else:
         return cluster_toolkit._lib.rho_einasto_at_R(R, M, rhos, rs, alpha, delta, om)
-
-__all__ = [
-    'rho_nfw_at_R',
-    'rho_einasto_at_R'
-]

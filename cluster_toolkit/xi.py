@@ -137,11 +137,3 @@ def _calc_xi_hm(xi_1halo, xi_2halo, xi_hm):
     NR = len(xi_1halo)
     cluster_toolkit._lib.calc_xi_hm(NR, _dcast(xi_1halo), _dcast(xi_2halo), _dcast(xi_hm))
     return
-
-__all__ = [
-    'xi_nfw_at_R',
-    'xi_einasto_at_R',
-    'xi_mm_at_R',
-    'xi_2halo',
-    'xi_hm'
-]

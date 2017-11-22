@@ -46,8 +46,3 @@ def average_profile_in_bins(Redges, R, prof):
     ave_prof = np.zeros(len(Redges)-1)
     cluster_toolkit._lib.average_profile_in_bins(_dcast(Redges), len(Redges), _dcast(R), len(R), _dcast(prof), _dcast(ave_prof))
     return ave_prof
-
-__all__ = [
-    'average_profile_in_bin',
-    'average_profile_in_bins'
-]

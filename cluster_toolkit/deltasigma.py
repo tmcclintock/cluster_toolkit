@@ -94,9 +94,3 @@ def _calc_Sigma_at_R(R, Rxi, xi, M, conc, om, Sigma, delta=200):
 
     """
     return cluster_toolkit._lib.Sigma_at_R_full_arr(_dcast(R), len(R), _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om, _dcast(Sigma))
-
-__all__ = [
-    'Sigma_nfw_at_R',
-    'Sigma_at_R',
-    'DeltaSigma_at_R'
-]
