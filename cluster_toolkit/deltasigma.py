@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from _cast import _dcast
+from cluster_toolkit import _dcast
 import numpy as np
 
 def Sigma_nfw_at_R(R, M, conc, om, delta=200):

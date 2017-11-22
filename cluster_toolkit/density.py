@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from _cast import _dcast
+from cluster_toolkit import _dcast
 import numpy as np
 
 def rho_nfw_at_R(R, M, c, om, delta=200):

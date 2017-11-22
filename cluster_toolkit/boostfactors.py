@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from _cast import _dcast
+from cluster_toolkit import _dcast
 import numpy as np
 
 def boost_nfw_at_R(R, B0, Rs):

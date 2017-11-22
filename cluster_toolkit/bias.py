@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from _cast import _dcast
+from cluster_toolkit import _dcast
 import numpy as np
 
 def bias_at_M(M, k, P, om, delta=200):

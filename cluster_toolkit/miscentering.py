@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from _cast import _dcast
+from cluster_toolkit import _dcast
 import numpy as np
 
 def Sigma_mis_single_at_R(R, Rs, Sigma, M, conc, om, Rmis, delta=200):

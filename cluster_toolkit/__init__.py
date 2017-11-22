@@ -3,6 +3,7 @@ cluster_toolkit is a module for computing galaxy cluster models.
 """
 
 import os, cffi, glob
+import numpy as np
 
 cluster_toolkit_dir = os.path.dirname(__file__)
 include_dir = os.path.join(cluster_toolkit_dir,'include')
@@ -13,11 +14,8 @@ for file_name in glob.glob(os.path.join(include_dir,'*.h')):
     _ffi.cdef(open(file_name).read())
 _lib = _ffi.dlopen(lib_file)
 
-from .xi import *
-from .bias import *
-from .deltasigma import *
-from .miscentering import *
-from .averaging import *
-from .massfunction import *
-from .boostfactors import *
-from .density import *
+def _dcast(x):
+    if type(x) is list: x = np.array(x)
+    return _ffi.cast('double*', x.ctypes.data)
+
+from . import averaging, bias, boostfactors, deltasigma, density, massfunction, miscentering, xi
