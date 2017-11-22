@@ -20,7 +20,7 @@ import os
 from os.path import abspath, dirname, join
 import sys
 this_dir = dirname(abspath(__file__))
-root_path = abspath(join(this_dir, '../'))
+root_path = abspath(join(this_dir, '../cluster_toolkit/'))
 if os.path.isdir(root_path):
     sys.path.insert(0, root_path)
 
@@ -36,8 +36,7 @@ if on_rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    #MOCK_MODULES = ['numpy','ctypes','cluster_toolkit.averaging','cluster_toolkit.bias','cluster_toolkit.boostfactors','cluster_toolkit.deltasigma','cluster_toolkit.density','cluster_toolkit.massfunction','cluster_toolkit.xi','cluster_toolkit']
-    MOCK_MODULES = ['numpy','ctypes','cluster_toolkit._cluster_toolkit']
+    MOCK_MODULES = ['numpy','ctypes','cffi','ctypes.c_double','ctypes.c_int']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
