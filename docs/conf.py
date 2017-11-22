@@ -17,18 +17,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+from os.path import abspath, dirname, join
 import sys
-#sys.path.insert(0, os.path.abspath('./api'))
-
-#Attempted to mock out the module itself
-#from mock import Mock as MagicMock
-#class Mock(MagicMock):
-#    @classmethod
-#    def __getattr__(cls, name):
-#            return MagicMock()
-#MOCK_MODULES = ['../cluster_toolkit/__init__.py']
-#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
+this_dir = dirname(abspath(__file__))
+root_path = abspath(join(this_dir, '../'))
+if os.path.isdir(root_path):
+    sys.path.insert(0, root_path)
 
 # -- General configuration ------------------------------------------------
 
@@ -39,14 +33,27 @@ import sys
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.todo',
-              'sphinx.ext.mathjax',
-              'sphinx.ext.autodoc',
-              'sphinxcontrib.napoleon',
-              'sphinx.ext.inheritance_diagram',
-              'autoapi.sphinx']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon']
 
-autoapi_modules = {'cluster_toolkit': None}
+#extensions = ['sphinx.ext.todo',
+#              'sphinx.ext.mathjax',
+#              'sphinx.ext.autodoc',
+#              'sphinx.ext.intersphinx',
+#              'sphinx.ext.ifconfig',
+#              'sphinx.ext.viewcode',
+#              'sphinxcontrib.napoleon',
+#              'sphinx.ext.inheritance_diagram',
+#              'autoapi.sphinx']
+#
+#autoapi_modules = {'cluster_toolkit': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -185,5 +192,5 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-
+#Remove the root_path we inserted
+del sys.path[0]

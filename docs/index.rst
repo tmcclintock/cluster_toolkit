@@ -45,4 +45,6 @@ Comprehensive API
 .. toctree::
    :maxdepth: 1
 
-   Comprehensive Cluster Toolkit Reference/API<cluster_toolkit/cluster_toolkit>
+   Comprehensive Cluster Toolkit Reference/API<api/modules>
+	      
+Comprehensive Cluster Toolkit Reference/API<cluster_toolkit/cluster_toolkit>
