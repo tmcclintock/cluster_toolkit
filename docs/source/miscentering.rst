@@ -39,6 +39,24 @@ which can be calculated using this module using
 Stacked Miscentering
 ==============================
 
-In a stack of clusters, the amount of miscentering will follow a distribution. That is, some clusters will be miscentered more than others. `Simet et al. (2017) <https://arxiv.org/abs/1603.06953>`_ for SDSS and `Melchior et al. (2017) <https://arxiv.org/abs/1610.06890>`_ for DES used the following:
+In a stack of clusters, the amount of miscentering will follow a distribution :math:`P(R'|R_{\rm mis})` given some characteristic miscentering length :math:`R_{\rm mis}`. That is, some clusters will be miscentered more than others. `Simet et al. (2017) <https://arxiv.org/abs/1603.06953>`_ for SDSS and `Melchior et al. (2017) <https://arxiv.org/abs/1610.06890>`_ assume a Raleigh distribution for the amount of miscentering :math:`R'`:
 
-in progress
+.. math::
+
+   P(R'|R_{\rm mis}) = \frac{R'}{R^2_{\rm mis}}\exp[-R'^2/2R_{\rm mis}^2].
+
+This means that :math:`R_{\rm mis}` is a free parameter in your analysis. This gives rise to a miscentered projected density profile:
+
+.. math::
+
+   \Sigma_{\rm mis}(R) = \int_0^\infty{\rm d}R'\ P(R'|R_{\rm mis})\Sigma(R|R')
+
+which can then itself be integrated to get :math:`\Delta\Sigma_{\rm mis}`. To calculate these in the code you woul use:
+
+.. code::
+
+   from cluster_toolkit import miscentering
+   #Assume Sigma at R_perp are computed here
+   Sigma_mis = miscentering.Sigma_mis_at_R(R_perp, R_perp, Sigma, mass, concentration, Omega_m, R_mis)
+   DeltaSigma_mis = miscentering.DeltaSigma_mis_at_R(R_perp, R_perp, Sigma_mis)
+   
