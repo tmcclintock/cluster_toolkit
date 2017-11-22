@@ -72,11 +72,11 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-#project = u'cluster_toolkit'
-#__import__(project)
-#package = sys.modules[project]
-copyright = u'2017, '
-author = u'Tom McClintock'#package.__author__
+project = u'cluster_toolkit'
+__import__(project)
+package = sys.modules[project]
+copyright = u'2017, Tom McClintock'
+author =package.__author__
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,6 +204,3 @@ texinfo_documents = [
      author, 'cluster_toolkit', 'Modules for modeling galaxy clusters and related systematics.',
      'Miscellaneous'),
 ]
-
-#Remove the root_path we inserted
-#del sys.path[0]
