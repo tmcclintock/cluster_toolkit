@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from ctypes import c_double, c_int, POINTER
+from ctypes import c_double, c_int
 import numpy as np
 
 def _dcast(x):

@@ -7,7 +7,7 @@ This module is broken. Do not use.
 """
 import cluster_toolkit
 import numpy as np
-from ctypes import c_double, c_int, POINTER
+from ctypes import c_double, c_int
 
 def dcast(x):
     return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
