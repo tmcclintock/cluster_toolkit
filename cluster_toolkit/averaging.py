@@ -21,7 +21,7 @@ def average_profile_in_bin(Rlow, Rhigh, R, prof):
         float: Average profile in the radial bin, or annulus.
 
     """
-    return cluster_toolkit._lib.average_profile_in_bin(Rlow, Rhigh, dcat(R), len(R), _dcast(prof))
+    return cluster_toolkit._lib.average_profile_in_bin(Rlow, Rhigh, _dcast(R), len(R), _dcast(prof))
 
 def average_profile_in_bins(Redges, R, prof):
     """Average profile in bins.
