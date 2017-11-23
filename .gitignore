@@ -1,3 +1,8 @@
+# The compiled code used for profiling and debugging
+profiling/*.o
+profiling/*.dSYM
+profiling/profile
+
 # emacs backup files
 *~
 
