@@ -45,3 +45,11 @@ def test_outputs_xi_einasto_at_R():
     arrout = xi.xi_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
     for i in range(len(R_arr)):
         npt.assert_equal(xi.xi_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m), arrout[i])
+
+def test_xi_mm_at_R():
+    #List vs. numpy.array
+    npt.assert_array_equal(xi.xi_mm_at_R(R_arr, knl, pnl), xi.xi_mm_at_R(R_arr.tolist(), knl, pnl))
+    #Single value vs numpy.array
+    arrout = xi.xi_mm_at_R(R_arr, knl, pnl)
+    for i in range(len(R_arr)):
+        npt.assert_equal(xi.xi_mm_at_R(R_arr[i], knl, pnl), arrout[i])
