@@ -46,3 +46,13 @@ def test_s2_and_nu_functions():
     out = bias.bias_at_R(R, klin, plin)
     out2 = bias.bias_at_nu(nu)
     npt.assert_array_equal(out, out2)
+
+def test_R_vs_M():
+    rhomconst = 2.775808e+11 #units are SM h^2/Mpc^3
+    R = 1.0 #Mpc/h
+    M = 4.*np.pi/3. * Omega_m * rhomconst * R**3
+    npt.assert_almost_equal(bias.bias_at_R(R, klin, plin), bias.bias_at_M(M, klin, plin, Omega_m))
+    R = np.array([1.2, 1.4, 1.5])
+    M = 4.*np.pi/3. * Omega_m * rhomconst * R**3
+    npt.assert_array_almost_equal(bias.bias_at_R(R, klin, plin), bias.bias_at_M(M, klin, plin, Omega_m))
+

@@ -39,7 +39,7 @@ def boost_powerlaw_at_R(R, B0, Rs, alpha):
     """
     if type(R) is list or type(R) is np.ndarray:
         boost = np.zeros_like(R)
-        cluster_toolkit._lib.boost_powerlaw_at_R_arr(_dcast(R), len(R), B0, Rs, _dcast(boost))
+        cluster_toolkit._lib.boost_powerlaw_at_R_arr(_dcast(R), len(R), B0, Rs, alpha, _dcast(boost))
         return boost
     else:
         return cluster_toolkit._lib.boost_powerlaw_at_R(R, B0, Rs, alpha)

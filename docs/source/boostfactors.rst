@@ -59,5 +59,5 @@ Here, the input parameters are :math:`B_0`, the scale radius :math:`R_s`, and th
    R = np.logspace(-2, 3, 100) #Mpc/h comoving
    B0 = 0.1 #Typical value
    Rs = 1.0 #Mpc/h comoving; typical value
-   alpha = 1.0 #arbitrary
+   alpha = -1.0 #arbitrary
    B = boostfactors.boost_powerlaw_at_R(R, B0, Rs, alpha)
