@@ -22,12 +22,9 @@ The source code is publically available at https://github.com/tmcclintock/cluste
 .. note::
    Unless stated otherwise, all distances are assumed to be :math:`{\rm Mpc}/h` comoving and masses :math:`{\rm M}_\odot/h`. Furthermore, power spectra :math:`P(k)` must be in units of :math:`({\rm Mpc}/h)^3` with wavenumber :math:`k` in units of :math:`h/{\rm Mpc}`.
 
-***************
-Getting Started
-***************
-
 .. toctree::
    :maxdepth: 1
+   :caption: Getting Started
 
    source/installation
    source/density_profiles
@@ -38,11 +35,9 @@ Getting Started
    source/boostfactors
    source/miscentering
 
-******************************
-Reference
-******************************
-
 .. toctree::
    :maxdepth: 1
+   :caption: Reference
 
    Cluster Toolkit Reference/API<api/modules>
+   How to use CLASS<source/using_class>
