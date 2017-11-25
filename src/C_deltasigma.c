@@ -126,26 +126,6 @@ double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double con
   return (result1+result2)*rhom*2;
 }
 
-double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
-  double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double hiR = Rxi[Nxi-1];
-  double lnmax = log(sqrt(hiR*hiR - R*R));
-  double result12 = Sigma_at_R(R, Rxi, xi, Nxi, M, conc, delta, om);
-  double result3, err3;
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
-  params->Rp = R;
-  params->slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
-  params->intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params->slope);
-  gsl_function F;
-  F.params=params;
-  F.function = &integrand_large_scales;
-  gsl_integration_qag(&F, lnmax, lnmax+ulim, TOL, TOL/10., workspace_size, 6, workspace, &result3, &err3);
-  gsl_integration_workspace_free(workspace);
-  free(params);
-  return result12 + result3*rhom*2;
-}
-
 int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
   double loR = Rxi[0];
@@ -183,6 +163,28 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   free(params);
 
   return 0;
+}
+
+double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
+  double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
+  double hiR = Rxi[Nxi-1];
+  double lnmax = log(sqrt(hiR*hiR - R*R));
+  //The contribution from the small scales and the medium scales
+  double result12 = Sigma_at_R(R, Rxi, xi, Nxi, M, conc, delta, om);
+  double result3, err3;
+  //Now figure out the contribution from extrapolating
+  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
+  integrand_params*params=malloc(sizeof(integrand_params));
+  params->Rp = R;
+  params->slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
+  params->intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params->slope);
+  gsl_function F;
+  F.params=params;
+  F.function = &integrand_large_scales;
+  gsl_integration_qag(&F, lnmax, lnmax+ulim, TOL, TOL/10., workspace_size, 6, workspace, &result3, &err3);
+  gsl_integration_workspace_free(workspace);
+  free(params);
+  return result12 + result3*rhom*2;
 }
 
 int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
