@@ -13,8 +13,14 @@ Rxi = np.loadtxt(here+"/data_for_testing/r3d.txt")
 xihm = np.loadtxt(here+"/data_for_testing/xi_hm.txt")
 R = np.logspace(-1, 2, num = 1000)
 
+def test_Sigma_nfw():
+    arrout = ds.Sigma_nfw_at_R(R, M, c, Om)
+    assert len(arrout) == len(R)
+    for i in range(len(R)):
+        npt.assert_equal(arrout[i], ds.Sigma_nfw_at_R(R[i], M, c, Om))
+
 def test_Sigma():
     arrout = ds.Sigma_at_R(R, Rxi, xihm, M, c, Om)
     assert len(arrout) == len(R)
     for i in range(len(R)):
-        npt.assert_almost_equal(arrout[i], ds.Sigma_at_R(R[i], Rxi, xihm, M, c, Om))
+        npt.assert_equal(arrout[i], ds.Sigma_at_R(R[i], Rxi, xihm, M, c, Om))
