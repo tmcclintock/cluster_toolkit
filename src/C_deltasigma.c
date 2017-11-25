@@ -253,11 +253,15 @@ double DeltaSigma_at_R(double R, double*Rs, double*Sigma, int Ns, double M, doub
   gsl_integration_qag(&F, lrmin-10, lrmin, TOL, TOL/10., workspace_size, 6, workspace, &result1, &err);
   F.function = &DS_integrand_medium_scales;
   gsl_integration_qag(&F, lrmin, log(R), TOL, TOL/10., workspace_size, 6, workspace, &result2, &err);
-  
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  //Calculate the result
+  double res =  (result1+result2)*2/(R*R) - gsl_spline_eval(spline, R, acc);
+  //Free everything
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
-  return (result1+result2)*2/(R*R) - gsl_spline_eval(spline, R, acc);
+  //Return the result
+  return res;
 }
 
 int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double*DeltaSigma){
