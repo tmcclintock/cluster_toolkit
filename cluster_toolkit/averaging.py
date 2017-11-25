@@ -33,10 +33,9 @@ def average_profile_in_bins(Redges, R, prof):
         Redges (array like): Array of radial bin edges.
         R (array like): Radii of the profile.
         prof (array like): Projected profile.
-        ave_prof (float): Average profile in the radial bins, populated with the result.
 
     Returns:
-        None.
+        numpy.array: Average profile in bins between the edges provided.
 
     """
     ave_prof = np.zeros(len(Redges)-1)
