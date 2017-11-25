@@ -168,13 +168,13 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
 double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
   double hiR = Rxi[Nxi-1];
-  double lnmax = log(sqrt(hiR*hiR - R*R));
   //The contribution from the small scales and the medium scales
   double result12 = Sigma_at_R(R, Rxi, xi, Nxi, M, conc, delta, om);
   double result3, err3;
   //Now figure out the contribution from extrapolating
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   integrand_params*params=malloc(sizeof(integrand_params));
+  double lnmax = log(sqrt(hiR*hiR - R*R));
   params->Rp = R;
   params->slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
   params->intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params->slope);
@@ -202,8 +202,6 @@ int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double
   F.function = &integrand_large_scales;
   int i;
   for(i = 0; i < NR; i++){
-    if(R[i] < 1.0) 
-      continue;
     lnmax = log(sqrt(hiR*hiR - R[i]*R[i]));
     params->Rp = R[i];
     gsl_integration_qag(&F, lnmax, lnmax+ulim, TOL, TOL/10., workspace_size, 6, workspace, &result3, &err3);

@@ -44,13 +44,10 @@ def Sigma_at_R(R, Rxi, xi, M, conc, om, delta=200):
     """
     if type(R) is list or type(R) is np.ndarray:
         Sigma = np.zeros_like(R)
-        #cluster_toolkit._lib.Sigma_at_R_full_arr(_dcast(R), len(R), _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om, _dcast(Sigma))
-        cluster_toolkit._lib.Sigma_at_R_arr(_dcast(R), len(R), _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om, _dcast(Sigma))
-
+        cluster_toolkit._lib.Sigma_at_R_full_arr(_dcast(R), len(R), _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om, _dcast(Sigma))
         return Sigma
     else:
-        #return cluster_toolkit._lib.Sigma_at_R_full(R, _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om)
-        return cluster_toolkit._lib.Sigma_at_R(R, _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om)
+        return cluster_toolkit._lib.Sigma_at_R_full(R, _dcast(Rxi), _dcast(xi), len(Rxi), M, conc, delta, om)
 
 
 def DeltaSigma_at_R(R, Rs, Sigma, M, conc, om, delta=200):
