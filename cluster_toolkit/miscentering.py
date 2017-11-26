@@ -65,32 +65,23 @@ def DeltaSigma_mis_at_R(R, Rsigma, Sigma_mis):
         Sigma_mis (array like): Miscentered Sigma profile.
 
     Returns:
-        float array like: Miscentered excess surface mass.
+        float array like: Miscentered excess surface mass density profile.
 
     """
     if type(R) is list or type(R) is np.ndarray:
         DeltaSigma_mis = np.zeros_like(R)
-        cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(R), _dcast(DeltaSigma_mis))
+        cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis), len(R), _dcast(DeltaSigma_mis))
         return DeltaSigma_mis
     else:
-        return cluster_toolkit._lib.DeltaSigma_mis_at_R(R, _dcast(Rsigma), _dcast(Sigma), len(Rsigma))
+        return cluster_toolkit._lib.DeltaSigma_mis_at_R(R, _dcast(Rsigma), _dcast(Sigma_mis), len(Rsigma))
 
 def _calc_DeltaSigma_mis_at_R(R, Rsigma, Sigma, DeltaSigma_mis):
-    """Direct call to vectorized miscentered excess surface mass density profile at R. Units are Msun h/pc^2 comoving.
-
-    """
     return cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(R), _dcast(DeltaSigma_mis))
 
 def _calc_Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, om, Rmis, Sigma_mis, delta=200):
-    """Direct call to vectorized miscentered sufrace mass density profile.
-
-    """
     return cluster_toolkit._lib.Sigma_mis_single_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, om, Rmis, _dcast(Sigma_mis))
 
 def _calc_Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, om, Rmis, Sigma_mis, delta=200, kernel="gaussian"):
-    """Direct call to vectorized miscentered surface density profile with convolution. Units are Msun h/pc^2 comoving
-
-    """
     if kernel == "gaussian": integrand_switch = 0
     elif kernel == "exponential": integrand_switch = 1
     return cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, om, Rmis, integrand_switch, _dcast(Sigma_mis))

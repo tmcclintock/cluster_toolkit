@@ -80,7 +80,8 @@ double Sigma_mis_single_at_R(double R, double*Rs, double*Sigma, int Ns, double M
   F.params=params;
   double result, err;
   gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
@@ -119,7 +120,8 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
     gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
     Sigma_mis[i] = result/M_PI;
   }
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
@@ -230,7 +232,8 @@ double Sigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns, double M, doubl
   F.params=params;
   double result, err;
   gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
@@ -277,7 +280,8 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
     gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
     Sigma_mis[i] = result/M_PI;
   }
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
@@ -312,11 +316,15 @@ double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns){
   F.params = params;
   F.function = &DS_mis_integrand;
   gsl_integration_qag(&F, lrmin, log(R), TOL, TOL/10., workspace_size, 6, workspace, &result, &err);
-  
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  //Evaluate the result
+  double res = (low_part+result)*2/(R*R) - gsl_spline_eval(spline, R, acc);
+  //Free everything
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
-  return (low_part+result)*2/(R*R) - gsl_spline_eval(spline, R, acc);
+  //Return the result
+  return res;
 }
 
 int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
