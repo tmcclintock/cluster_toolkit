@@ -6,7 +6,7 @@ import numpy.testing as npt
 
 #Halo properties that are inputs
 R = 1.0 #Mpc/h
-R_arr = np.array([0.1, 1.0, 10.0]) #Mpc/h
+Ra = np.array([0.1, 1.0, 10.0]) #Mpc/h
 Mass = 1e14 #Msun/h
 conc = 5 #concentration; no units, for NFW
 Rscale = 1.0 #Mph/h; for Einasto
@@ -25,11 +25,11 @@ def test_exceptions_xi_nfw_at_R():
 
 def test_outputs_xi_nfw_at_R():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_nfw_at_R(R_arr, Mass, conc, Omega_m), xi.xi_nfw_at_R(R_arr.tolist(), Mass, conc, Omega_m))
+    npt.assert_array_equal(xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m), xi.xi_nfw_at_R(Ra.tolist(), Mass, conc, Omega_m))
     #Single value vs numpy.array
-    arrout = xi.xi_nfw_at_R(R_arr, Mass, conc, Omega_m)
-    for i in range(len(R_arr)):
-        npt.assert_equal(xi.xi_nfw_at_R(R_arr[i], Mass, conc, Omega_m), arrout[i])
+    arrout = xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m)
+    for i in range(len(Ra)):
+        npt.assert_equal(xi.xi_nfw_at_R(Ra[i], Mass, conc, Omega_m), arrout[i])
 
 def test_exceptions_xi_einasto_at_R():
     with pytest.raises(TypeError):
@@ -40,16 +40,30 @@ def test_exceptions_xi_einasto_at_R():
 
 def test_outputs_xi_einasto_at_R():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m), xi.xi_einasto_at_R(R_arr.tolist(), Mass, Rscale, alpha, Omega_m))
+    npt.assert_array_equal(xi.xi_einasto_at_R(Ra, Mass, Rscale, alpha, Omega_m), xi.xi_einasto_at_R(Ra.tolist(), Mass, Rscale, alpha, Omega_m))
     #Single value vs numpy.array
-    arrout = xi.xi_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
-    for i in range(len(R_arr)):
-        npt.assert_equal(xi.xi_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m), arrout[i])
+    arrout = xi.xi_einasto_at_R(Ra, Mass, Rscale, alpha, Omega_m)
+    for i in range(len(Ra)):
+        npt.assert_equal(xi.xi_einasto_at_R(Ra[i], Mass, Rscale, alpha, Omega_m), arrout[i])
 
 def test_xi_mm_at_R():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_mm_at_R(R_arr, knl, pnl), xi.xi_mm_at_R(R_arr.tolist(), knl, pnl))
+    npt.assert_array_equal(xi.xi_mm_at_R(Ra, knl, pnl), xi.xi_mm_at_R(Ra.tolist(), knl, pnl))
     #Single value vs numpy.array
-    arrout = xi.xi_mm_at_R(R_arr, knl, pnl)
-    for i in range(len(R_arr)):
-        npt.assert_equal(xi.xi_mm_at_R(R_arr[i], knl, pnl), arrout[i])
+    arrout = xi.xi_mm_at_R(Ra, knl, pnl)
+    for i in range(len(Ra)):
+        npt.assert_equal(xi.xi_mm_at_R(Ra[i], knl, pnl), arrout[i])
+
+def test_nfw_mass_dependence():
+    masses = np.array([1e13, 1e14, 1e15])
+    for i in range(len(masses)-1):
+        xi1 = xi.xi_nfw_at_R(Ra, masses[i], conc, Omega_m)
+        xi2 = xi.xi_nfw_at_R(Ra, masses[i+1], conc, Omega_m)
+        npt.assert_array_less(xi1, xi2)
+
+def test_einasto_mass_dependence():
+    masses = np.array([1e13, 1e14, 1e15])
+    for i in range(len(masses)-1):
+        xi1 = xi.xi_einasto_at_R(Ra, masses[i], Rscale, alpha, Omega_m)
+        xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], Rscale, alpha, Omega_m)
+        npt.assert_array_less(xi1, xi2)
