@@ -38,3 +38,16 @@ def test_DSmis():
     assert len(arrout) == len(Rm)
     for i in range(len(Rm)):
         npt.assert_equal(arrout[i], mis.DeltaSigma_mis_at_R(Rm[i], Rm, Smis))
+
+def test_nomis():
+    #Test what happens when Rmis=0
+    Rmis = 0.0001
+    lo, hi = 0, -1 #We expect the end points to be off
+    dec = 3 #To this decimal place
+    ones = np.ones_like(Sigma)
+    Smis = mis.Sigma_mis_at_R(R, R, Sigma, M, c, Om, Rmis)/Sigma
+    #npt.assert_array_almost_equal(Sigma[lo:hi], Smis[lo:hi], decimal=dec)
+    npt.assert_array_almost_equal(ones[lo:hi], Smis[lo:hi], decimal=dec)
+    Smis = mis.Sigma_mis_single_at_R(R, R, Sigma, M, c, Om, Rmis)/Sigma
+    #npt.assert_array_almost_equal(Sigma[lo:hi], Smis[lo:hi], decimal=dec)
+    npt.assert_array_almost_equal(ones[lo:hi], Smis[lo:hi], decimal=dec)
