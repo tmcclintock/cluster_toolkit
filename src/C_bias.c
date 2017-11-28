@@ -8,7 +8,7 @@
 #define BIAS_TOL 1e-6 //Used for the tinker bias
 #define delta_c 1.686 //Critical collapse density
 #define rhomconst 2.775808e+11
-//1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
+//1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 #define workspace_size 8000
 
 typedef struct integrand_params{

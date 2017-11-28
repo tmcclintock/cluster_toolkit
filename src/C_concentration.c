@@ -6,7 +6,13 @@
 #include <math.h>
 #include <stdio.h>
 
+#define rhocrit 2.775808e+11
+//1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
+
 double DK15_concentration_at_M(double Mass, double*k, double*P, int Nk, double Omega_m){
+  //Input mass is M200m, but DK15 uses M200c, so we need to convert
+  //on the following line.
+  //Mass = Mass; // Replace with something real to go from M200m->M200c
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
   //By default we use the median c-M relation presented in DK15
   double R = M_to_R(Mass, Omega_m);
