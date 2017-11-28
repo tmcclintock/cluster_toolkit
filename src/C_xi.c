@@ -112,8 +112,8 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   double zero,psi,x,t,dpsi,f,PIsinht;
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;
-  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline,Nk);
-  gsl_spline_init(Pspl,k,P,Nk);
+  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
+  gsl_spline_init(Pspl, k, P, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
 
   double sum = 0;
@@ -130,7 +130,8 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
     sum += f*sin(x)*dpsi;
   }
 
-  gsl_spline_free(Pspl),gsl_interp_accel_free(acc);
+  gsl_spline_free(Pspl);
+  gsl_interp_accel_free(acc);
   return sum/(R*R*R*M_PI*2); //Note: factor of pi picked up in the quadrature rule
   //See Ogata 2005 for details, especially eq. 5.2
 }

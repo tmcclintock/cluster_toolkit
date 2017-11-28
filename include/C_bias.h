@@ -1,3 +1,5 @@
+double M_to_R(double M, double Omega_m);
+
 double sigma2_at_R(double R, double*k, double*P, int Nk);
 double sigma2_at_M(double M, double*k, double*P, int Nk, double om);
 int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2);

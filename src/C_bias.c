@@ -2,6 +2,7 @@
 
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
+
 #include <math.h>
 
 #define BIAS_TOL 1e-6 //Used for the tinker bias
@@ -16,9 +17,9 @@ typedef struct integrand_params{
   double r;
 }integrand_params;
 
-double M_to_R(double M, double om){
+double M_to_R(double M, double Omega_m){
   //Lagrangian radius Mpc/h
-  return pow(M/(1.33333333333*M_PI*rhomconst*om),0.3333333333);
+  return pow(M/(1.33333333333*M_PI*rhomconst*Omega_m),0.3333333333);
 }
 
 double R_to_M(double R, double om){
