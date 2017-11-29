@@ -5,7 +5,7 @@ Using CLASS
 [CLASS](http://class-code.net/) is a code used to compute the matter power spectrum. The power spectrum is a key input for the cluster-toolkit. This is meant to be a very short example of how you can call CLASS to get the linear and nonlinear power spectra.
 
 .. note::
-   The CLASS github page is [here](https://github.com/lesgourg/class_public). The CLASS documentation is [here](https://github.com/lesgourg/class_public/blob/master/explanatory.ini).
+   The CLASS github page is `here <https://github.com/lesgourg/class_public>`_. The CLASS documentation is `here <https://github.com/lesgourg/class_public/blob/master/explanatory.ini>`_.
 
 .. note::
    CLASS uses units of :math:`Mpc^{-1}` for math:`k` and :math:`Mpc^3` for math:`P`.
