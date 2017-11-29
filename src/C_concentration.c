@@ -9,12 +9,19 @@
 #define rhocrit 2.775808e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
-double DK15_concentration_at_M(double Mass, double*k, double*P, int Nk, double Omega_m){
-  //Input mass is M200m, but DK15 uses M200c, so we need to convert
-  //on the following line.
-  //Mass = Mass; // Replace with something real to go from M200m->M200c
+//This is for M200m(b)
+double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, double Oemga_m){
+  /*
+    Need to do root finding to solve the equation
+    Mass - int d3r rho_nfw(r|M200c, c200c) = 0.
+   */
+  return 0;
+}
+
+//We need to implement the M-c equation just for M200crit first
+//This is the median M-c relation from DK15
+double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
-  //By default we use the median c-M relation presented in DK15
   double R = M_to_R(Mass, Omega_m);
   double lnk_R = log(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
   double*lnk = (double*)malloc(Nk*sizeof(double));
