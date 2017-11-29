@@ -94,9 +94,9 @@ double integrand_large_scales(double lRz, void*params){
 
 double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double loR = Rxi[0];
-  double hiR = Rxi[Nxi-1];
-  double lnmax = log(sqrt(hiR*hiR - R*R));
+  double Rxi0 = Rxi[0];
+  double RxiM = Rxi[Nxi-1];
+  double lnmax = log(sqrt(RxiM*RxiM - R*R));
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nxi);
   gsl_spline_init(spline, Rxi, xi, Nxi);
@@ -113,12 +113,18 @@ double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double con
   params->om = om;
   gsl_function F;
   F.params=params;
-  double result1, err1;
-  F.function = &integrand_small_scales;
-  gsl_integration_qag(&F, log(loR)-10, log(loR), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
-  double result2, err2;
-  F.function = &integrand_medium_scales;
-  gsl_integration_qag(&F, log(loR), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+  double result1, err1, result2, err2;
+
+  if(R < Rxi0){
+    F.function = &integrand_small_scales;
+    gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R*R)), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
+    F.function = &integrand_medium_scales;
+    gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R*R)), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+  }else{ //R[i] > Rxi[0]
+    result1 = 0;
+    F.function = &integrand_medium_scales;
+    gsl_integration_qag(&F, -10, lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+  }
 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
@@ -128,8 +134,8 @@ double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double con
 
 int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double loR = Rxi[0];
-  double hiR = Rxi[Nxi-1];
+  double Rxi0 = Rxi[0];
+  double RxiM = Rxi[Nxi-1];
   double lnmax;
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nxi);
@@ -146,18 +152,25 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   params->om = om;
   gsl_function F;
   F.params = params;
-  double result1, err1;
-  double result2, err2;
+  double result1, err1, result2, err2;
   int i;
+  
   for(i = 0; i < NR; i++){
-    lnmax = log(sqrt(hiR*hiR - R[i]*R[i]));
+    lnmax = log(sqrt(RxiM*RxiM - R[i]*R[i])); //Max distance to integrate to
     params->Rp = R[i];
-    F.function = &integrand_small_scales;
-    gsl_integration_qag(&F, log(loR)-10, log(loR), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
-    F.function = &integrand_medium_scales;
-    gsl_integration_qag(&F, log(loR), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+    if(R[i] < Rxi0){
+      F.function = &integrand_small_scales;
+      gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
+      F.function = &integrand_medium_scales;
+      gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+    }else{ //R[i] > Rxi0
+      result1 = 0;
+      F.function = &integrand_medium_scales;
+      gsl_integration_qag(&F, -10, lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+    }
     Sigma[i] = (result1+result2)*rhom*2;
   }
+  
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
@@ -167,14 +180,14 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
 
 double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double hiR = Rxi[Nxi-1];
+  double RxiM = Rxi[Nxi-1];
   //The contribution from the small scales and the medium scales
   double result12 = Sigma_at_R(R, Rxi, xi, Nxi, M, conc, delta, om);
   double result3, err3;
   //Now figure out the contribution from extrapolating
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   integrand_params*params=malloc(sizeof(integrand_params));
-  double lnmax = log(sqrt(hiR*hiR - R*R));
+  double lnmax = log(sqrt(RxiM*RxiM - R*R));
   params->Rp = R;
   params->slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
   params->intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params->slope);
@@ -190,7 +203,7 @@ double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, doubl
 int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   Sigma_at_R_arr(R, NR, Rxi, xi, Nxi, M, conc, delta, om, Sigma);
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double hiR = Rxi[Nxi-1];
+  double RxiM = Rxi[Nxi-1];
   double lnmax;
   double result3, err3;
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
@@ -202,7 +215,7 @@ int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double
   F.function = &integrand_large_scales;
   int i;
   for(i = 0; i < NR; i++){
-    lnmax = log(sqrt(hiR*hiR - R[i]*R[i]));
+    lnmax = log(sqrt(RxiM*RxiM - R[i]*R[i]));
     params->Rp = R[i];
     gsl_integration_qag(&F, lnmax, lnmax+ulim, TOL, TOL/10., workspace_size, 6, workspace, &result3, &err3);
     Sigma[i] += (result3*rhom*2);
