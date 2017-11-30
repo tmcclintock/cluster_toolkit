@@ -10,11 +10,12 @@
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
 //This is for M200m(b)
-double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, double Oemga_m){
+double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, double Omega_m){
   /*
     Need to do root finding to solve the equation
     Mass - int d3r rho_nfw(r|M200c, c200c) = 0.
    */
+  //double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*200.), 1./3.); //R200m
   return 0;
 }
 
