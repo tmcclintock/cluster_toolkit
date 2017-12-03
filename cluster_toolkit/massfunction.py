@@ -1,28 +1,39 @@
 """Halo mass function.
-
-This module is broken. Do not use.
-
 """
 
-"""
 import cluster_toolkit
+from cluster_toolkit import _dcast
 import numpy as np
-from ctypes import c_double, c_int
 
-def dcast(x):
-    return cluster_toolkit._ffi.cast('double*', x.ctypes.data)
+def dndM_at_M(M, k, P, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
+    """Tinker et al. 2008 appendix C mass function at a given mass. 
+    Default behavior is for :math:`M_{200m}` mass definition.
 
-def dndM_at_M(M, k, P, om, d=1.97, e=1.0, f=0.51, g=1.228):
-    return cluster_toolkit._lib.dndM_at_M(M, dcast(k), dcast(P), len(k), om, d, e, f, g)
+    Args:
+        M (float or array like): Mass in Msun/h.
+        k (array like): Wavenumbers of the matter power spectrum in h/Mpc comoving.
+        P_lin (array like): Linear matter power spectrum in (Mpc/h)^3 comoving.
+        Omega_m (float): Matter density fraction.
+        d (float; optional): First Tinker parameter. Default is 1.97.
+        e (float; optional): Second Tinker parameter. Default is 1.
+        f (float; optional): Third Tinker parameter. Default is 0.51.
+        g (float; optional): Fourth Tinker parameter. Default is 1.228.
 
-def calc_dndM_at_M(M, k, P, om, dndM, d=1.97, e=1.0, f=0.51, g=1.228):
-    return cluster_toolkit._lib.dndM_at_M_arr(dcast(M), len(M), dcast(k), dcast(P), len(k), om, d, e, f, g, dcast(dndM))
+    """
+    if type(M) is list or type(M) is np.ndarray:
+        dndM = np.zeros_like(M)
+        cluster_toolkit._lib.dndM_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), Omega_m, d, e, f, g, _dcast(dndM))
+        return dndM
+    else:
+        return cluster_toolkit._lib.dndM_at_M(M, _dcast(k), _dcast(P), len(k), Omega_m, d, e, f, g)
 
-def N_in_bin(Mlo, Mhi, volume, Marr, dndM):
-    return cluster_toolkit._lib.N_in_bin(dcast(Marr), dcast(dndM), len(Marr), volume, Mlo, Mhi)
+def _calc_dndM_at_M(M, k, P, om, dndM, d=1.97, e=1.0, f=0.51, g=1.228):
+    return cluster_toolkit._lib.dndM_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), om, d, e, f, g, _dcast(dndM))
 
-def N_in_bins(edges, volume, Marr, dndM):
+def _n_in_bin(Mlo, Mhi, Marr, dndM):
+    return cluster_toolkit._lib.n_in_bin(_dcast(Marr), _dcast(dndM), len(Marr), Mlo, Mhi)
+
+def _n_in_bins(edges, Marr, dndM):
     N = np.zeros(len(edges)-1)
-    cluster_toolkit._lib.N_in_bins(dcast(Marr), dcast(dndM), len(Marr), volume, dcast(edges), len(edges), dcast(N))
+    cluster_toolkit._lib.n_in_bins(_dcast(Marr), _dcast(dndM), len(Marr), _dcast(edges), len(edges), _dcast(N))
     return N
-"""

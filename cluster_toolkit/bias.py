@@ -6,7 +6,7 @@ from cluster_toolkit import _dcast
 import numpy as np
 
 def bias_at_M(M, k, P, Omega_m, delta=200):
-    """Tinker 2008 bais at mass M [Msun/h].
+    """Tinker et al. 2010 bais at mass M [Msun/h].
 
     Args:
         M (float or array like): Mass in Msun/h.
@@ -27,7 +27,7 @@ def bias_at_M(M, k, P, Omega_m, delta=200):
         return cluster_toolkit._lib.bias_at_M(M, delta, _dcast(k), _dcast(P), len(k), Omega_m)
 
 def bias_at_R(R, k, P, delta=200):
-    """Tinker 2008 bais at mass M [Msun/h] corresponding to radius R [Mpc/h comoving].
+    """Tinker 2010 bais at mass M [Msun/h] corresponding to radius R [Mpc/h comoving].
 
     Args:
         R (float or array like): Lagrangian radius in Mpc/h comoving.
@@ -47,7 +47,7 @@ def bias_at_R(R, k, P, delta=200):
         return cluster_toolkit._lib.bias_at_R(R, delta, _dcast(k), _dcast(P), len(k))
     
 def bias_at_nu(nu, delta=200):
-    """Tinker 2008 bais at peak height nu.
+    """Tinker 2010 bais at peak height nu.
 
     Args:
         nu (float or array like): Peak height.
