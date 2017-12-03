@@ -33,6 +33,12 @@ M = np.logspace(12, 16, num=20)
 
 def test_dndM():
     n = mf.dndM_at_M(M, k/h, p, Omega_m)*M
+    k2 = k/h
+    n2 = np.array([mf.dndM_at_M(Mi, k2, p, Omega_m) for Mi in M])*M
+    npt.assert_array_equal(n, n2)
+
+def test_dndM_M():
+    n = mf.dndM_at_M(M, k/h, p, Omega_m)*M
     npt.assert_array_less(n[1:], n[:-1])
 
 def test_dndM_z():
@@ -43,3 +49,6 @@ def test_dndM_z():
     p1 = np.array([cosmo.pk_lin(ki, z) for ki in k])*h**3 #Mpc^3/h^3
     nz1 = mf.dndM_at_M(M, k/h, p1, Omega_m)*M
     npt.assert_array_less(nz1, nz0)
+
+if __name__ == "__main__":
+    test_dndM()

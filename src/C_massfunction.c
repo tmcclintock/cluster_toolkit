@@ -42,6 +42,7 @@ int G_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, do
 
 double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
   double*Marr = (double*)malloc(sizeof(double));
+  Marr[0] = M;
   double*dndM = (double*)malloc(sizeof(double));
   dndM_at_M_arr(Marr, 1, k, P, Nk, om, d, e, f, g, dndM);
   double res = dndM[0];
