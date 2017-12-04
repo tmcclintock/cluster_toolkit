@@ -1,5 +1,8 @@
-double G_sigma(double sigma, double d, double e, double f, double g);
-int G_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, double*G);
+double G_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g);
+int G_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*G);
+
+double G_at_sigma(double sigma, double d, double e, double f, double g);
+int G_at_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, double*G);
 
 double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g);
 int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*dndM);

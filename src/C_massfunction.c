@@ -13,18 +13,18 @@
 #define del 1e-8
 
 ///////////////// G(sigma) multiplicity below ///////////////////
-double G_sigma(double sigma, double d, double e, double f, double g){
+double G_at_sigma(double sigma, double d, double e, double f, double g){
   double*sig = (double*)malloc(sizeof(double));
   sig[0] = sigma;
   double*G = (double*)malloc(sizeof(double));
-  G_sigma_arr(sig, 1, d, e, f, g, G);
+  G_at_sigma_arr(sig, 1, d, e, f, g, G);
   double res = G[0];
   free(sig);
   free(G);
   return res;
 }
 
-int G_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, double*G){
+int G_at_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, double*G){
   //Compute the prefactor B
   double d2 = 0.5*d;
   double gamma_d2 = gsl_sf_gamma(d2);
@@ -35,6 +35,29 @@ int G_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, do
   for(i = 0; i < Ns; i++){
     G[i] = B*exp(-g/(sigma[i]*sigma[i]))*(pow(sigma[i]/e, -d)+pow(sigma[i], -f));
   }
+  return 0;
+}
+
+double G_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
+  double*Marr = (double*)malloc(sizeof(double));
+  Marr[0] = M;
+  double*G = (double*)malloc(sizeof(double));
+  G_at_M_arr(Marr, 1, k, P, Nk, om, d, e, f, g, G);
+  double res = G[0];
+  free(Marr);
+  free(G);
+  return res;
+}
+
+int G_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*G){
+  double*sigma = (double*)malloc(sizeof(double)*NM);
+  sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma);
+  int i;
+  for(i = 0; i < NM; i++){
+    sigma[i] = sqrt(sigma[i]);
+  }
+  G_at_sigma_arr(sigma, NM, d, e, f, g, G);
+  free(sigma);
   return 0;
 }
 
@@ -80,7 +103,7 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
   }
   //Compute g(sigma)
   double*Gsigma = (double*)malloc(sizeof(double)*NM);
-  G_sigma_arr(sigma, NM, d, e, f, g, Gsigma);
+  G_at_sigma_arr(sigma, NM, d, e, f, g, Gsigma);
   double*dlnsiginvdm = (double*)malloc(sizeof(double)*NM);
   for(i = 0; i < NM; i++){
     dM = del*M[i];
@@ -96,19 +119,6 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
 }
 
 ///////////////// N in bin functions below ///////////////////
-
-typedef struct integrand_params{
-  gsl_spline *spline;
-  gsl_interp_accel *acc;
-}integrand_params;
-
-double dndm_integrand(double lM, void*params){
-  double M = exp(lM);
-  integrand_params pars = *(integrand_params*)params;
-  gsl_spline*spline = pars.spline;
-  gsl_interp_accel*acc = pars.acc;
-  return M*gsl_spline_eval(spline, M, acc);
-}
 
 double n_in_bin(double Mlo, double Mhi, double*M, double*dndM, int NM){
   double*N = (double*)malloc(sizeof(double));
@@ -127,22 +137,11 @@ int n_in_bins(double*edges, int Nedges, double*M, double*dndM, int NM, double*N)
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, NM);
   gsl_spline_init(spline, M, dndM, NM);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params *params = malloc(sizeof(integrand_params));
-  params->spline = spline;
-  params->acc = acc;
-  gsl_function F;
-  F.function = &dndm_integrand;
-  F.params = params;
-  double result, err;
   int i;
   for(i = 0; i < Nedges-1; i++){
-    gsl_integration_qag(&F, log(edges[i]), log(edges[i+1]), TOL ,TOL/10., workspace_size, 6, workspace, &result, &err);
-    N[i] = result;
+    N[i] = gsl_spline_eval_integ(spline, edges[i], edges[i+1], acc);
   }
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  free(params);
   return 0;
 }
