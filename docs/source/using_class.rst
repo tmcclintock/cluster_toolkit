@@ -51,3 +51,9 @@ Using CLASS
    #Call these for the nonlinear and linear matter power spectra
    Pnonlin = np.array([cosmo.pk(ki, z) for ki in k])
    Plin = np.array([cosmo.pk_lin(ki, z) for ki in k])
+
+   #NOTE: You will need to convert these to h/Mpc and (Mpc/h)^3
+   #to use in the toolkit. To do this you would do:
+   k /= h
+   Plin *= h**3
+   Pnonlin *= h**3
