@@ -4,6 +4,7 @@
 #include "gsl/gsl_spline.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #define BIAS_TOL 1e-6 //Used for the tinker bias
 #define delta_c 1.686 //Critical collapse density
