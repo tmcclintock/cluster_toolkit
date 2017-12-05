@@ -51,7 +51,7 @@ This means that :math:`R_{\rm mis}` is a free parameter in your analysis. This g
 
    \Sigma_{\rm mis}(R) = \int_0^\infty{\rm d}R'\ P(R'|R_{\rm mis})\Sigma(R|R')
 
-which can then itself be integrated to get :math:`\Delta\Sigma_{\rm mis}`. To calculate these in the code you woul use:
+which can then itself be integrated to get :math:`\Delta\Sigma_{\rm mis}`. To calculate these in the code you would use:
 
 .. code::
 
