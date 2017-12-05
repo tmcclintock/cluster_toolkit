@@ -20,7 +20,7 @@ def dndM_at_M(M, k, P, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
         g (float; optional): Fourth Tinker parameter. Default is 1.228.
 
     Returns:
-        float or array like: Mass function :math:`{\rm d}n/{\rm d}M`.
+        float or array like: Mass function :math:`dn/dM`.
 
     """
     if type(M) is list or type(M) is np.ndarray:
