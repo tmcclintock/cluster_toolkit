@@ -12,7 +12,7 @@ That is, the average density of halos some distance :math:`r` from the center of
 
 .. note::
 
-   By definition :math:`\int {\rm d}V\ \xi(\vec{r}) = 0`.
+   By definition :math:`\int {\rm d}V\ \xi(\vec{r}) = 0`. Almost no analytic correlation function has this built in, however.
 
 NFW Profile
 ===========
@@ -78,7 +78,7 @@ or equivalently
 
 .. math::
 
-   \xi_hm(r >> r_s) = \xi_{2-halo}(r).
+   \xi_{hm}(r >> r_s) = \xi_{2-halo}(r).
 
 The two halo term, as detailed below, should be related to the matter density field and a bias. The specific treatment of this is not unanimously agreed upon.
 
