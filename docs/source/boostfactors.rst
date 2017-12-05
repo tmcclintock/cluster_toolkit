@@ -61,3 +61,11 @@ Here, the input parameters are :math:`B_0`, the scale radius :math:`R_s`, and th
    Rs = 1.0 #Mpc/h comoving; typical value
    alpha = -1.0 #arbitrary
    B = boostfactors.boost_powerlaw_at_R(R, B0, Rs, alpha)
+
+This figure shows the NFW boost factor model:
+
+.. image:: figures/boost_example.png
+
+This figure shows how the boost factor changes the :math:`\Delta\Sigma(R)` profile:
+
+.. image:: figures/deboost_example.png

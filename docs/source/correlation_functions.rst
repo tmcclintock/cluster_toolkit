@@ -152,3 +152,7 @@ To use this you would do
    from cluster_toolkit import xi
    #Calculate 1-halo and 2-halo terms here
    xi_hm = xi.xi_hm(xi_1halo, xi_2halo)
+
+Here are each of these correlation functions plotted together:
+
+.. image:: figures/xi_example.png

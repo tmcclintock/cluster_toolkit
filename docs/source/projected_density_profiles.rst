@@ -81,3 +81,10 @@ As you can see, the code is structured so that the input :math:`\Sigma` profile 
 .. note::
    Mass, concentration, and :math:`\Omega_m` are also arguments to :math:`\Delta\Sigma`, because an NFW profile is used to extrapolate the integrand for :math:`\bar{\Sigma}(<R)` at very small scales. To avoid issues when using an Einasto or other profile, make sure that the input profiles are calculated to fairly large and small scales.
    
+This figure shows the different :math:`\Sigma(R)` profiles, including with miscentering
+
+.. image:: figures/Sigma_example.png
+
+This figure shows the different :math:`\Delta\Sigma(R)` profiles, including with miscentering
+
+.. image:: figures/DeltaSigma_example.png

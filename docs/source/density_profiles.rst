@@ -55,4 +55,4 @@ In this model, the free parameters are the scale radius :math:`r_s`, :math:`\alp
 
 We can see the difference between these two profiles here:
 
-.. image:: figures/density_profile_examples.png
+.. image:: figures/density_profile_example.png

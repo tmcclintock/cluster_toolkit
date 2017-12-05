@@ -32,3 +32,7 @@ This module also allows for conversions between mass and RMS density variance :m
    #Assume that k and P_linear came from somewhere, e.g. CAMB or CLASS
    sigma2= bias.sigma2_at_M(mass, k, P_linear, Omega_m)
    nu = bias.nu_at_M(Mass, k, P_linear, Omega_m)
+
+The bias as a function of mass is seen here for a basic cosmology:
+
+.. image:: figures/bias_example.png
