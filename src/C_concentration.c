@@ -11,12 +11,14 @@
 
 //This is for M200m(b)
 double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, double Omega_m){
+  double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*200.), 0.33333333); //R200m
   /*
     Need to do root finding to solve the equation
-    Mass - int d3r rho_nfw(r|M200c, c200c) = 0.
+    Mass - int_0^R200m dr r^2*rho_nfw(r|M200c, c200c) = 0.
+    The solution to the right term is analytic. Check wolframalpha.
    */
-  //double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*200.), 1./3.); //R200m
-  return 0;
+  
+  return R; //this is wrong right now
 }
 
 //We need to implement the M-c equation just for M200crit first
