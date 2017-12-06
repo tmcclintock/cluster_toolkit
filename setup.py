@@ -2,14 +2,24 @@ from __future__ import print_function
 import sys, os, glob
 import setuptools
 from setuptools import setup, Extension
+import subprocess
 
 os.system('ln -s ../include cluster_toolkit/include')
 
 sources = glob.glob(os.path.join('src','*.c'))
-print('sources = ',sources)
 headers = glob.glob(os.path.join('include','*.h'))
-print('headers = ',headers)
-ext=Extension("cluster_toolkit._cluster_toolkit", sources, depends=headers, include_dirs=['include'], extra_compile_args=[os.path.expandvars("-I${GSLI}")], extra_link_args=[os.path.expandvars("-L${GSLL}"),"-lgslcblas","-lgsl"])
+try:
+    cflags = subprocess.check_output(['gsl-config', '--cflags']).split()
+    lflags = subprocess.check_output(['gsl-config', '--libs']).split()
+except OSError:
+    raise Exception("Error: must have GSL installed")
+
+ext=Extension("cluster_toolkit._cluster_toolkit",
+              sources,
+              depends=headers,
+              include_dirs=['include'],
+              extra_compile_args=[os.path.expandvars(flag) for flag in cflags],
+              extra_link_args=[os.path.expandvars(flag) for flag in lflags])
 
 dist = setup(name="cluster_toolkit",
              author="Tom McClintock",
