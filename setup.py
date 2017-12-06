@@ -12,7 +12,7 @@ try:
     cflags = subprocess.check_output(['gsl-config', '--cflags']).split()
     lflags = subprocess.check_output(['gsl-config', '--libs']).split()
 except OSError:
-    raise Exception("Error: must have GSL installed")
+    raise Exception("Error: must have GSL installed and gsl-config working")
 
 ext=Extension("cluster_toolkit._cluster_toolkit",
               sources,
