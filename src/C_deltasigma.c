@@ -9,7 +9,7 @@
 #define TOL 1e-4
 #define workspace_size 8000
 #define ulim 5.0
-#define rhomconst 2.775808e+11
+#define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
 
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////

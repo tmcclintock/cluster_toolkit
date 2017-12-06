@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 
 #Halo properties that are inputs
-rhomconst = 2.775808e+11 #units are SM h^2/Mpc^3
+rhomconst = 2.77533742639e+11 #units are SM h^2/Mpc^3
 Mass = 1e14 #Msun/h
 Omega_m = 0.3 #arbitrary
 datapath = "./data_for_testing/"

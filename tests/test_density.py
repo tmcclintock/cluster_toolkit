@@ -1,5 +1,5 @@
 import pytest
-from cluster_toolkit import density
+from cluster_toolkit import density, xi
 import numpy as np
 import numpy.testing as npt
 
@@ -11,6 +11,8 @@ conc = 5 #concentration; no units, for NFW
 Rscale = 1.0 #Mph/h; for Einasto
 alpha = 0.19 #typical value; for Einasto
 Omega_m = 0.3 #arbitrary
+rhocrit = 2.77533742639e+11
+rhom = rhocrit*Omega_m
 
 def test_exceptions_rho_nfw_at_R():
     with pytest.raises(TypeError):
@@ -44,5 +46,24 @@ def test_outputs_rho_einasto_at_R():
     arr2 = np.array([density.rho_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m) for i in range(len(R_arr))])
     npt.assert_array_equal(arr1, arr2)
 
+def test_rho_vs_xi_nfw():
+    #Note: testing fractional precision to avoid numerical issues
+    arr1 = density.rho_nfw_at_R(R_arr, Mass, conc, Omega_m)
+    arr2 = xi.xi_nfw_at_R(R_arr, Mass, conc, Omega_m)
+    arr2 = rhom*(1+arr2)
+    arr2 = arr2/arr1
+    ones = np.ones_like(arr1)
+    npt.assert_array_equal(ones, arr2)
+    
+def test_rho_vs_xi_einasto():
+    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = xi.xi_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = rhom*(1+arr2)
+    arr2 = arr2/arr1
+    ones = np.ones_like(arr1)
+    npt.assert_array_almost_equal(ones, arr2)
+
+
 if __name__ == "__main__":
+    #test_outputs_rho_nfw_at_R()
     test_outputs_rho_einasto_at_R()

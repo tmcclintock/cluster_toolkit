@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define rhocrit 2.775808e+11
+#define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
 //This is for M200m(b)

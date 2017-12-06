@@ -5,59 +5,64 @@
 #include <math.h>
 #include <stdio.h>
 
-#define rhomconst 2.775808e+11
+#define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
 
 double xi_nfw_at_R(double R, double Mass, double conc, int delta, double om){
-  double rhom = om*rhomconst;//SM h^2/Mpc^3
-  double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double Rscale = Rdelta/conc;
-  double fc = log(1.+conc)-conc/(1.+conc); 
-  return Mass/(4.*M_PI*Rscale*Rscale*Rscale*fc)/(R/Rscale*(1+R/Rscale)*(1+R/Rscale))/rhom - 1.0;
+  double*Rarr = (double*)malloc(sizeof(double));
+  double*xi  = (double*)malloc(sizeof(double));
+  Rarr[0] = R;
+  calc_xi_nfw(Rarr, 1, Mass, conc, delta, om, xi);
+  double result = xi[0];
+  free(Rarr);
+  free(xi);
+  return result;
 }
 
 int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om, double*xi_nfw){
   int i;
-  for(i = 0; i < NR; i++)
-    xi_nfw[i] = xi_nfw_at_R(R[i], Mass, conc, delta, om);
+  double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double Rscale = Rdelta/conc;
+  double fc = log(1.+conc)-conc/(1.+conc);
+  double R_Rs;
+  for(i = 0; i < NR; i++){
+    R_Rs = R[i]/Rscale;
+    xi_nfw[i] = Mass/(4.*M_PI*Rscale*Rscale*Rscale*fc)/(R_Rs*(1+R_Rs)*(1+R_Rs))/rhom - 1.0;
+  }
   return 0;
 }
 
 double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
-  double x;
-  double rhom = om*rhomconst;//SM h^2/Mpc^3;
-  if (rhos < 0){
-    //Calculate rhos from Mass
-    // Rdelta in Mpc/h comoving
-    double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
-    x = 2./alpha * pow(Rdelta/rs, alpha); // Mpc/h comoving
-    double a = 3./alpha;
-    double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
-    double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
-    double den = 3. * rs*rs*rs * gam;
-    rhos = num/den;
-  }
-  x = 2./alpha * pow(R/rs, alpha);
-  return rhos/rhom * exp(-x) - 1;
+  double*Rarr = (double*)malloc(sizeof(double));
+  double*xi  = (double*)malloc(sizeof(double));
+  Rarr[0] = R;
+  calc_xi_einasto(Rarr, 1, Mass, rhos, rs, alpha, delta, om, xi);
+  double result = xi[0];
+  free(Rarr);
+  free(xi);
+  return result;
 }
 
 int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*xi_einasto){
+  double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double x;
+  int i;
   if (rhos < 0){
     //Calculate rhos from Mass
-    double rhom = om*rhomconst;//SM h^2/Mpc^3
     // Rdelta in Mpc/h comoving
     double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
-    double x = 2./alpha * pow(Rdelta/rs, alpha); 
+    x = 2./alpha * pow(Rdelta/rs, alpha); 
     double a = 3./alpha;
     double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
     double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
     double den = 3. * rs*rs*rs * gam;
     rhos = num/den;
   }
-  int i;
-  for(i = 0; i < NR; i++)
-    xi_einasto[i] = xi_einasto_at_R(R[i], Mass, rhos, rs, alpha, delta, om);
-
+  for(i = 0; i < NR; i++){
+    x = 2./alpha * pow(R[i]/rs, alpha);
+    xi_einasto[i] = rhos/rhom * exp(-x) - 1;
+  }
   return 0;
 }
 
