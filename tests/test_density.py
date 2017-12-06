@@ -36,8 +36,13 @@ def test_exceptions_rho_einasto_at_R():
 
 def test_outputs_rho_einasto_at_R():
     #List vs. numpy.array
-    npt.assert_array_equal(density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m), density.rho_einasto_at_R(R_arr.tolist(), Mass, Rscale, alpha, Omega_m))
+    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = density.rho_einasto_at_R(R_arr.tolist(), Mass, Rscale, alpha, Omega_m)
+    npt.assert_array_equal(arr1, arr2)
     #Single value vs numpy.array
-    arrout = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
-    for i in range(len(R_arr)):
-        npt.assert_equal(density.rho_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m), arrout[i])
+    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = np.array([density.rho_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m) for i in range(len(R_arr))])
+    npt.assert_array_equal(arr1, arr2)
+
+if __name__ == "__main__":
+    test_outputs_rho_einasto_at_R()

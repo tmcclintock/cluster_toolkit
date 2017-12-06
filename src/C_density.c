@@ -1,4 +1,4 @@
-#include "C_xi.h"
+#include "C_density.h"
 
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_sf_gamma.h"
@@ -38,7 +38,7 @@ double rho_einasto_at_R(double R, double Mass, double rhos, double rs, double al
     rhos = num/den;
   }
   x = 2./alpha * pow(R/rs, alpha);
-  return rhos * exp(-x);
+  return rhos * exp(-x);  
 }
 
 int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*rho_einasto){
