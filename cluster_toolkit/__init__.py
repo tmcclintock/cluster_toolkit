@@ -2,7 +2,9 @@
 cluster_toolkit is a module for computing galaxy cluster models.
 """
 
-import os, cffi, glob
+import cffi
+import glob
+import os
 import numpy as np
 
 __author__ = "Tom McClintock <tmcclintock@email.arizona.edu>"
