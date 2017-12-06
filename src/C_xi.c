@@ -33,6 +33,18 @@ int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om
   return 0;
 }
 
+double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double om){
+  double rhom = om*rhomconst;//Msun h^2/Mpc^3
+  // Rdelta in Mpc/h comoving
+  double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
+  double x = 2./alpha * pow(Rdelta/rs, alpha); 
+  double a = 3./alpha;
+  double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
+  double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
+  double den = 3. * rs*rs*rs * gam;
+  return num/den;
+}
+
 double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*xi  = (double*)malloc(sizeof(double));
@@ -48,24 +60,14 @@ int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double rs, doubl
   double rhom = om*rhomconst;//SM h^2/Mpc^3
   double x;
   int i;
-  if (rhos < 0){
-    //Calculate rhos from Mass
-    // Rdelta in Mpc/h comoving
-    double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
-    x = 2./alpha * pow(Rdelta/rs, alpha); 
-    double a = 3./alpha;
-    double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
-    double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
-    double den = 3. * rs*rs*rs * gam;
-    rhos = num/den;
-  }
+  if (rhos < 0)
+    rhos = rhos_einasto_at_M(Mass, rs, alpha, delta, om);
   for(i = 0; i < NR; i++){
     x = 2./alpha * pow(R[i]/rs, alpha);
     xi_einasto[i] = rhos/rhom * exp(-x) - 1;
   }
   return 0;
 }
-
 
 int calc_xi_2halo(int NR, double bias, double*xi_mm, double*xi_2halo){
   int i;

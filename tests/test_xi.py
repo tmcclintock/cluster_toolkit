@@ -67,3 +67,6 @@ def test_einasto_mass_dependence():
         xi1 = xi.xi_einasto_at_R(Ra, masses[i], Rscale, alpha, Omega_m)
         xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], Rscale, alpha, Omega_m)
         npt.assert_array_less(xi1, xi2)
+
+if __name__ == "__main__":
+    test_einasto_mass_dependence()

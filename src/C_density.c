@@ -26,18 +26,6 @@ int calc_rho_nfw(double*R, int NR, double Mass, double conc, int delta, double o
   return 0;
 }
 
-double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double om){
-  double rhom = om*rhomconst;//Msun h^2/Mpc^3
-  // Rdelta in Mpc/h comoving
-  double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
-  double x = 2./alpha * pow(Rdelta/rs, alpha); 
-  double a = 3./alpha;
-  double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
-  double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
-  double den = 3. * rs*rs*rs * gam;
-  return num/den;
-}
-
 double rho_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*rhoe = (double*)malloc(sizeof(double));
