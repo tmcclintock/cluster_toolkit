@@ -14,6 +14,7 @@ The core functionality of the package includes:
  * Boost factor models :math:`\mathcal{B} = (1-f_{\rm cl})^{-1}`
  * Miscentering affects on projected profiles :math:`R_{\rm mis}`
  * Halo mass functions :math:`\frac{dn}{dM}(M,z)`
+ * Mass-concentration relations :math:`M-c` (in development)
  * Sunyaev-Zel'dovich (SZ) cluster signals :math:`Y_{SZ}` (in development)
  * Cluster magnification :math:`\kappa(\theta)` and shear profiles :math:`\gamma(\theta)` (in development)
 
