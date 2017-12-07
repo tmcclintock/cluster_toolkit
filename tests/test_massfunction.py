@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-from classy import Class
 from cluster_toolkit import massfunction as mf
 from cluster_toolkit import bias
 import numpy.testing as npt
