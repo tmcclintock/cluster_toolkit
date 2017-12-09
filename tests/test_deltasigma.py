@@ -1,5 +1,6 @@
 import pytest
 from cluster_toolkit import deltasigma as ds
+from cluster_toolkit import xi
 from os.path import dirname, join
 import numpy as np
 import numpy.testing as npt
@@ -59,3 +60,17 @@ def test_Sigma_and_xi():
     inds = np.where(R >= cut)[0]
     #Splines mean that we won't get perfectly equal
     npt.assert_array_almost_equal(arrout[inds], arrout2[inds], decimal=2)
+
+def test_analytic_Sigma():
+    r = np.logspace(-2, 3, num=1000)
+    R = np.logspace(-2, 2, num=1000)
+    xiin = r**-3
+    rhom = 2.77533742639e+11 * Om
+    true = 2*rhom*R**-2 * 1e-12 #Mpc to pc
+    Sigma = ds.Sigma_at_R(R, r, xiin, M, c, Om)
+    ratio = Sigma/true
+    npt.assert_array_almost_equal(np.ones_like(R), ratio, decimal=2)
+    
+if __name__ == "__main__":
+    test_analytic_Sigma()
+    test_Sigma_nfw()
