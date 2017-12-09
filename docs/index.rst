@@ -36,6 +36,7 @@ The source code is publically available at https://github.com/tmcclintock/cluste
    source/boostfactors
    source/miscentering
    source/massfunction
+   source/concentration
 
 .. toctree::
    :maxdepth: 1

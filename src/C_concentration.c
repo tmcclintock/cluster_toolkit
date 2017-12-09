@@ -1,6 +1,8 @@
 #include "C_concentration.h"
 #include "C_bias.h"
 
+//#include "gsl/gsl_math.h"
+#include "gsl/gsl_errno.h"
 #include "gsl/gsl_roots.h"
 #include "gsl/gsl_spline.h"
 
@@ -22,25 +24,41 @@ typedef struct mc_params{
   double Omega_m;
 }mc_params;
 
-double mass_comparison_function(double M, void*params){
+double Mm_from_Mc(double Mc, void*params){
   //M is M200c
   mc_params*pars = (mc_params*)params;
   double Mm = pars->Mm;
-  //double Rm = pars->Rm;
+  double Rm = pars->Rm;
   double*k = pars->k;
   double*P = pars->P;
   int Nk = pars->Nk;
   int delta = pars->delta;
   double Omega_m = pars->Omega_m;
-  pars->c = DK15_concentration_at_Mcrit(M, k, P, Nk, delta, Omega_m);
-  //double M_integral = stuff;
-  return Mm - M;//WRONG for now
+  double rhom = rhocrit*Omega_m;
+  double cc = DK15_concentration_at_Mcrit(Mc, k, P, Nk, delta, Omega_m);
+  pars->c = cc;
+  //Figure out the total mass, but first figure out rho0 for Mcrit
+  double rho0c = delta*rhom*cc*cc*cc/((cc+2)/(cc+1)+log(1+cc));
+  double Rc = pow(Mc/(4./3.*M_PI*rhocrit*delta), 0.33333333); //R200c
+  double Rs_c = Rc/cc; //Scale radius of Mcrit
+  double Rm_Rsc = Rm/Rs_c;
+  double Mout = 4*M_PI*rho0c*Rs_c*Rs_c*Rs_c*((Rm_Rsc+2)/(Rm_Rsc+1)+log(1+Rm_Rsc));
+  return Mm - Mout;
 }
 
 //This is for M200m(b)
 double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
+  int status;
   mc_params*pars = (mc_params*)malloc(sizeof(mc_params));
   double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
+  double M_lo = Mass/10;
+  double M_hi = Mass*10;
+  double Mm;
+  double cm = -1; //will have result
+  const gsl_root_fsolver_type*T=gsl_root_fsolver_bisection;
+  gsl_root_fsolver*s = gsl_root_fsolver_alloc(T);
+  gsl_function F;
+  int iter = 0, max_iter = 100;
   pars->Mm = Mass;
   pars->Rm = R;
   pars->k = k;
@@ -48,20 +66,41 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   pars->Nk = Nk;
   pars->delta = delta;
   pars->Omega_m = Omega_m;
-  /*
-    Need to do root finding to solve the equation
-    Mass - int_0^R200m dr r^2*rho_nfw(r|M200c, c200c) = 0.
-    The solution to the right term is analytic. Check wolframalpha.
-   */
   
-  return R; //this is wrong right now
+  F.function = &Mm_from_Mc;
+  F.params = &pars;
+
+  gsl_root_fsolver_set(s, &F, M_lo, M_hi); //Maybe should work with logs...
+
+  do{
+    iter++;
+    status = gsl_root_fsolver_iterate(s);
+    Mm = gsl_root_fsolver_root(s);
+    M_lo = gsl_root_fsolver_x_lower(s);
+    M_hi = gsl_root_fsolver_x_upper(s);
+    status = gsl_root_test_interval(M_lo, M_hi, 0, 0.001);
+
+    if (status == GSL_SUCCESS)
+      printf("Converged:\n");
+    printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+	    iter, M_lo, M_hi,
+	    Mm, Mm - Mass, 
+	    M_hi - M_lo);
+
+  }while(status == GSL_CONTINUE && iter < max_iter);
+  
+  cm = pars->c;
+
+  free(pars);
+  gsl_root_fsolver_free(s);
+  return cm;
 }
 
 //We need to implement the M-c equation just for M200crit first
 //This is the median M-c relation from DK15
 double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
-  double R = M_to_R(Mass, Omega_m);
+  double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
   double lnk_R = log(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
   double*lnk = (double*)malloc(Nk*sizeof(double));
   double*lnP = (double*)malloc(Nk*sizeof(double));

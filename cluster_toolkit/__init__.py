@@ -22,4 +22,4 @@ def _dcast(x):
     if type(x) is list: x = np.array(x)
     return _ffi.cast('double*', x.ctypes.data)
 
-from . import averaging, bias, boostfactors, deltasigma, density, massfunction, miscentering, xi
+from . import averaging, bias, boostfactors, concentration, deltasigma, density, massfunction, miscentering, xi
