@@ -1,7 +1,7 @@
 #include "C_concentration.h"
 #include "C_bias.h"
 
-//#include "gsl/gsl_math.h"
+#include "gsl/gsl_math.h"
 #include "gsl/gsl_errno.h"
 #include "gsl/gsl_roots.h"
 #include "gsl/gsl_spline.h"
@@ -68,9 +68,9 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   pars->Omega_m = Omega_m;
   
   F.function = &Mm_from_Mc;
-  F.params = &pars;
+  F.params = pars;
 
-  gsl_root_fsolver_set(s, &F, M_lo, M_hi); //Maybe should work with logs...
+  status = gsl_root_fsolver_set(s, &F, M_lo, M_hi);
 
   do{
     iter++;
@@ -82,7 +82,7 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
 
     if (status == GSL_SUCCESS)
       printf("Converged:\n");
-    printf ("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+    printf ("%3d [%.2f, %.2f] %.2f %+.2f %.2f\n",
 	    iter, M_lo, M_hi,
 	    Mm, Mm - Mass, 
 	    M_hi - M_lo);

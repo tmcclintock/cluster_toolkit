@@ -19,4 +19,5 @@ def test_exceptions():
 
         
 if __name__ == "__main__":
-    print concentration.concentration_at_M(Mass, k, p, Omega_m)
+    print concentration.concentration_at_M(Mass, k, p, Omega_m, Mass_type="crit")
+    print concentration.concentration_at_M(Mass, k, p, Omega_m, Mass_type="mean")
