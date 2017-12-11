@@ -126,5 +126,5 @@ double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int 
   double beta  = 1.69;
   double c0 = phi0 + n * phi1;
   double nu0   = eta0 + n * eta1;
-  return 0.5 * c0 * (pow(nu0/nu, -alpha) + pow(nu/nu0, beta));
+  return 0.5 * c0 * (pow(nu0/nu, alpha) + pow(nu/nu0, beta));
 }
