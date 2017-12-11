@@ -31,7 +31,7 @@ Using CLASS
 		'output':'mPk',
 		'non linear':'halofit',
 		'Omega_b':Omega_b,
-		'Omega_cdm':Omega_cdm
+		'Omega_cdm':Omega_cdm,
 		'h':h,
 		'A_s':A_s,
 		'n_s':n_s,
