@@ -80,13 +80,14 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
     M_hi = gsl_root_fsolver_x_upper(s);
     status = gsl_root_test_interval(M_lo, M_hi, 0, 0.001);
 
+    /*
     if (status == GSL_SUCCESS)
       printf("Converged:\n");
-    printf ("%3d [%.2f, %.2f] %.2f %+.2f %.2f\n",
-	    iter, M_lo, M_hi,
-	    Mm, Mm - Mass, 
-	    M_hi - M_lo);
-
+    printf ("%3d [%.2e, %.2e] %.2e %+.2e %.2e\n",
+    iter, M_lo, M_hi,
+    Mm, Mm - Mass, 
+    M_hi - M_lo);
+    */
   }while(status == GSL_CONTINUE && iter < max_iter);
   
   cm = pars->c;
@@ -101,15 +102,15 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
 double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
   double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
-  double lnk_R = log(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
+  double lnk_R = log10(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
   double*lnk = (double*)malloc(Nk*sizeof(double));
   double*lnP = (double*)malloc(Nk*sizeof(double));
   int i;
   for(i = 0; i < Nk; i++){
-    lnk[i] = log(k[i]);
-    lnP[i] = log(P[i]);
+    lnk[i] = log10(k[i]);
+    lnP[i] = log10(P[i]);
   }
-  gsl_spline*lnPspl = gsl_spline_alloc(gsl_interp_cspline,Nk);
+  gsl_spline*lnPspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
   gsl_spline_init(lnPspl, lnk, lnP, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   double n = gsl_spline_eval_deriv(lnPspl, lnk_R, acc);
