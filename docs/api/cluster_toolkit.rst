@@ -28,6 +28,14 @@ cluster\_toolkit\.boostfactors module
     :undoc-members:
     :show-inheritance:
 
+cluster\_toolkit\.concentration module
+--------------------------------------
+
+.. automodule:: cluster_toolkit.concentration
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 cluster\_toolkit\.deltasigma module
 -----------------------------------
 
