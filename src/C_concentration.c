@@ -129,3 +129,49 @@ double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int 
   double nu0   = eta0 + n * eta1;
   return 0.5 * c0 * (pow(nu0/nu, alpha) + pow(nu/nu0, beta));
 }
+
+/*
+This is an equation for P(k) of E&H with no BAO.
+this is what the DK15 M-c relation uses in its derivative.
+It may not be feasible to incorporate it into here, given the amount of
+front end overhaul it would require.
+*/
+/*
+double transferFunc_EH98_zeroBaryon(double kin, CosmoParams *cosmoParams)
+{
+    //vars
+    double k, Tk;
+    double omb, om0, omc, h;
+    double theta2p7, s, q;
+    double Gamma, alphaGamma, L0, C0;
+
+    omb = cosmoParams->Omega_b;
+    om0 = cosmoParams->Omega_m;
+    omc = cosmoParams->Omega_m - cosmoParams->Omega_b;
+    h = cosmoParams->h;
+    theta2p7 = cosmoParams->T_CMB / 2.7;
+
+    //convert k from hMpc^-1 to Mpc^-1
+    k = kin * h;
+
+    //eqn 26
+    s = 44.5 * log(9.83 / om0 / h / h) / sqrt(1.0 + 10.0 * pow(omb * h * h, 0.75));
+
+    //eqn 31
+    alphaGamma = 1.0 - 0.328 * log(431.0 * om0 * h * h) * omb / om0
+            + 0.38 * log(22.3 * om0 * h * h) * (omb / om0) * (omb / om0);
+
+    //eqn 30
+    Gamma = om0 * h * (alphaGamma + (1.0 - alphaGamma) / (1.0 + pow(0.43 * k * s, 4.0)));
+
+    //eqn 28
+    q = kin * theta2p7 * theta2p7 / Gamma;
+
+    //eqns 29
+    C0 = 14.2 + 731.0 / (1.0 + 62.5 * q);
+    L0 = log(2.0 * exp(1.0) + 1.8 * q);
+    Tk = L0 / (L0 + C0 * q * q);
+
+    return Tk;
+}
+*/
