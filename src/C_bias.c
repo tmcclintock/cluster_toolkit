@@ -134,16 +134,25 @@ int nu_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double*
 ///////////BIAS FUNCTIONS///////////
 
 double bias_at_nu(double nu, int delta){
-  double y = log10(delta);
-  double xp = exp(-1.0*pow(4./y,4.));
-  double A = 1.+0.24*y*xp, a = 0.44*y-0.88;
-  double B = 0.183, b = 1.5;
-  double C = 0.019+0.107*y+0.19*xp, c = 2.4;
-  return 1 - A*pow(nu,a)/(pow(nu,a)+pow(delta_c,a)) + B*pow(nu,b) + C*pow(nu,c);
+  double*nus = (double*)malloc(sizeof(double));
+  double*bias = (double*)malloc(sizeof(double));
+  nus[0] = nu;
+  bias_at_nu_arr(nus, 1, delta, bias);
+  double result = bias[0];
+  free(nus);
+  free(bias);
+  return result;
 }
 
 double bias_at_R(double R, int delta, double*k, double*P, int Nk){
-  return bias_at_nu(nu_at_R(R, k, P, Nk), delta);
+  double*Rs = (double*)malloc(sizeof(double));
+  double*bias = (double*)malloc(sizeof(double));
+  Rs[0] = R;
+  bias_at_R_arr(Rs, 1, delta, k, P, Nk, bias);
+  double result = bias[0];
+  free(Rs);
+  free(bias);
+  return result;
 }
 
 double bias_at_M(double M, int delta, double*k, double*P, int Nk, double om){
