@@ -15,18 +15,14 @@
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
 double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
-  double rhom = om*rhomconst;//SM h^2/Mpc^3
-  double deltac = delta*0.3333333333*c*c*c/(log(1.+c)-c/(1.+c));
-  double rdelta = pow(M/(1.333333333*M_PI*rhom*delta),0.333333333);//Mpc/h
-  double rscale = rdelta/c;
-  double x = R/rscale;
-  double gx = 0;
-  if(x<1){
-    gx = (1 - 2./sqrt(1-x*x)*atanh(sqrt((1-x)/(1+x))))/(x*x-1);
-  }else{// if(x>1){
-    gx = (1 - 2./sqrt(x*x-1)* atan(sqrt((x-1)/(1+x))))/(x*x-1);
-  }
-  return 2*rscale*deltac*rhom*gx*1.e-12;//SM h/pc^2
+  double*Rs = (double*)malloc(sizeof(double));
+  Rs[0] = R;
+  double*Sigma = (double*)malloc(sizeof(double));
+  Sigma_nfw_at_R_arr(Rs, 1, M, c, delta, om, Sigma);
+  double result = Sigma[0];
+  free(Rs);
+  free(Sigma);
+  return result;
 }
 
 int Sigma_nfw_at_R_arr(double*R, int NR, double M, double c, int delta, double om, double*Sigma){
