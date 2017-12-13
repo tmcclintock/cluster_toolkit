@@ -16,10 +16,11 @@
 
 double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
   double*Rs = (double*)malloc(sizeof(double));
-  Rs[0] = R;
   double*Sigma = (double*)malloc(sizeof(double));
+  double result;
+  Rs[0] = R;
   Sigma_nfw_at_R_arr(Rs, 1, M, c, delta, om, Sigma);
-  double result = Sigma[0];
+  result = Sigma[0];
   free(Rs);
   free(Sigma);
   return result;
@@ -89,43 +90,15 @@ double integrand_large_scales(double lRz, void*params){
 }
 
 double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
-  double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
-  double Rxi0 = Rxi[0];
-  double RxiM = Rxi[Nxi-1];
-  double lnmax = log(sqrt(RxiM*RxiM - R*R));
-
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nxi);
-  gsl_spline_init(spline, Rxi, xi, Nxi);
-  gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-
-  integrand_params*params=malloc(sizeof(integrand_params));
-  params->acc = acc;
-  params->spline = spline;
-  params->Rp = R;
-  params->M = M;
-  params->conc= conc;
-  params->delta = delta;
-  params->om = om;
-  gsl_function F;
-  F.params=params;
-  double result1, err1, result2, err2;
-
-  if(R < Rxi0){
-    F.function = &integrand_small_scales;
-    gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R*R)), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
-    F.function = &integrand_medium_scales;
-    gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R*R)), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
-  }else{ //R[i] > Rxi[0]
-    result1 = 0;
-    F.function = &integrand_medium_scales;
-    gsl_integration_qag(&F, -10, lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
-  }
-
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  free(params);
-  return (result1+result2)*rhom*2;
+  double*Rs = (double*)malloc(sizeof(double));
+  double*Sigma = (double*)malloc(sizeof(double));
+  double result;
+  Rs[0] = R;
+  Sigma_at_R_arr(Rs, 1, Rxi, xi, Nxi, M, conc, delta, om, Sigma);
+  result = Sigma[0];
+  free(Rs);
+  free(Sigma);
+  return result;
 }
 
 int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
