@@ -140,7 +140,8 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
     Sigma[i] = (result1+result2)*rhom*2;
   }
   
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
 
@@ -215,35 +216,15 @@ double DS_integrand_medium_scales(double lR, void*params){
 }
 
 double DeltaSigma_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om){
-  double lrmin = log(Rs[0]);
-
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_spline_init(spline, Rs, Sigma, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace* workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
-  params->spline = spline;
-  params->acc = acc;
-  params->M = M;
-  params->conc = conc;
-  params->delta = delta;
-  params->om = om;
-  double result1, result2, err;
-  gsl_function F;
-  F.params = params;
-  F.function = &DS_integrand_small_scales;
-  gsl_integration_qag(&F, lrmin-10, lrmin, TOL, TOL/10., workspace_size, 6, workspace, &result1, &err);
-  F.function = &DS_integrand_medium_scales;
-  gsl_integration_qag(&F, lrmin, log(R), TOL, TOL/10., workspace_size, 6, workspace, &result2, &err);
-  //Calculate the result
-  double res =  (result1+result2)*2/(R*R) - gsl_spline_eval(spline, R, acc);
-  //Free everything
-  gsl_spline_free(spline);
-  gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  free(params);
-  //Return the result
-  return res;
+  double*Ra = (double*)malloc(sizeof(double));
+  double*DS = (double*)malloc(sizeof(double));
+  double result;
+  Ra[0] = R;
+  DeltaSigma_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, DS);
+  result = DS[0];
+  free(Ra);
+  free(DS);
+  return result;
 }
 
 int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double*DeltaSigma){
