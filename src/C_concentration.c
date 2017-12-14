@@ -136,20 +136,18 @@ this is what the DK15 M-c relation uses in its derivative.
 It may not be feasible to incorporate it into here, given the amount of
 front end overhaul it would require.
 */
-/*
-double transferFunc_EH98_zeroBaryon(double kin, CosmoParams *cosmoParams)
+double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB)
 {
     //vars
     double k, Tk;
-    double omb, om0, omc, h;
+    double omb, om0, omc;
     double theta2p7, s, q;
     double Gamma, alphaGamma, L0, C0;
 
-    omb = cosmoParams->Omega_b;
-    om0 = cosmoParams->Omega_m;
-    omc = cosmoParams->Omega_m - cosmoParams->Omega_b;
-    h = cosmoParams->h;
-    theta2p7 = cosmoParams->T_CMB / 2.7;
+    omb = Omega_b;
+    om0 = Omega_m;
+    omc = Omega_m - Omega_b;
+    theta2p7 = T_CMB / 2.7;
 
     //convert k from hMpc^-1 to Mpc^-1
     k = kin * h;
@@ -174,4 +172,3 @@ double transferFunc_EH98_zeroBaryon(double kin, CosmoParams *cosmoParams)
 
     return Tk;
 }
-*/
