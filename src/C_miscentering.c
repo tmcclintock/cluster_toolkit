@@ -53,39 +53,15 @@ double single_angular_integrand(double theta, void*params){
 }
 
 double Sigma_mis_single_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis){
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_spline_init(spline, Rs, Sigma, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  gsl_integration_workspace*workspace2 = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params = malloc(sizeof(integrand_params));
-  params->acc = acc;
-  params->spline = spline;
-  params->workspace = workspace;
-  params->workspace2 = workspace2;
-  params->Rp  = R;
-  params->Rp2 = R * R;
-  params->M = M;
-  params->conc = conc;
-  params->delta = delta;
-  params->om = om;
-  params->Rmis = Rmis;
-  params->Rmis2 = Rmis*Rmis;
-  params->rmin = Rs[0];
-  params->rmax = Rs[Ns-1];
-  params->lrmin = log(Rs[0]);
-  params->lrmax = log(Rs[Ns-1]);
-  gsl_function F;
-  F.function=&single_angular_integrand;
-  F.params=params;
-  double result, err;
-  gsl_integration_qag(&F, 0, M_PI, TOL, TOL2, workspace_size, 6, workspace, &result, &err);
-  gsl_spline_free(spline);
-  gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  gsl_integration_workspace_free(workspace2);
-  free(params);
-  return result/=M_PI; //Factor of PI from the angular integral
+  double*Ra = (double*)malloc(sizeof(double));
+  double*Smis = (double*)malloc(sizeof(double));
+  double result;
+  Ra[0] = R;
+  Sigma_mis_single_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, Rmis, Smis);
+  result = Smis[0];
+  free(Ra);
+  free(Smis);
+  return result;
 }
 
 int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, double*Sigma_mis){
