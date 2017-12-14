@@ -24,28 +24,37 @@ int main(){
   double alpha = -1.0;
   
   int i;
-  double Rmin = 0.01; //Mpc/h
-  double Rmax = 150; //Mpc/h
-  int num = 100;
+  double rmin = 0.01; //Mpc/h
+  double rmax = 200; //Mpc/h
+  double Rmin = 0.1; //Mpc/ projectd
+  double Rmax = 80; //Mpc/h projected
+  int num = 1000;
+  double dlr = (log10(rmax)-log10(rmin))/num;
   double dlR = (log10(Rmax)-log10(Rmin))/num;
+  double*r = (double*)malloc(num*sizeof(double));
   double*R = (double*)malloc(num*sizeof(double));
   double*xi_nfw = (double*)malloc(num*sizeof(double));
   double*den_nfw = (double*)malloc(num*sizeof(double));
   double*boost_nfw = (double*)malloc(num*sizeof(double));
   double*boost_pl = (double*)malloc(num*sizeof(double));
+  double*Sigma_nfw = (double*)malloc(num*sizeof(double));
   
   for(i = 0; i <num; i++){
+    r[i] = pow(10, log10(rmin)+i*dlr);
     R[i] = pow(10, log10(Rmin)+i*dlR);
-    xi_nfw[i] = xi_nfw_at_R(R[i], M, c, 200, om);
-    den_nfw[i] = rho_nfw_at_R(R[i], M, c, 200, om);
+    xi_nfw[i] = xi_nfw_at_R(r[i], M, c, 200, om);
+    den_nfw[i] = rho_nfw_at_R(r[i], M, c, 200, om);
     boost_nfw[i] = boost_nfw_at_R(R[i], B0, Rs);
     boost_pl[i] = boost_powerlaw_at_R(R[i], B0, Rs, alpha);
+    Sigma_nfw[i] = Sigma_nfw_at_R(R[i], M, c, 200, om);
   }
 
+  free(r);
   free(R);
   free(xi_nfw);
   free(den_nfw);
   free(boost_nfw);
   free(boost_pl);
+  free(Sigma_nfw);
   return 0;
 }

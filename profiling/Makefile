@@ -1,8 +1,8 @@
 CC = gcc
 SDIR = ../src
 IDIR = ../include
-CFLAGS = -I$(IDIR) `gsl-config --libs --cflags` 
-LFLAGS = `gsl-config --libs --cflags` -lm
+CFLAGS = -I$(IDIR) -I/usr/local/include
+LFLAGS = -L/usr/local/lib -lgsl -lgslcblas -lm
 
 _DEPS =
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
