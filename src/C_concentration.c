@@ -141,23 +141,29 @@ double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, 
     //vars
     double k, Tk;
     double omb, om0, omc;
+    double obh2, omh2, och2;
+    double ob_om;
     double theta2p7, s, q;
     double Gamma, alphaGamma, L0, C0;
 
     omb = Omega_b;
     om0 = Omega_m;
     omc = Omega_m - Omega_b;
+    obh2 = Omega_b*h*h;
+    omh2 = Omega_m*h*h;
+    och2 = omc*h*h;
+    ob_om = omb / om0;
     theta2p7 = T_CMB / 2.7;
 
     //convert k from hMpc^-1 to Mpc^-1
     k = kin * h;
 
     //eqn 26
-    s = 44.5 * log(9.83 / om0 / h / h) / sqrt(1.0 + 10.0 * pow(omb * h * h, 0.75));
+    s = 44.5 * log(9.83/(omh2)) / sqrt(1.0 + 10.0 * pow(obh2, 0.75));
 
     //eqn 31
-    alphaGamma = 1.0 - 0.328 * log(431.0 * om0 * h * h) * omb / om0
-            + 0.38 * log(22.3 * om0 * h * h) * (omb / om0) * (omb / om0);
+    alphaGamma = 1.0 - 0.328 * log(431.0 * omh2) * ob_om
+      + 0.38 * log(22.3 * omh2) * ob_om * ob_om;
 
     //eqn 30
     Gamma = om0 * h * (alphaGamma + (1.0 - alphaGamma) / (1.0 + pow(0.43 * k * s, 4.0)));
