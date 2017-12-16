@@ -136,8 +136,7 @@ this is what the DK15 M-c relation uses in its derivative.
 It may not be feasible to incorporate it into here, given the amount of
 front end overhaul it would require.
 */
-double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB)
-{
+double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB){
     //vars
     double k, Tk;
     double omb, om0, omc;
@@ -177,4 +176,15 @@ double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, 
     Tk = L0 / (L0 + C0 * q * q);
 
     return Tk;
+}
+
+double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
+  //kin has units of h/Mpc
+  double result = (n_s-1);
+  double dlnk = 1e-6;
+  double dk = dlnk*kin;
+  double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
+  double T2 = transferFunc_EH98_zeroBaryon(kin-dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
+  result += 2 * log(T2/T1)/dlnk;
+  return result;
 }
