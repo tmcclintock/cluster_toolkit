@@ -12,6 +12,7 @@
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
+/*
 //Structure to hold the parameters for the M-c root finder
 typedef struct mc_params{
   double Mm;
@@ -47,7 +48,7 @@ double Mm_from_Mc(double Mc, void*params){
 }
 
 //This is for M200m(b)
-double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
+double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
   int status;
   mc_params*pars = (mc_params*)malloc(sizeof(mc_params));
   double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
@@ -79,15 +80,6 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
     M_lo = gsl_root_fsolver_x_lower(s);
     M_hi = gsl_root_fsolver_x_upper(s);
     status = gsl_root_test_interval(M_lo, M_hi, 0, 0.001);
-
-    /*
-    if (status == GSL_SUCCESS)
-      printf("Converged:\n");
-    printf ("%3d [%.2e, %.2e] %.2e %+.2e %.2e\n",
-    iter, M_lo, M_hi,
-    Mm, Mm - Mass, 
-    M_hi - M_lo);
-    */
   }while(status == GSL_CONTINUE && iter < max_iter);
   
   cm = pars->c;
@@ -96,13 +88,18 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   gsl_root_fsolver_free(s);
   return cm;
 }
+*/
+
+//Just the signature
+double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB);
+
 
 //We need to implement the M-c equation just for M200crit first
 //This is the median M-c relation from DK15
-double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double Omega_m){
+double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
   double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
-  double lnk_R = log10(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
+  /*double lnk_R = log10(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
   double*lnk = (double*)malloc(Nk*sizeof(double));
   double*lnP = (double*)malloc(Nk*sizeof(double));
   int i;
@@ -118,7 +115,10 @@ double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int 
   gsl_spline_free(lnPspl);
   gsl_interp_accel_free(acc);
   free(lnk);
-  free(lnP);
+  free(lnP);*/
+  double k_R = 0.69 * 2*M_PI/R;
+  double n = dlnP_dlnk(k_R, n_s, Omega_b, Omega_m, h, T_CMB);
+  
   double phi0  = 6.58;
   double phi1  = 1.37;
   double eta0  = 6.82;
