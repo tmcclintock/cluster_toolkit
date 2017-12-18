@@ -137,50 +137,51 @@ It may not be feasible to incorporate it into here, given the amount of
 front end overhaul it would require.
 */
 double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB){
-    //vars
-    double k, Tk;
-    double omb, om0, omc;
-    double obh2, omh2, och2;
-    double ob_om;
-    double theta2p7, s, q;
-    double Gamma, alphaGamma, L0, C0;
 
-    omb = Omega_b;
-    om0 = Omega_m;
-    omc = Omega_m - Omega_b;
-    obh2 = Omega_b*h*h;
-    omh2 = Omega_m*h*h;
-    och2 = omc*h*h;
-    ob_om = omb / om0;
-    theta2p7 = T_CMB / 2.7;
 
-    //convert k from hMpc^-1 to Mpc^-1
-    k = kin * h;
+  double k, Tk;
+  double omb, om0, omc;
+  double obh2, omh2, och2;
+  double ob_om;
+  double theta2p7, s, q;
+  double Gamma, alphaGamma, L0, C0;
+  
+  omb = Omega_b;
+  om0 = Omega_m;
+  omc = Omega_m - Omega_b;
+  obh2 = Omega_b*h*h;
+  omh2 = Omega_m*h*h;
+  och2 = omc*h*h;
+  ob_om = omb / om0;
+  theta2p7 = T_CMB / 2.7;
+  
+  //convert k from hMpc^-1 to Mpc^-1
+  k = kin * h;
 
-    //eqn 26
-    s = 44.5 * log(9.83/(omh2)) / sqrt(1.0 + 10.0 * pow(obh2, 0.75));
+  //eqn 26
+  s = 44.5*log(9.83/om0/h/h)/sqrt(1.0 + 10.0*pow(omb*h*h,0.75));
 
-    //eqn 31
-    alphaGamma = 1.0 - 0.328 * log(431.0 * omh2) * ob_om
-      + 0.38 * log(22.3 * omh2) * ob_om * ob_om;
+  //eqn 31
+  alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*omb/om0 + 0.38*log(22.3*om0*h*h)*(omb/om0)*(omb/om0);
 
-    //eqn 30
-    Gamma = om0 * h * (alphaGamma + (1.0 - alphaGamma) / (1.0 + pow(0.43 * k * s, 4.0)));
+  //eqn 30
+  Gamma = om0*h*(alphaGamma + (1.0 - alphaGamma)/(1.0 + pow(0.43*k*s,4.0)));
 
-    //eqn 28
-    q = kin * theta2p7 * theta2p7 / Gamma;
+  //eqn 28
+  q = kin * theta2p7 * theta2p7 / Gamma;
 
-    //eqns 29
-    C0 = 14.2 + 731.0 / (1.0 + 62.5 * q);
-    L0 = log(2.0 * exp(1.0) + 1.8 * q);
-    Tk = L0 / (L0 + C0 * q * q);
+  //eqns 29
+  C0 = 14.2 + 731.0 / (1.0 + 62.5 * q);
+  L0 = log(2.0 * exp(1.0) + 1.8 * q);
+  Tk = L0 / (L0 + C0 * q * q);
 
-    return Tk;
+  return Tk;
 }
 
 double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
+  printf("Ob %.2e  ns %.2e  Om %.2e h %.2e T %.2e\n",Omega_b, n_s, Omega_m, h, T_CMB);
   //kin has units of h/Mpc
-  double result = (n_s-1);
+  double result = n_s;
   double dlnk = 1e-6;
   double dk = dlnk*kin;
   double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
