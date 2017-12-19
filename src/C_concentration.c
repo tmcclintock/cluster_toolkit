@@ -182,10 +182,12 @@ double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double 
   printf("Ob %.2e  ns %.2e  Om %.2e h %.2e T %.2e\n",Omega_b, n_s, Omega_m, h, T_CMB);
   //kin has units of h/Mpc
   double result = n_s;
-  double dlnk = 1e-6;
+  double dlnk = 1e-4;
   double dk = dlnk*kin;
   double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
   double T2 = transferFunc_EH98_zeroBaryon(kin-dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
+  //double P1 = pow(kin, n_s)*T1*T1;
+  //double P2 = pow(kin, n_s)*T2*T2;
   result += 2 * log(T2/T1)/dlnk;
   return result;
 }
