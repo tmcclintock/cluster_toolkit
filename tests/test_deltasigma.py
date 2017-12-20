@@ -30,6 +30,13 @@ def test_Sigma():
     for i in range(len(R)):
         npt.assert_equal(arrout[i], ds.Sigma_at_R(R[i], Rxi, xihm, M, c, Om))
 
+def test_errors():
+    Rxi = np.loadtxt("./data_for_testing/r3d.txt")
+    xihm = np.loadtxt("./data_for_testing/xi_hm.txt")
+    with pytest.raises(Exception):
+        ds.Sigma_at_R(min(Rxi)*0.9, Rxi, xihm, M, c, Om)
+        ds.Sigma_at_R(max(Rxi)*1.1, Rxi, xihm, M, c, Om)
+
 def test_DeltaSigma():
     #Try with nfw
     snfw = ds.Sigma_nfw_at_R(R, M, c, Om)
@@ -72,5 +79,6 @@ def test_analytic_Sigma():
     npt.assert_array_almost_equal(np.ones_like(R), ratio, decimal=2)
     
 if __name__ == "__main__":
-    test_analytic_Sigma()
-    test_Sigma_nfw()
+    #test_analytic_Sigma()
+    #test_Sigma_nfw()
+    test_errors()
