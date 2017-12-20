@@ -31,8 +31,6 @@ def test_Sigma():
         npt.assert_equal(arrout[i], ds.Sigma_at_R(R[i], Rxi, xihm, M, c, Om))
 
 def test_errors():
-    Rxi = np.loadtxt("./data_for_testing/r3d.txt")
-    xihm = np.loadtxt("./data_for_testing/xi_hm.txt")
     with pytest.raises(Exception):
         ds.Sigma_at_R(min(Rxi)*0.9, Rxi, xihm, M, c, Om)
         ds.Sigma_at_R(max(Rxi)*1.1, Rxi, xihm, M, c, Om)
