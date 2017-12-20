@@ -34,6 +34,10 @@ def test_errors():
     with pytest.raises(Exception):
         ds.Sigma_at_R(min(Rxi)*0.9, Rxi, xihm, M, c, Om)
         ds.Sigma_at_R(max(Rxi)*1.1, Rxi, xihm, M, c, Om)
+    Sigma = ds.Sigma_at_R(R, Rxi, xihm, M, c, Om)
+    with pytest.raises(Exception):
+        ds.DeltaSigma_at_R(min(R)*0.9, R, Sigma, M, c, Om)
+        ds.DeltaSigma_at_R(max(R)*1.1, R, Sigma, M, c, Om)
 
 def test_DeltaSigma():
     #Try with nfw

@@ -43,10 +43,9 @@ def Sigma_at_R(R, Rxi, xi, mass, concentration, Omega_m, delta=200):
 
     """
     if np.min(R) < np.min(Rxi):
-        raise Exception("Minimum R for Sigma(R) must be greater than min(r) of xi(r).")
+        raise Exception("Minimum R for Sigma(R) must be >= than min(r) of xi(r).")
     if np.max(R) > np.max(Rxi):
-        raise Exception("Maximum R for Sigma(R) must be less than min(r) of xi(r).")
-
+        raise Exception("Maximum R for Sigma(R) must be <= than min(r) of xi(r).")
     if type(R) is list or type(R) is np.ndarray:
         Sigma = np.zeros_like(R)
         cluster_toolkit._lib.Sigma_at_R_full_arr(_dcast(R), len(R), _dcast(Rxi), _dcast(xi), len(Rxi), mass, concentration, delta, Omega_m, _dcast(Sigma))
@@ -71,6 +70,11 @@ def DeltaSigma_at_R(R, Rs, Sigma, mass, concentration, Omega_m, delta=200):
         float or array like: Excess surface mass density Msun h/pc^2 comoving.
 
     """
+    if np.min(R) < np.min(Rs):
+        raise Exception("Minimum R for DeltaSigma(R) must be >= than min(R) of Sigma(R).")
+    if np.max(R) > np.max(Rs):
+        raise Exception("Maximum R for DeltaSigma(R) must be <= than min(R) of Sigma(R).")
+
     if type(R) is list or type(R) is np.ndarray:
         DeltaSigma = np.zeros_like(R)
         cluster_toolkit._lib.DeltaSigma_at_R_arr(_dcast(R), len(R), _dcast(Rs), _dcast(Sigma), len(Rs), mass, concentration, delta, Omega_m, _dcast(DeltaSigma))
