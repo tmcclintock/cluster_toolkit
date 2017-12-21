@@ -38,6 +38,10 @@ def average_profile_in_bins(Redges, R, prof):
         numpy.array: Average profile in bins between the edges provided.
 
     """
+    if np.min(Redges) < np.min(R):
+        raise Exception("Minimum edge must be >= minimum R")
+    if np.max(Redges) > np.max(R):
+        raise Exception("Maximum edge must be <= maximum R")
     ave_prof = np.zeros(len(Redges)-1)
     cluster_toolkit._lib.average_profile_in_bins(_dcast(Redges), len(Redges), _dcast(R), len(R), _dcast(prof), _dcast(ave_prof))
     return ave_prof
