@@ -21,6 +21,10 @@ def average_profile_in_bin(Rlow, Rhigh, R, prof):
         float: Average profile in the radial bin, or annulus.
 
     """
+    if Rlow < np.min(R):
+        raise Exception("Minimum edge must be >= minimum R")
+    if Rhigh > np.max(R):
+        raise Exception("Maximum edge must be <= maximum R")
     return cluster_toolkit._lib.average_profile_in_bin(Rlow, Rhigh, _dcast(R), len(R), _dcast(prof))
 
 def average_profile_in_bins(Redges, R, prof):

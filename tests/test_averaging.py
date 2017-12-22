@@ -30,7 +30,9 @@ def test_errors():
         averaging.average_profile_in_bins(Redges, R, prof)
         Redges = [.6, 1.6, np.max(R)*1.1]
         averaging.average_profile_in_bins(Redges, R, prof)
-
+        averaging.average_profile_in_bin(np.min(R)*0.9, 1.6, R, prof)
+        averaging.average_profile_in_bin(0.6, np.max(R)*1.1, R, prof)
+        
 #Regression tests below. TODO
 
 if __name__ =="__main__":
