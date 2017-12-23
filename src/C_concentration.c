@@ -99,26 +99,8 @@ double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double 
 double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
   double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
-  /*double lnk_R = log10(0.69 * 2*M_PI/R); //0.69 is DK15 kappa
-  double*lnk = (double*)malloc(Nk*sizeof(double));
-  double*lnP = (double*)malloc(Nk*sizeof(double));
-  int i;
-  for(i = 0; i < Nk; i++){
-    lnk[i] = log10(k[i]);
-    lnP[i] = log10(P[i]);
-  }
-  gsl_spline*lnPspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
-  gsl_spline_init(lnPspl, lnk, lnP, Nk);
-  gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  double n = gsl_spline_eval_deriv(lnPspl, lnk_R, acc);
-  //Free things we don't need anymore
-  gsl_spline_free(lnPspl);
-  gsl_interp_accel_free(acc);
-  free(lnk);
-  free(lnP);*/
   double k_R = 0.69 * 2*M_PI/R;
-  double n = dlnP_dlnk(k_R, n_s, Omega_b, Omega_m, h, T_CMB);
-  
+  double n = dlnP_dlnk(k_R, n_s, Omega_b, Omega_m, h, T_CMB);  
   double phi0  = 6.58;
   double phi1  = 1.37;
   double eta0  = 6.82;
@@ -179,15 +161,12 @@ double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, 
 }
 
 double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
-  printf("Ob %.2e  ns %.2e  Om %.2e h %.2e T %.2e\n",Omega_b, n_s, Omega_m, h, T_CMB);
-  //kin has units of h/Mpc
-  double result = n_s;
-  double dlnk = 1e-4;
+  //kin needs to have units of h/Mpc
+  double dlnk = 1e-6;
   double dk = dlnk*kin;
   double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
   double T2 = transferFunc_EH98_zeroBaryon(kin-dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
-  //double P1 = pow(kin, n_s)*T1*T1;
-  //double P2 = pow(kin, n_s)*T2*T2;
-  result += 2 * log(T2/T1)/dlnk;
-  return result;
+  double P1 = pow(kin+dk*0.5, n_s)*T1*T1;
+  double P2 = pow(kin-dk*0.5, n_s)*T2*T2;
+  return log(P1/P2)/dlnk;
 }
