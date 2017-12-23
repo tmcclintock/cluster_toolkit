@@ -28,8 +28,7 @@ def concentration_at_M(Mass, k, P, n_s, Omega_b, Omega_m, h, T_CMB=2.7, delta=20
 
     """
     if Mass_type is "mean":
-        print "Not implemented right now"
-        return 0#cluster_toolkit._lib.DK15_concentration_at_Mmean(Mass, _dcast(k), _dcast(P), len(k), delta, Omega_m)
+        return cluster_toolkit._lib.DK15_concentration_at_Mmean(Mass, _dcast(k), _dcast(P), len(k), delta, n_s, Omega_b, Omega_m, h, T_CMB)
     elif Mass_type is "crit":
         return cluster_toolkit._lib.DK15_concentration_at_Mcrit(Mass, _dcast(k), _dcast(P), len(k), delta, n_s, Omega_b, Omega_m, h, T_CMB)
     else:

@@ -12,7 +12,7 @@
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
-/*
+
 //Structure to hold the parameters for the M-c root finder
 typedef struct mc_params{
   double Mm;
@@ -22,7 +22,11 @@ typedef struct mc_params{
   double*P;
   int Nk;
   int delta;
+  double n_s;
+  double Omega_b;
   double Omega_m;
+  double h;
+  double T_CMB;
 }mc_params;
 
 double Mm_from_Mc(double Mc, void*params){
@@ -34,9 +38,13 @@ double Mm_from_Mc(double Mc, void*params){
   double*P = pars->P;
   int Nk = pars->Nk;
   int delta = pars->delta;
+  double n_s = pars->n_s;
+  double Omega_b = pars->Omega_b;
   double Omega_m = pars->Omega_m;
+  double h = pars->h;
+  double T_CMB = pars->T_CMB;
   double rhom = rhocrit*Omega_m;
-  double cc = DK15_concentration_at_Mcrit(Mc, k, P, Nk, delta, Omega_m);
+  double cc = DK15_concentration_at_Mcrit(Mc, k, P, Nk, delta, n_s, Omega_b, Omega_m, h, T_CMB);
   pars->c = cc;
   //Figure out the total mass, but first figure out rho0 for Mcrit
   double rho0c = delta*rhom*cc*cc*cc/((cc+2)/(cc+1)+log(1+cc));
@@ -66,7 +74,11 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   pars->P = P;
   pars->Nk = Nk;
   pars->delta = delta;
+  pars->h = h;
+  pars->n_s = n_s;
+  pars->Omega_b = Omega_b;
   pars->Omega_m = Omega_m;
+  pars->T_CMB = T_CMB;
   
   F.function = &Mm_from_Mc;
   F.params = pars;
@@ -88,7 +100,6 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   gsl_root_fsolver_free(s);
   return cm;
 }
-*/
 
 //Just the signature
 double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB);
