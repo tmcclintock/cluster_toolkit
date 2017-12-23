@@ -33,7 +33,7 @@ double Mm_from_Mc(double Mc, void*params){
   //M is M200c
   mc_params*pars = (mc_params*)params;
   double Mm = pars->Mm;
-  double Rm = pars->Rm;
+  double Rm = pars->Rm; //R200m
   double*k = pars->k;
   double*P = pars->P;
   int Nk = pars->Nk;
@@ -48,10 +48,12 @@ double Mm_from_Mc(double Mc, void*params){
   pars->c = cc;
   //Figure out the total mass, but first figure out rho0 for Mcrit
   double rho0c = delta*rhom*cc*cc*cc/((cc+2)/(cc+1)+log(1+cc));
-  double Rc = pow(Mc/(4./3.*M_PI*rhocrit*delta), 0.33333333); //R200c
-  double Rs_c = Rc/cc; //Scale radius of Mcrit
-  double Rm_Rsc = Rm/Rs_c;
-  double Mout = 4*M_PI*rho0c*Rs_c*Rs_c*Rs_c*((Rm_Rsc+2)/(Rm_Rsc+1)+log(1+Rm_Rsc));
+  double Rc = pow(Mc/(1.3333333333*M_PI*rhocrit*delta), 0.33333333); //R200c
+  double Rscale = Rc/cc; //Scale radius of Mcrit
+  double cm = Rm/Rscale; //R200m / Rscale_crit = concentration
+  //pars->c = cm;
+  //double rho0m = delta*rhom*cm*cm*cm/((cm+2)/(cm+1)+log(1+cm));
+  double Mout = 4*M_PI*rho0c*Rscale*Rscale*Rscale*((cm+2)/(cm+1)+log(1+cm));
   return Mm - Mout;
 }
 
@@ -59,7 +61,7 @@ double Mm_from_Mc(double Mc, void*params){
 double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
   int status;
   mc_params*pars = (mc_params*)malloc(sizeof(mc_params));
-  double R = pow(Mass/(4./3.*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
+  double R = pow(Mass/(1.33333333333*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
   double M_lo = Mass/10;
   double M_hi = Mass*10;
   double Mm;
