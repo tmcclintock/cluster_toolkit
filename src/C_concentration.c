@@ -51,8 +51,8 @@ double Mm_from_Mc(double Mc, void*params){
   double Rc = pow(Mc/(1.3333333333*M_PI*rhocrit*delta), 0.33333333); //R200c
   double Rscale = Rc/cc; //Scale radius of Mcrit
   double cm = Rm/Rscale; //R200m / Rscale_crit = concentration
-  //pars->c = cm;
-  //double rho0m = delta*rhom*cm*cm*cm/((cm+2)/(cm+1)+log(1+cm));
+  pars->c = cm;
+  //Mout is the mass inside of rho(M_crit, c_crit) from 0 to R200m. It should be M200m (Mm).
   double Mout = 4*M_PI*rho0c*Rscale*Rscale*Rscale*((cm+2)/(cm+1)+log(1+cm));
   return Mm - Mout;
 }
