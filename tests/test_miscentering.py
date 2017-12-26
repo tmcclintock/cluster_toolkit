@@ -15,6 +15,10 @@ Sigma = np.loadtxt(dpath+"Sigma.txt")
 DeltaSigma = np.loadtxt(dpath+"DeltaSigma.txt")
 Rm = np.logspace(np.log10(min(R)), np.log10(max(R)), num=100)
 
+def test_errors():
+    with pytest.raises(Exception):
+        mis.Sigma_mis_single_at_R(np.min(R)*0.9, R, Sigma, M, c, Om, Rmis)
+
 def test_Sigma_mis():
     arrout = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis)
     assert len(arrout) == len(Rm)
