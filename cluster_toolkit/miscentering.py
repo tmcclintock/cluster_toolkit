@@ -23,9 +23,9 @@ def Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200):
 
     """
     if np.min(R) < np.min(Rsigma):
-        raise Excepction("Minimum R must be >= min(R_Sigma)")
+        raise Exception("Minimum R must be >= min(R_Sigma)")
     if np.max(R) > np.max(Rsigma):
-        raise Excepction("Maximum R must be <= max(R_Sigma)")
+        raise Exception("Maximum R must be <= max(R_Sigma)")
     if type(R) is list or type(R) is np.ndarray:
         Sigma_mis = np.zeros_like(R)
         cluster_toolkit._lib.Sigma_mis_single_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, Omega_m, Rmis, _dcast(Sigma_mis))
@@ -51,6 +51,10 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
         float or array like: Miscentered projected surface mass density.
 
     """
+    if np.min(R) < np.min(Rsigma):
+        raise Exception("Minimum R must be >= min(R_Sigma)")
+    if np.max(R) > np.max(Rsigma):
+        raise Exception("Maximum R must be <= max(R_Sigma)")
     if kernel == "gaussian": integrand_switch = 0
     elif kernel == "exponential": integrand_switch = 1
     if type(R) is list or type(R) is np.ndarray:

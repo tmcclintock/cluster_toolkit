@@ -19,7 +19,9 @@ def test_errors():
     with pytest.raises(Exception):
         mis.Sigma_mis_single_at_R(np.min(R)*0.9, R, Sigma, M, c, Om, Rmis)
         mis.Sigma_mis_single_at_R(np.max(R)*1.1, R, Sigma, M, c, Om, Rmis)
-
+        mis.Sigma_mis_at_R(np.min(R)*0.9, R, Sigma, M, c, Om, Rmis)
+        mis.Sigma_mis_at_R(np.max(R)*1.1, R, Sigma, M, c, Om, Rmis)
+        
 def test_Sigma_mis():
     arrout = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis)
     assert len(arrout) == len(Rm)
@@ -56,3 +58,7 @@ def test_nomis():
     Smis = mis.Sigma_mis_single_at_R(R, R, Sigma, M, c, Om, Rmis)/Sigma
     #npt.assert_array_almost_equal(Sigma[lo:hi], Smis[lo:hi], decimal=dec)
     npt.assert_array_almost_equal(ones[lo:hi], Smis[lo:hi], decimal=dec)
+
+if __name__ == "__main__":
+    print "in main"
+    test_errors()
