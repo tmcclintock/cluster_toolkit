@@ -55,8 +55,12 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
         raise Exception("Minimum R must be >= min(R_Sigma)")
     if np.max(R) > np.max(Rsigma):
         raise Exception("Maximum R must be <= max(R_Sigma)")
-    if kernel == "gaussian": integrand_switch = 0
-    elif kernel == "exponential": integrand_switch = 1
+    if kernel == "gaussian":
+        integrand_switch = 0
+    elif kernel == "exponential":
+        integrand_switch = 1
+    else:
+        raise Exception("Miscentering kernel must be either 'gaussian' or 'exponential'")
     if type(R) is list or type(R) is np.ndarray:
         Sigma_mis = np.zeros_like(R)
         cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, Omega_m, Rmis, integrand_switch, _dcast(Sigma_mis))
