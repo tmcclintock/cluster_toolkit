@@ -80,6 +80,10 @@ def DeltaSigma_mis_at_R(R, Rsigma, Sigma_mis):
         float array like: Miscentered excess surface mass density profile.
 
     """
+    if np.min(R) < np.min(Rsigma):
+        raise Exception("Minimum R must be >= min(R_Sigma)")
+    if np.max(R) > np.max(Rsigma):
+        raise Exception("Maximum R must be <= max(R_Sigma)")
     if type(R) is list or type(R) is np.ndarray:
         DeltaSigma_mis = np.zeros_like(R)
         cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis), len(R), _dcast(DeltaSigma_mis))
