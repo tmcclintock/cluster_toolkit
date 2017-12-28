@@ -12,6 +12,7 @@ datapath = "./data_for_testing/"
 klin = np.loadtxt(join(dirname(__file__),datapath+"klin.txt")) #h/Mpc; wavenumber
 plin = np.loadtxt(join(dirname(__file__),datapath+"plin.txt")) #[Mpc/h]^3 linear power spectrum
 Ma = np.array([1e13, 1e14, 1e15]) #Msun/h
+Ra = (Ma/(4./3.*np.pi*rhomconst*Omega_m))**(1./3.)
 
 def test_exceptions_bias_at_M():
     with pytest.raises(TypeError):
@@ -53,6 +54,17 @@ def test_single_vs_array():
     a1 = bias.sigma2_at_M(Ma, klin, plin, Omega_m)
     a2 = np.array([bias.sigma2_at_M(Mi, klin, plin, Omega_m) for Mi in Ma])
     npt.assert_array_equal(a1, a2)
+    a1 = bias.sigma2_at_R(Ra, klin, plin)
+    a2 = np.array([bias.sigma2_at_R(Ri, klin, plin) for Ri in Ra])
+    npt.assert_array_equal(a1, a2)
+    #Now the bias
+    a1 = bias.bias_at_M(Ma, klin, plin, Omega_m)
+    a2 = np.array([bias.bias_at_M(Mi, klin, plin, Omega_m) for Mi in Ma])
+    npt.assert_array_equal(a1, a2)
+    a1 = bias.bias_at_R(Ra, klin, plin)
+    a2 = np.array([bias.bias_at_R(Ri, klin, plin) for Ri in Ra])
+    npt.assert_array_equal(a1, a2)
+
 
 def test_R_vs_M():
     R = 1.0 #Mpc/h
