@@ -36,7 +36,7 @@ double integrand(double lk, void*params){
   double k = exp(lk);
   double x  = k*R;
   double P = gsl_spline_eval(spline, k, acc);
-  double w = 3.0/x/x/x*(sin(x)-x*cos(x)); //Window function
+  double w = 3.0/(x*x*x)*(sin(x)-x*cos(x)); //Window function
   return k*k*k*P*w*w;
 }
 
