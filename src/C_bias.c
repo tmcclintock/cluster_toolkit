@@ -96,8 +96,9 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
 int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, double*s2){
   int i;
   double*R = (double*)malloc(sizeof(double)*NM);
-  for(i = 0; i < NM; i++)
+  for(i = 0; i < NM; i++){
     R[i] = M_to_R(M[i], om);
+  }
   sigma2_at_R_arr(R, NM, k, P, Nk, s2);
   return 0;
 }

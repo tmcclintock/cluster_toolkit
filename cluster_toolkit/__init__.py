@@ -19,7 +19,7 @@ for file_name in glob.glob(os.path.join(include_dir,'*.h')):
 _lib = _ffi.dlopen(lib_file)
 
 def _dcast(x):
-    if type(x) is list: x = np.array(x)
+    if type(x) is list: x = np.array(x, order='C')
     return _ffi.cast('double*', x.ctypes.data)
 
 from . import averaging, bias, boostfactors, concentration, deltasigma, density, massfunction, miscentering, xi
