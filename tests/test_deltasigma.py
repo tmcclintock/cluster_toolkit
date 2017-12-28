@@ -17,6 +17,7 @@ except IOError:
     Rxi = np.loadtxt("./data_for_testing/r3d.txt")
     xihm = np.loadtxt("./data_for_testing/xi_hm.txt")
 R = np.logspace(-1, 2, num = 1000)
+R = np.copy(R)
 
 def test_Sigma_nfw():
     arrout = ds.Sigma_nfw_at_R(R, M, c, Om)
