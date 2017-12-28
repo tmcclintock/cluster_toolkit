@@ -48,6 +48,12 @@ def test_s2_and_nu_functions():
     out2 = bias.bias_at_nu(nu)
     npt.assert_array_equal(out, out2)
 
+def test_single_vs_array():
+    #First sigma2
+    a1 = bias.sigma2_at_M(Ma, klin, plin, Omega_m)
+    a2 = np.array([bias.sigma2_at_M(Mi, klin, plin, Omega_m) for Mi in Ma])
+    npt.assert_array_equal(a1, a2)
+
 def test_R_vs_M():
     R = 1.0 #Mpc/h
     M = 4.*np.pi/3. * Omega_m * rhomconst * R**3
