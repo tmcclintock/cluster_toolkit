@@ -64,7 +64,7 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   gsl_spline_init(spline,k,P,Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params *params = malloc(sizeof(integrand_params));
+  integrand_params*params = (integrand_params*)malloc(sizeof(integrand_params));
   params->spline = spline;
   params->acc = acc;
   gsl_function F;
@@ -76,10 +76,11 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   int i;
   for(i = 0; i < NR; i++){
     params->r = R[i];
-    gsl_integration_qag(&F, lo, hi, BIAS_TOL ,BIAS_TOL/10., workspace_size, 6, workspace, &result, &abserr);
+    gsl_integration_qag(&F, lo, hi, BIAS_TOL, BIAS_TOL/10., workspace_size, 6, workspace, &result, &abserr);
     s2[i] = result/(2*M_PI*M_PI);
   }
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
   return 0;
@@ -92,6 +93,7 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
     R[i] = M_to_R(M[i], om);
   }
   sigma2_at_R_arr(R, NM, k, P, Nk, s2);
+  free(R);
   return 0;
 }
 
@@ -110,17 +112,21 @@ int nu_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*nu){
   int i;
   double*s2 = (double*)malloc(sizeof(double)*NR);
   sigma2_at_R_arr(R, NR, k, P, Nk, s2);
-  for(i = 0; i < NR; i++)
+  for(i = 0; i < NR; i++){
     nu[i] = delta_c/sqrt(s2[i]);
+  }
+  free(s2);
   return 0;
 }
 
 int nu_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double*nu){
   int i;
   double*R = (double*)malloc(sizeof(double)*NM);
-  for(i = 0; i < NM; i++)
+  for(i = 0; i < NM; i++){
     R[i] = M_to_R(M[i], om);
+  }
   nu_at_R_arr(R, NM, k, P, Nk, nu);
+  free(R);
   return 0;
 }
 
