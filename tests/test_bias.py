@@ -87,3 +87,6 @@ def test_mass_dependence():
     arrout = bias.bias_at_nu(nus)
     for i in range(len(masses)-1):
         assert arrout[i] < arrout[i+1]
+
+def test_cordering():
+    print "not implemented yet"
