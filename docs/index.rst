@@ -45,3 +45,4 @@ The source code is publically available at https://github.com/tmcclintock/cluste
    Cluster Toolkit Reference/API<api/modules>
    How to use CLASS<source/using_class>
    How to use CAMB<source/using_camb>
+   Frequently Asked Questions<source/FAQ>
