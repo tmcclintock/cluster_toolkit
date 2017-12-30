@@ -9,8 +9,8 @@ rhomconst = 2.77533742639e+11 #units are SM h^2/Mpc^3
 Mass = 1e14 #Msun/h
 Omega_m = 0.3 #arbitrary
 datapath = "./data_for_testing/"
-klin = np.loadtxt(join(dirname(__file__),datapath+"klin.txt")) #h/Mpc; wavenumber
-plin = np.loadtxt(join(dirname(__file__),datapath+"plin.txt")) #[Mpc/h]^3 linear power spectrum
+klin = np.loadtxt(join(dirname(__file__),datapath+"klin.txt"))#h/Mpc; wavenumber
+plin = np.loadtxt(join(dirname(__file__),datapath+"plin.txt"))#[Mpc/h]^3 linear power spectrum
 Ma = np.array([1e13, 1e14, 1e15]) #Msun/h
 Ra = (Ma/(4./3.*np.pi*rhomconst*Omega_m))**(1./3.)
 
@@ -88,5 +88,16 @@ def test_mass_dependence():
     for i in range(len(masses)-1):
         assert arrout[i] < arrout[i+1]
 
-def test_cordering():
-    print "not implemented yet"
+def test_Cordering():
+    Me,be = np.loadtxt(join(dirname(__file__),datapath+"bias_camb_z0.0.dat")).T
+    ke,pe = np.loadtxt(join(dirname(__file__),datapath+"ps_camb_z0.0.dat")).T
+    pe = 2*np.pi**2*pe/ke**3
+    #Me = np.ascontiguousarray(Me)
+    #ke = np.ascontiguousarray(ke)
+    #pe = np.ascontiguousarray(pe)
+    #bt = bias.bias_at_M(Me, ke, pe, Omega_m)
+    #r = be/bt
+    #npt.assert_array_almost_equal(r, np.ones_like(r), decimal=3)
+
+if __name__=="__main__":
+    test_Cordering()
