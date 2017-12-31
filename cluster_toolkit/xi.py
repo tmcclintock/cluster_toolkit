@@ -85,18 +85,22 @@ def xi_2halo(bias, xi_mm):
     cluster_toolkit._lib.calc_xi_2halo(NR, bias, _dcast(xi_mm), _dcast(xi))
     return xi
 
-def xi_hm(xi_1halo, xi_2halo):
+def xi_hm(xi_1halo, xi_2halo, combination="max"):
     """Halo-matter correlation function
 
     Args:
         xi_1halo (float or array like): 1-halo term
         xi_2halo (float or array like, same size as xi_1halo): 2-halo term
+        combination (string; optional): specifies how the 1-halo and 2-halo terms are combined, default is 'max' which takes the max of the two
 
     Returns:
         float or array like: Halo-matter correlation function
 
     """
-
+    if combination == "max":
+        switch = 0
+    else:
+        raise Exception("Combinations other than maximum not implemented yet")
     NR = len(xi_1halo)
     xi = np.zeros_like(xi_1halo)
     cluster_toolkit._lib.calc_xi_hm(NR, _dcast(xi_1halo), _dcast(xi_2halo), _dcast(xi))

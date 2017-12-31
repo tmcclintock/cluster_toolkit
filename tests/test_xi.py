@@ -15,6 +15,8 @@ Omega_m = 0.3 #arbitrary
 datapath = "./data_for_testing/"
 knl = np.loadtxt(join(dirname(__file__),datapath+"knl.txt")) #h/Mpc; wavenumber
 pnl = np.loadtxt(join(dirname(__file__),datapath+"pnl.txt")) #[Mpc/h]^3 nonlinear power spectrum
+klin = np.loadtxt(join(dirname(__file__),datapath+"klin.txt")) #h/Mpc; wavenumber
+plin = np.loadtxt(join(dirname(__file__),datapath+"plin.txt")) #[Mpc/h]^3 linear power spectrum
 
 def test_exceptions_xi_nfw_at_R():
     with pytest.raises(TypeError):
@@ -68,5 +70,18 @@ def test_einasto_mass_dependence():
         xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], Rscale, alpha, Omega_m)
         npt.assert_array_less(xi1, xi2)
 
+def test_combination():
+    xinfw = xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m)
+    ximm = xi.xi_mm_at_R(Ra, knl, pnl)
+    from cluster_toolkit import bias
+    b = bias.bias_at_M(Mass, klin, plin, Omega_m)
+    xi2h = xi.xi_2halo(b, ximm)
+    xihm = xi.xi_hm(xinfw, xi2h)
+    xihm2 = xi.xi_hm(xinfw, xi2h, combination='max')
+    npt.assert_array_equal(xihm, xihm2)
+    with pytest.raises(Exception):
+        xi.xi_hm(xinfw, xi2h, combination='sum')
+        xi.xi_hm(xinfw, xi2h, combination='blah')
 if __name__ == "__main__":
-    test_einasto_mass_dependence()
+    #test_einasto_mass_dependence()
+    test_combination()
