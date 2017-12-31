@@ -77,11 +77,18 @@ int calc_xi_2halo(int NR, double bias, double*xi_mm, double*xi_2halo){
   return 0;
 }
 
-int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm){
+int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm, int flag){
+  //Flag specifies how to combine the two terms
   int i;
-  for(i = 0; i < NR; i++){
-    if(xi_1h[i] >= xi_2h[i]) xi_hm[i] = xi_1h[i];
-    else xi_hm[i] = xi_2h[i];
+  if (flag == 0) { //Take the max
+    for(i = 0; i < NR; i++){
+      if(xi_1h[i] >= xi_2h[i]) xi_hm[i] = xi_1h[i];
+      else xi_hm[i] = xi_2h[i];
+    }
+  } else if (flag == 1) { //Take the sum
+    for(i = 0; i < NR; i++){
+      xi_hm[i] = xi_1h[i] + xi_2h[i];
+    }
   }
   return 0;
 }

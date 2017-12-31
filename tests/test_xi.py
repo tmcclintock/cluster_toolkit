@@ -79,8 +79,9 @@ def test_combination():
     xihm = xi.xi_hm(xinfw, xi2h)
     xihm2 = xi.xi_hm(xinfw, xi2h, combination='max')
     npt.assert_array_equal(xihm, xihm2)
+    xihm2 = xi.xi_hm(xinfw, xi2h, combination='sum')
+    npt.assert_raises(AssertionError, npt.assert_array_equal, xihm, xihm2)
     with pytest.raises(Exception):
-        xi.xi_hm(xinfw, xi2h, combination='sum')
         xi.xi_hm(xinfw, xi2h, combination='blah')
 if __name__ == "__main__":
     #test_einasto_mass_dependence()
