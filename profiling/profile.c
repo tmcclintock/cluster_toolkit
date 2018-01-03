@@ -12,6 +12,12 @@
 #include "C_xi.h"
 #include "constants.h"
 
+int read_file(FILE *fp, int N, double *data){
+  int i;
+  for(i = 0; i < N; i++)
+    fscanf(fp,"%lf",&data[i]);
+  return 0;
+}
 
 int main(){
   printf("Starting the profiling routines.\n");
@@ -48,7 +54,43 @@ int main(){
     boost_pl[i] = boost_powerlaw_at_R(R[i], B0, Rs, alpha);
     Sigma_nfw[i] = Sigma_nfw_at_R(R[i], M, c, 200, om);
   }
+  printf("First arrays calculated.\n");
 
+  printf("Reading in power spectra.\n");
+  FILE*k_fp, *P_fp;
+  char*line = NULL;
+  size_t len = 0;
+  int Nk = -1, Nklin = -1;
+  int read;
+  //Get the nl data
+  k_fp = fopen("input_files/knl.txt","r");
+  while ((read = getline(&line, &len, k_fp)) != -1){Nk++;}
+  rewind(k_fp);
+  getline(&line,&len,k_fp); //header line read off
+  double*knl = (double*)malloc(Nk*sizeof(double));
+  read_file(k_fp, Nk, knl);
+  fclose(k_fp);
+  P_fp = fopen("input_files/pnl.txt","r");
+  getline(&line,&len,P_fp); //header line read off
+  double*Pnl = (double*)malloc(Nk*sizeof(double));
+  read_file(P_fp, Nk, Pnl);
+  fclose(P_fp);
+  //Get the lin data
+  k_fp = fopen("input_files/klin.txt","r");
+  while ((read = getline(&line, &len, k_fp)) != -1){Nklin++;}
+  rewind(k_fp);
+  getline(&line,&len,k_fp); //header line read off
+  double*klin = (double*)malloc(Nklin*sizeof(double));
+  read_file(k_fp, Nklin, klin);
+  fclose(k_fp);
+  P_fp = fopen("input_files/plin.txt","r");
+  getline(&line, &len, P_fp); //header line read off
+  double*Plin = (double*)malloc(Nklin*sizeof(double));
+  read_file(P_fp, Nklin, Plin);
+  fclose(P_fp);
+  printf("Power spectra read in. Nlin=%d Nnl=%d\n",Nk, Nklin);
+
+  printf("Freeing arrays.\n");
   free(r);
   free(R);
   free(xi_nfw);
@@ -56,5 +98,9 @@ int main(){
   free(boost_nfw);
   free(boost_pl);
   free(Sigma_nfw);
+  free(knl);
+  free(klin);
+  free(Pnl);
+  free(Plin);
   return 0;
 }
