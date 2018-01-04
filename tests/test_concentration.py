@@ -20,8 +20,10 @@ Marr = np.array([1e13, 1e14, 1e15]) #Msun/h
 
 def test_exceptions():
     with pytest.raises(Exception):
-        concentration.concentration_at_M(Mass, k, p, Omega_m, Mass_type="blah")
+        concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="vir")
+        concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, delta=300)
 
 if __name__ == "__main__":
     print concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="crit")
     print concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="mean")
+    test_exceptions()
