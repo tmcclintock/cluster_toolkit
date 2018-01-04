@@ -82,6 +82,7 @@ def test_analytic_Sigma():
     npt.assert_array_almost_equal(np.ones_like(R), ratio, decimal=2)
     
 if __name__ == "__main__":
-    #test_analytic_Sigma()
+    test_Sigma()
+    test_analytic_Sigma()
     #test_Sigma_nfw()
-    test_errors()
+    #test_errors()
