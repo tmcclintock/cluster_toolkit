@@ -29,19 +29,19 @@ double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
 int Sigma_nfw_at_R_arr(double*R, int NR, double M, double c, int delta, double om, double*Sigma){
   double rhom = om*rhomconst;//SM h^2/Mpc^3
   double deltac = delta*0.3333333333*c*c*c/(log(1.+c)-c/(1.+c));
-  double rdelta = pow(M/(1.333333333*M_PI*rhom*delta),0.333333333);//Mpc/h
-  double rscale = rdelta/c;
+  double Rdelta = pow(M/(1.333333333*M_PI*rhom*delta),0.333333333);//Mpc/h
+  double Rscale = Rdelta/c;
   double gx = 0;
   double x;
   int i;
   for(i = 0; i < NR; i++){
-    x = R[i]/rscale;
+    x = R[i]/Rscale;
     if(x<1){
       gx = (1 - 2./sqrt(1-x*x)*atanh(sqrt((1-x)/(1+x))))/(x*x-1);
     }else{// if(x>=1){
       gx = (1 - 2./sqrt(x*x-1)* atan(sqrt((x-1)/(1+x))))/(x*x-1);
     }
-    Sigma[i] = 2*rscale*deltac*rhom*gx*1.e-12; //SM h/pc^2
+    Sigma[i] = 2*Rscale*deltac*rhom*gx*1.e-12; //SM h/pc^2
   }
   return 0;
 }
