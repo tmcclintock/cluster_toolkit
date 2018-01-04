@@ -17,7 +17,7 @@
 typedef struct mc_params{
   double Mm;
   double Rm;
-  double c;//will be the output
+  double cm;//will be the output
   double*k;
   double*P;
   int Nk;
@@ -30,10 +30,10 @@ typedef struct mc_params{
 }mc_params;
 
 double Mm_from_Mc(double Mc, void*params){
-  //M is M200c
+  //Mc is M200c
   mc_params*pars = (mc_params*)params;
   double Mm = pars->Mm;
-  //double Rm = pars->Rm; //R200m
+  double Rm = pars->Rm; //R200m
   double*k = pars->k;
   double*P = pars->P;
   int Nk = pars->Nk;
@@ -43,15 +43,15 @@ double Mm_from_Mc(double Mc, void*params){
   double Omega_m = pars->Omega_m;
   double h = pars->h;
   double T_CMB = pars->T_CMB;
-  double rhom = rhocrit*Omega_m;
   double cc = DK15_concentration_at_Mcrit(Mc, k, P, Nk, delta, n_s, Omega_b, Omega_m, h, T_CMB);
-  pars->c = cc;
   //Figure out the total mass, but first figure out rho0 for Mcrit
-  double rho0c = delta*rhom*cc*cc*cc/((cc+2)/(cc+1)+log(1+cc));
   double Rc = pow(Mc/(1.3333333333*M_PI*rhocrit*delta), 0.33333333); //R200c
-  double Rscale = Rc/cc; //Scale radius of Mcrit
+  double Rs_c = Rc/cc; //Scale radius of Mcrit
+  double rho0c = Mc/(Rs_c*Rs_c*Rs_c * 4 * M_PI * (log(1+cc) - cc/(1+cc)));
+  double cm = Rm/Rs_c; //upper limit
+  pars->cm = cm;
   //Mout is the mass inside of rho(M_crit, c_crit) from 0 to R200m. It should be M200m (Mm).
-  double Mout = 4*M_PI*rho0c*Rscale*Rscale*Rscale*((cc+2)/(cc+1)+log(1+cc));
+  double Mout = 4*M_PI*rho0c*Rs_c*Rs_c*Rs_c*(log(1+cm) - cm/(1+cm));
   return Mm - Mout;
 }
 
@@ -94,7 +94,7 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
     status = gsl_root_test_interval(M_lo, M_hi, 0, 0.001);
   }while(status == GSL_CONTINUE && iter < max_iter);
   
-  cm = pars->c;
+  cm = pars->cm;
 
   free(pars);
   gsl_root_fsolver_free(s);

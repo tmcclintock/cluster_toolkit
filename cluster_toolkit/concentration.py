@@ -5,7 +5,7 @@ import cluster_toolkit
 from cluster_toolkit import _dcast
 import numpy as np
 
-def concentration_at_M(Mass, k, P, n_s, Omega_b, Omega_m, h, T_CMB=2.7, delta=200, Mass_type="crit"):
+def concentration_at_M(Mass, k, P, n_s, Omega_b, Omega_m, h, T_CMB=2.7255, delta=200, Mass_type="crit"):
     """Concentration of the NFW profile at mass M [Msun/h].
     Only implemented relation at the moment is Diemer & Kravtsov (2015).
 
