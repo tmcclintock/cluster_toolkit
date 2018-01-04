@@ -60,7 +60,7 @@ typedef struct integrand_params{
 
 double integrand_small_scales(double lRz, void*params){
   double Rz = exp(lRz);
-  integrand_params pars=*(integrand_params *)params;
+  integrand_params pars=*(integrand_params*)params;
   double Rp = pars.Rp;
   double om = pars.om;
   double M = pars.M;
@@ -82,7 +82,7 @@ double integrand_large_scales(double lRz, void*params){
   //Use a power law approximation. This is fine as long as xi_hm
   //doesn't have wiggles in it (i.e. it doesn't stop at BAO)
   double Rz = exp(lRz);
-  integrand_params pars=*(integrand_params *)params;
+  integrand_params pars=*(integrand_params*)params;
   double Rp = pars.Rp;
   double slope = pars.slope;
   double intercept = pars.intercept;
@@ -104,8 +104,8 @@ double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double con
 int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
   double Rxi0 = Rxi[0];
-  double RxiM = Rxi[Nxi-1];
-  double lnmax;
+  double Rxi_max = Rxi[Nxi-1];
+  double ln_z_max;
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nxi);
   gsl_spline_init(spline, Rxi, xi, Nxi);
@@ -125,17 +125,17 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   int i;
   
   for(i = 0; i < NR; i++){
-    lnmax = log(sqrt(RxiM*RxiM - R[i]*R[i])); //Max distance to integrate to
+    ln_z_max = log(sqrt(Rxi_max*Rxi_max - R[i]*R[i])); //Max distance to integrate to
     params->Rp = R[i];
     if(R[i] < Rxi0){
       F.function = &integrand_small_scales;
       gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), TOL, TOL/10., workspace_size, 6, workspace, &result1, &err1);
       F.function = &integrand_medium_scales;
-      gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+      gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ln_z_max, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
     }else{ //R[i] > Rxi0
       result1 = 0;
       F.function = &integrand_medium_scales;
-      gsl_integration_qag(&F, -10, lnmax, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
+      gsl_integration_qag(&F, -10, ln_z_max, TOL, TOL/10., workspace_size, 6, workspace, &result2, &err2);
     }
     Sigma[i] = (result1+result2)*rhom*2;
   }
