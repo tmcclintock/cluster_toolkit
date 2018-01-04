@@ -86,13 +86,13 @@ def DeltaSigma_mis_at_R(R, Rsigma, Sigma_mis):
         raise Exception("Maximum R must be <= max(R_Sigma)")
     if type(R) is list or type(R) is np.ndarray:
         DeltaSigma_mis = np.zeros_like(R)
-        cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis), len(R), _dcast(DeltaSigma_mis))
+        cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis), len(Rsigma), _dcast(DeltaSigma_mis))
         return DeltaSigma_mis
     else:
         return cluster_toolkit._lib.DeltaSigma_mis_at_R(R, _dcast(Rsigma), _dcast(Sigma_mis), len(Rsigma))
 
 def _calc_DeltaSigma_mis_at_R(R, Rsigma, Sigma, DeltaSigma_mis):
-    return cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(R), _dcast(DeltaSigma_mis))
+    return cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), _dcast(DeltaSigma_mis))
 
 def _calc_Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, Sigma_mis, delta=200):
     return cluster_toolkit._lib.Sigma_mis_single_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, Omega_m, Rmis, _dcast(Sigma_mis))
