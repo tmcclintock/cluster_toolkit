@@ -275,32 +275,15 @@ double DS_mis_integrand(double lR, void*params){
 }
 
 double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns){
-  double lrmin = log(Rs[0]);
-
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_spline_init(spline, Rs, Sigma, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace* workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
-  params->spline = spline;
-  params->acc = acc;
-  double slope = log(Sigma[0]/Sigma[1])/log(Rs[0]/Rs[1]);
-  double intercept = Sigma[0]*pow(Rs[0], -slope);
-  double low_part = intercept*pow(Rs[0], slope+2)/(slope+2);
-  double result, err;
-  gsl_function F;
-  F.params = params;
-  F.function = &DS_mis_integrand;
-  gsl_integration_qag(&F, lrmin, log(R), TOL, TOL/10., workspace_size, 6, workspace, &result, &err);
-  //Evaluate the result
-  double res = (low_part+result)*2/(R*R) - gsl_spline_eval(spline, R, acc);
-  //Free everything
-  gsl_spline_free(spline);
-  gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  free(params);
-  //Return the result
-  return res;
+  double*Ra = (double*)malloc(sizeof(double));
+  double*DSm = (double*)malloc(sizeof(double));
+  double result;
+  Ra[0] = R;
+  DeltaSigma_mis_at_R_arr(Ra, 1, Rs, Sigma, Ns, DSm);
+  result = DSm[0];
+  free(Ra);
+  free(DSm);
+  return result;
 }
 
 int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
