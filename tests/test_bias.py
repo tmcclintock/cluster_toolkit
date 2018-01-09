@@ -92,12 +92,12 @@ def test_Cordering():
     Me,be = np.loadtxt(join(dirname(__file__),datapath+"bias_camb_z0.0.dat")).T
     ke,pe = np.loadtxt(join(dirname(__file__),datapath+"ps_camb_z0.0.dat")).T
     pe = 2*np.pi**2*pe/ke**3
-    #Me = np.ascontiguousarray(Me)
-    #ke = np.ascontiguousarray(ke)
-    #pe = np.ascontiguousarray(pe)
-    #bt = bias.bias_at_M(Me, ke, pe, Omega_m)
-    #r = be/bt
-    #npt.assert_array_almost_equal(r, np.ones_like(r), decimal=3)
+    #Me = np.ascontiguousarray(Me) #test passes if this is not required
+    #ke = np.ascontiguousarray(ke) #test passes if this is not required
+    #pe = np.ascontiguousarray(pe) #test passes if this is not required
+    bt = bias.bias_at_M(Me, ke, pe, Omega_m)
+    r = be/bt
+    npt.assert_array_almost_equal(r, np.ones_like(r), decimal=3)
 
 if __name__=="__main__":
     test_Cordering()

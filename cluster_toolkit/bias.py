@@ -4,6 +4,7 @@
 import cluster_toolkit
 from cluster_toolkit import _dcast
 import numpy as np
+from numpy import ascontiguousarray as ACA
 
 def bias_at_M(M, k, P, Omega_m, delta=200):
     """Tinker et al. 2010 bais at mass M [Msun/h].
@@ -21,6 +22,9 @@ def bias_at_M(M, k, P, Omega_m, delta=200):
     """
     if type(M) is list or type(M) is np.ndarray:
         bias = np.zeros_like(M)
+        M = ACA(M, dtype=np.float64)
+        k = ACA(k, dtype=np.float64)
+        P = ACA(P, dtype=np.float64)
         cluster_toolkit._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), Omega_m, _dcast(bias))
         return bias
     else:
