@@ -14,7 +14,7 @@ def concentration_at_M(Mass, k, P, n_s, Omega_b, Omega_m, h, T_CMB=2.7255, delta
     Args:
         Mass (float): Mass in Msun/h.
         k (array like): Wavenumbers of power spectrum in h/Mpc comoving.
-        P (array like): Power spectrum in (Mpc/h)^3 comoving.
+        P (array like): Linear matter power spectrum in (Mpc/h)^3 comoving.
         n_s (float): Power spectrum tilt.
         Omega_b (float): Baryonic matter density fraction.
         Omega_m (float): Matter density fraction.
