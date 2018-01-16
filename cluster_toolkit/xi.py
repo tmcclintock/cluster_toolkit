@@ -49,14 +49,14 @@ def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     else:
         return cluster_toolkit._lib.xi_einasto_at_R(R, M, rhos, rs, alpha, delta, om)
 
-def xi_mm_at_R(R, k, P, N=200, step=0.005):
+def xi_mm_at_R(R, k, P, N=500, step=0.005):
     """Matter-matter correlation function.
 
     Args:
         R (float or array like): 3d distances from halo center in Mpc/h comoving
         k (array like): Wavenumbers of power spectrum in h/Mpc comoving
         P (array like): Matter power spectrum in (Mpc/h)^3 comoving
-        N (int; optional): Quadrature step count, default is 200
+        N (int; optional): Quadrature step count, default is 500
         step (float; optional): Quadrature step size, default is 5e-3
 
     Returns:
