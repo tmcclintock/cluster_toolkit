@@ -88,7 +88,7 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm, int flag){
     }
   } else if (flag == 1) { //Take the sum
     for(i = 0; i < NR; i++){
-      xi_hm[i] = xi_1h[i] + xi_2h[i];
+      xi_hm[i] = 1 + xi_1h[i] + xi_2h[i];
     }
   }
   return 0;
@@ -220,7 +220,6 @@ int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
   int i;
   wf = gsl_integration_qawo_table_alloc(R[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
   for(i = 0; i < NR; i++){
-    printf("On %d\n",i);
     gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
     params->r=R[i];
     gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
