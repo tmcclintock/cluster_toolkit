@@ -49,7 +49,7 @@ def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     else:
         return cluster_toolkit._lib.xi_einasto_at_R(R, M, rhos, rs, alpha, delta, om)
 
-def xi_mm_at_R(R, k, P, N=500, step=0.005):
+def xi_mm_at_R(R, k, P, N=500, step=0.005, exact=False):
     """Matter-matter correlation function.
 
     Args:
@@ -58,6 +58,7 @@ def xi_mm_at_R(R, k, P, N=500, step=0.005):
         P (array like): Matter power spectrum in (Mpc/h)^3 comoving
         N (int; optional): Quadrature step count, default is 500
         step (float; optional): Quadrature step size, default is 5e-3
+        exact (boolean): Use the slow, exact calculation; default is False
 
     Returns:
         float or array like: Matter-matter correlation function
@@ -65,9 +66,15 @@ def xi_mm_at_R(R, k, P, N=500, step=0.005):
     """
     if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
-        cluster_toolkit._lib.calc_xi_mm(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(xi), N, step)
+        if not exact:
+            cluster_toolkit._lib.calc_xi_mm(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(xi), N, step)
+        else:
+            cluster_toolkit._lib.calc_xi_mm_exact(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(xi))
         return xi
-    return cluster_toolkit._lib.xi_mm_at_R(R, _dcast(k), _dcast(P), len(k), N, step)
+    if not exact:
+        return cluster_toolkit._lib.xi_mm_at_R(R, _dcast(k), _dcast(P), len(k), N, step)
+    else:
+        return cluster_toolkit._lib.xi_mm_at_R_exact(R, _dcast(k), _dcast(P), len(k))
 
 def xi_2halo(bias, xi_mm):
     """2-halo term in halo-matter correlation function

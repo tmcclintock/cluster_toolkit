@@ -1,5 +1,6 @@
 #include "C_xi.h"
 
+#include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_sf_gamma.h"
 #include <math.h>
@@ -156,36 +157,93 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   free(Ra);
   free(xi);
   return result;
-  /*
-  double zero,psi,x,t,dpsi,f,PIsinht;
-  double PI_h = M_PI/h;
-  double PI_2 = M_PI*0.5;
+}
+
+//////////////////////////////////////////
+//////////////Xi(R) exact below //////////
+//////////////////////////////////////////
+
+#define workspace_size 8000
+#define workspace_num 70
+#define ABSERR 0.0
+#define RELERR 2e-3
+
+typedef struct integrand_params_xi_mm_exact{
+  gsl_spline*spline;
+  gsl_interp_accel*acc;
+  gsl_integration_workspace * workspace;
+  double r; //3d r; Mpc/h, or inverse units of k
+  double*kp; //pointer to wavenumbers
+  double*Pp; //pointer to P(k) array
+  int Nk; //length of k and P arrays
+}integrand_params_xi_mm_exact;
+
+double integrand_xi_mm_exact(double k, void*params){
+  integrand_params_xi_mm_exact pars = *(integrand_params_xi_mm_exact*)params;
+  gsl_spline*Pspl = pars.spline;
+  gsl_interp_accel*acc = pars.acc;
+  double*kp = pars.kp;
+  double*Pp = pars.Pp;
+  int Nk = pars.Nk;
+  double R = pars.r;
+  
+  //double k = exp(lk);
+  double x  = k*R;
+  double P = get_P(x, R, kp, Pp, Nk, Pspl, acc);
+
+  return P*k/R; //if using k
+}
+
+int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
+  //The spline based, periodic integral
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
   gsl_spline_init(Pspl, k, P, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
+  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
+  gsl_integration_qawo_table*wf;
 
-  double sum = 0;
+  integrand_params_xi_mm_exact*params=malloc(sizeof(integrand_params_xi_mm_exact));
+  params->acc = acc;
+  params->spline = Pspl;
+  params->kp = k;
+  params->Pp = P;
+  params->Nk = Nk;
+
+  gsl_function F;
+  F.function=&integrand_xi_mm_exact;
+  F.params=params;
+
+  double kmax = 1e3;
+  double kmin = 1e-7;
+  double result, err;
+  
   int i;
-  for(i=0;i<N;i++){
-    zero = i+1;
-    psi = h*zero*tanh(sinh(h*zero)*PI_2);
-    x = psi*PI_h;
-    t = h*zero;
-    PIsinht = M_PI*sinh(t);
-    dpsi = (M_PI*t*cosh(t)+sinh(PIsinht))/(1+cosh(PIsinht));
-    if (dpsi!=dpsi) dpsi=1.0;
-    f = x*get_P(x,R,k,P,Nk,Pspl,acc);
-    sum += f*sin(x)*dpsi;
+  wf = gsl_integration_qawo_table_alloc(R[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
+  for(i = 0; i < NR; i++){
+    printf("On %d\n",i);
+    gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
+    params->r=R[i];
+    gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
+    xi[i] = result/(M_PI*M_PI*2);
   }
 
+  free(params);
   gsl_spline_free(Pspl);
   gsl_interp_accel_free(acc);
-  return sum/(R*R*R*M_PI*2); //Note: factor of pi picked up in the quadrature rule
-  //See Ogata 2005 for details, especially eq. 5.2
-  */
+  gsl_integration_workspace_free(workspace);
+  gsl_integration_qawo_table_free(wf);
+
+  return 0;
 }
 
 double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
-  //The spline based, periodic integral
-  return 0;
+  double*Ra = (double*)malloc(sizeof(double));
+  double*xi = (double*)malloc(sizeof(double));
+  double result;
+  Ra[0] = R;
+  calc_xi_mm_exact(Ra, 1, k, P, Nk, xi);
+  result = xi[0];
+  free(Ra);
+  free(xi);
+  return result;
 }

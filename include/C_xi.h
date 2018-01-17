@@ -9,3 +9,6 @@ double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double
 int calc_xi_2halo(int, double, double*, double*);
 int calc_xi_hm(int, double*, double*, double*, int);
 int calc_xi_mm(double*, int, double*, double*, int, double*, int, double);
+
+double xi_mm_at_R_exact(double R, double*k, double*P, int Nk);
+int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi);

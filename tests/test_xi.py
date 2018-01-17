@@ -56,6 +56,15 @@ def test_xi_mm_at_R():
     arr2 = np.array([xi.xi_mm_at_R(Ri, knl, pnl) for Ri in Ra])
     npt.assert_array_equal(arr1, arr2)
 
+def test_xi_mm_at_R_exact():
+    #List vs. numpy.array
+    npt.assert_array_equal(xi.xi_mm_at_R(Ra, knl, pnl, exact=True), xi.xi_mm_at_R(Ra.tolist(), knl, pnl, exact=True))
+    #Single value vs numpy.array
+    arr1 = xi.xi_mm_at_R(Ra, knl, pnl, exact=True)
+    arr2 = np.array([xi.xi_mm_at_R(Ri, knl, pnl, exact=True) for Ri in Ra])
+    npt.assert_array_equal(arr1, arr2)
+
+
 def test_nfw_mass_dependence():
     masses = np.array([1e13, 1e14, 1e15])
     for i in range(len(masses)-1):
