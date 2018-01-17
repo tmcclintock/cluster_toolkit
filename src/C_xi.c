@@ -96,11 +96,35 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm, int flag){
 double get_P(double, double, double*, double*, int, gsl_spline*, gsl_interp_accel*);
 
 int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, double h){
-  int i;
-  for(i=0;i<NR;i++){
-    xi[i] = xi_mm_at_R(R[i],k,P,Nk,N,h);
+  double zero,psi,x,t,dpsi,f,PIsinht;
+  double PI_h = M_PI/h;
+  double PI_2 = M_PI*0.5;
+  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
+  gsl_spline_init(Pspl, k, P, Nk);
+  gsl_interp_accel*acc= gsl_interp_accel_alloc();
+
+  double sum = 0;
+  int i,j;
+  for(j = 0; j < NR; j++){
+    sum = 0;
+    for(i = 0; i < N; i++){
+      zero = i+1;
+      psi = h*zero*tanh(sinh(h*zero)*PI_2);
+      x = psi*PI_h;
+      t = h*zero;
+      PIsinht = M_PI*sinh(t);
+      dpsi = (M_PI*t*cosh(t)+sinh(PIsinht))/(1+cosh(PIsinht));
+      if (dpsi!=dpsi) dpsi=1.0;
+      f = x*get_P(x,R[j],k,P,Nk,Pspl,acc);
+      sum += f*sin(x)*dpsi;
+    }
+    xi[j] = sum/(R[j]*R[j]*R[j]*M_PI*2);
   }
-  return 0;
+
+  gsl_spline_free(Pspl);
+  gsl_interp_accel_free(acc);
+  return 0; //Note: factor of pi picked up in the quadrature rule
+  //See Ogata 2005 for details, especially eq. 5.2
 }
 
 ///////Functions for calc_xi_mm
@@ -123,6 +147,16 @@ double get_P(double x, double R, double*k, double*P, int Nk, gsl_spline*Pspl, gs
 }
 
 double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
+  double*Ra = (double*)malloc(sizeof(double));
+  double*xi = (double*)malloc(sizeof(double));
+  double result;
+  Ra[0] = R;
+  calc_xi_mm(Ra, 1, k, P, Nk, xi, N, h);
+  result = xi[0];
+  free(Ra);
+  free(xi);
+  return result;
+  /*
   double zero,psi,x,t,dpsi,f,PIsinht;
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;
@@ -148,4 +182,10 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   gsl_interp_accel_free(acc);
   return sum/(R*R*R*M_PI*2); //Note: factor of pi picked up in the quadrature rule
   //See Ogata 2005 for details, especially eq. 5.2
+  */
+}
+
+double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
+  //The spline based, periodic integral
+  return 0;
 }
