@@ -164,9 +164,9 @@ double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
 //////////////////////////////////////////
 
 #define workspace_size 8000
-#define workspace_num 70
+#define workspace_num 100
 #define ABSERR 0.0
-#define RELERR 2e-3
+#define RELERR 1.8e-3
 
 typedef struct integrand_params_xi_mm_exact{
   gsl_spline*spline;
@@ -213,13 +213,14 @@ int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
   F.function=&integrand_xi_mm_exact;
   F.params=params;
 
-  double kmax = 1e3;
-  double kmin = 1e-7;
+  double kmax = 4e3;
+  double kmin = 5e-8;
   double result, err;
   
   int i;
   wf = gsl_integration_qawo_table_alloc(R[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
   for(i = 0; i < NR; i++){
+    //printf("On %d\n",i);
     gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
     params->r=R[i];
     gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
