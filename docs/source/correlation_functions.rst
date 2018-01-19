@@ -90,7 +90,7 @@ The matter-matter correlation function describes the average density of matter.
 
 .. math::
 
-   \rho_m(r) = \bar{\rho}(1+\xi_{mm}(r)
+   \rho_m(r) = \bar{\rho}(1+\xi_{mm}(r))
 
 By definition it is related to the matter power spectrum by a Hankel transform
 
