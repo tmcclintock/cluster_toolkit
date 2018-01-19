@@ -195,7 +195,6 @@ double integrand_xi_mm_exact(double k, void*params){
 }
 
 int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
-  //The spline based, periodic integral
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
   gsl_spline_init(Pspl, k, P, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
