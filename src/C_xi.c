@@ -1,4 +1,5 @@
 #include "C_xi.h"
+#include "C_power.h"
 
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
@@ -94,8 +95,6 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm, int flag){
   return 0;
 }
 
-double get_P(double, double, double*, double*, int, gsl_spline*, gsl_interp_accel*);
-
 int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, double h){
   double zero,psi,x,t,dpsi,f,PIsinht;
   double PI_h = M_PI/h;
@@ -128,24 +127,7 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
   //See Ogata 2005 for details, especially eq. 5.2
 }
 
-///////Functions for calc_xi_mm
-//The power spectrum
-double get_P(double x, double R, double*k, double*P, int Nk, gsl_spline*Pspl, gsl_interp_accel*acc){
-  double ki = x/R;
-  double kmin = k[0];
-  double kmax = k[Nk-1];
-  double alpha,A;
-  if (ki < kmin){
-    alpha = log(P[1]/P[0])/log(k[1]/k[0]);
-    A = P[0]/pow(k[0],alpha);
-    return A*pow(ki,alpha);
-  }else if (ki > kmax){
-    alpha = log(P[Nk-1]/P[Nk-2])/log(k[Nk-1]/k[Nk-2]);
-    A = P[Nk-1]/pow(k[Nk-1],alpha);
-    return A*pow(ki,alpha);
-  }// Assume power laws at ends
-  return gsl_spline_eval(Pspl,ki,acc);
-}
+///////Functions for calc_xi_mm/////////
 
 double xi_mm_at_R(double R, double*k, double*P, int Nk, int N, double h){
   double*Ra = (double*)malloc(sizeof(double));
@@ -186,12 +168,9 @@ double integrand_xi_mm_exact(double k, void*params){
   double*Pp = pars.Pp;
   int Nk = pars.Nk;
   double R = pars.r;
-  
-  //double k = exp(lk);
   double x  = k*R;
   double P = get_P(x, R, kp, Pp, Nk, Pspl, acc);
-
-  return P*k/R; //if using k
+  return P*k/R; //Note - sin(kR) is taken care of in the qawo table
 }
 
 int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
