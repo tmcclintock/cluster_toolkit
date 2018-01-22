@@ -40,6 +40,8 @@ typedef struct integrand_params{
 
 double single_angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
+  gsl_spline*spline = pars->spline;
+  gsl_interp_accel*acc = pars->acc;
   double Rp = pars->Rp;
   double Rmis = pars->Rmis;
   double arg = sqrt(Rp*Rp + Rmis*Rmis - 2*Rp*Rmis*cos(theta));
@@ -47,8 +49,6 @@ double single_angular_integrand(double theta, void*params){
   if (arg < rmin){
     return Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }else if(arg < rmax){
-    gsl_spline*spline = pars->spline;
-    gsl_interp_accel*acc = pars->acc;
     return gsl_spline_eval(spline, arg ,acc);
   }
   return 0;
