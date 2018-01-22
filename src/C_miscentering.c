@@ -109,6 +109,8 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
 
 double exp_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
+  gsl_spline*spline = pars->spline;
+  gsl_interp_accel*acc = pars->acc;
   double Rc = exp(lRc);
   double Rc2 = Rc*Rc;
   double rmin = pars->rmin,rmax = pars->rmax;
@@ -118,8 +120,6 @@ double exp_radial_integrand(double lRc, void*params){
   double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
   double Sigma = 0;
   if(arg > rmin && arg < rmax){
-    gsl_spline*spline = pars->spline;
-    gsl_interp_accel*acc = pars->acc;
     Sigma = gsl_spline_eval(spline, arg, acc);
   }else if(arg < rmin){
     Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
@@ -129,6 +129,8 @@ double exp_radial_integrand(double lRc, void*params){
 
 double g2d_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
+  gsl_spline*spline = pars->spline;
+  gsl_interp_accel*acc = pars->acc;
   double Rc = exp(lRc);
   double Rc2 = Rc*Rc;
   double rmin = pars->rmin,rmax = pars->rmax;
@@ -136,15 +138,13 @@ double g2d_radial_integrand(double lRc, void*params){
   double Rmis2 = pars->Rmis2;
   double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
   double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
-  double answer = 0;
+  double Sigma = 0;
   if(arg > rmin && arg < rmax){
-    gsl_spline*spline = pars->spline;
-    gsl_interp_accel*acc = pars->acc;
-    answer = gsl_spline_eval(spline, arg, acc);
+    Sigma = gsl_spline_eval(spline, arg, acc);
   }else if(arg < rmin){
-    answer = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
+    Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }
-  return Rc2 * exp(-0.5 * Rc2/Rmis2) * answer; //normalized outside
+  return Rc2 * exp(-0.5 * Rc2/Rmis2) * Sigma; //normalized outside
 }
 
 double angular_integrand(double theta, void*params){
