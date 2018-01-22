@@ -108,15 +108,12 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
 
 /////////////////// SIGMA(R) INTEGRANDS BELOW //////////////////////
 
-double exp_radial_integrand(double lRc, void*params){
+double get_Sigma(double Rc, double Rc2, void*params){
   integrand_params*pars = (integrand_params*)params;
   gsl_spline*spline = pars->spline;
   gsl_interp_accel*acc = pars->acc;
-  double Rc = exp(lRc);
-  double Rc2 = Rc*Rc;
   double rmin = pars->rmin,rmax = pars->rmax;
   double Rp2 = pars->Rp2;
-  double Rmis = pars->Rmis;
   double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
   double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
   double Sigma = 0;
@@ -125,26 +122,24 @@ double exp_radial_integrand(double lRc, void*params){
   }else if(arg < rmin){
     Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }
+  return Sigma;
+}
+
+double exp_radial_integrand(double lRc, void*params){
+  integrand_params*pars = (integrand_params*)params;
+  double Rc = exp(lRc);
+  double Rc2 = Rc*Rc;
+  double Rmis = pars->Rmis;
+  double Sigma = get_Sigma(Rc, Rc2, params);
   return Rc2 * exp(-Rc/Rmis) * Sigma; //normalized outside
 }
 
 double g2d_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
-  gsl_spline*spline = pars->spline;
-  gsl_interp_accel*acc = pars->acc;
   double Rc = exp(lRc);
   double Rc2 = Rc*Rc;
-  double rmin = pars->rmin,rmax = pars->rmax;
-  double Rp2 = pars->Rp2;
   double Rmis2 = pars->Rmis2;
-  double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
-  double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
-  double Sigma = 0;
-  if(arg > rmin && arg < rmax){
-    Sigma = gsl_spline_eval(spline, arg, acc);
-  }else if(arg < rmin){
-    Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
-  }
+  double Sigma = get_Sigma(Rc, Rc2, pars);
   return Rc2 * exp(-0.5 * Rc2/Rmis2) * Sigma; //normalized outside
 }
 
@@ -244,20 +239,20 @@ double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns){
 int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
   double lrmin = log(Rs[0]);
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_spline_init(spline, Rs, Sigma, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace* workspace = gsl_integration_workspace_alloc(workspace_size);
   integrand_params*params=malloc(sizeof(integrand_params));
-  params->spline = spline;
-  params->acc = acc;
   double slope = log(Sigma[0]/Sigma[1])/log(Rs[0]/Rs[1]);
   double intercept = Sigma[0]*pow(Rs[0], -slope);
   double low_part = intercept*pow(Rs[0], slope+2)/(slope+2);
   double result,  err;
   gsl_function F;
+  int i;
+  gsl_spline_init(spline, Rs, Sigma, Ns);
+  params->spline = spline;
+  params->acc = acc;
   F.params = params;
   F.function = &DS_mis_integrand;
-  int i;
   for(i = 0; i < NR; i++){
     gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
     DeltaSigma_mis[i] = (low_part+result)*2/(R[i]*R[i]) - gsl_spline_eval(spline, R[i], acc);
