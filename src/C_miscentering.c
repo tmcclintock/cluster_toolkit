@@ -7,10 +7,11 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-1 // Used for miscentering
+#define RELERR 1e-4 // Used for miscentering
 #define workspace_size 8000
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
+#define KEY 1 //Used for GSL QAG function
 
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
@@ -94,7 +95,7 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   for(i = 0; i < NR; i++){
     params->Rp  = R[i];
     params->Rp2 = R[i] * R[i];
-    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, 6, workspace, &result, &err);
+    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
     Sigma_mis[i] = result/M_PI;
   }
   gsl_spline_free(spline);
@@ -149,26 +150,25 @@ double g2d_radial_integrand(double lRc, void*params){
 
 double angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
-  double Rmis2 = pars->Rmis2;
   double cos_theta = cos(theta);
   double lrmin = pars->lrmin, lrmax = pars->lrmax;
   gsl_integration_workspace*workspace = pars->workspace2;
   gsl_function F = pars->F_radial;
   double result, err;
   pars->Rp_cos_theta_2 = pars->Rp*cos_theta*2;
-  gsl_integration_qag(&F, lrmin-10, lrmax, ABSERR, RELERR, workspace_size, 6, workspace, &result, &err);
-  return result/Rmis2;
+  gsl_integration_qag(&F, lrmin-10, lrmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+  return result;
 }
 
 double Sigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch){
   double*Ra = (double*)malloc(sizeof(double));
-  double*Sigmamis = (double*)malloc(sizeof(double));
+  double*Sigma_mis = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  Sigma_mis_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, Rmis, integrand_switch, Sigmamis);
-  result = Sigmamis[0];
+  Sigma_mis_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, Rmis, integrand_switch, Sigma_mis);
+  result = Sigma_mis[0];
   free(Ra);
-  free(Sigmamis);
+  free(Sigma_mis);
   return result;
 }
 
@@ -198,9 +198,8 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
   F.function = &angular_integrand;
-  if(integrand_switch == 0){
-    F_radial.function = &g2d_radial_integrand;
-  } else { //if(integrand_switch == 1)
+  F_radial.function = &g2d_radial_integrand; //integrand_switch == 0
+  if(integrand_switch == 1){
     F_radial.function = &exp_radial_integrand;
   }
   F_radial.params = params;
@@ -209,8 +208,8 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
   for(i = 0; i < NR; i++){
     params->Rp  = R[i];
     params->Rp2 = R[i] * R[i];
-    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, 6, workspace, &result, &err);
-    Sigma_mis[i] = result/M_PI;
+    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+    Sigma_mis[i] = result/(M_PI*Rmis*Rmis);
   }
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
@@ -244,7 +243,6 @@ double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns){
 
 int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
   double lrmin = log(Rs[0]);
-
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_spline_init(spline, Rs, Sigma, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -261,7 +259,7 @@ int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, d
   F.function = &DS_mis_integrand;
   int i;
   for(i = 0; i < NR; i++){
-    gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size, 6, workspace, &result, &err);
+    gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
     DeltaSigma_mis[i] = (low_part+result)*2/(R[i]*R[i]) - gsl_spline_eval(spline, R[i], acc);
   }
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
