@@ -27,10 +27,13 @@ def test_errors():
         mis.DeltaSigma_mis_at_R(np.max(R)*1.1, R, Smis,)
 
 def test_Sigma_mis():
-    arrout = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis)
-    assert len(arrout) == len(Rm)
-    for i in range(len(Rm)):
-        npt.assert_equal(arrout[i], mis.Sigma_mis_at_R(Rm[i], R, Sigma, M, c, Om, Rmis))
+    arr1 = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis)
+    arr2 = np.array([mis.Sigma_mis_at_R(Rmi, R, Sigma, M, c, Om, Rmis) for Rmi in Rm])
+    npt.assert_array_equal(arr1, arr2)
+    arr1 = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis, kernel='exponential')
+    arr2 = np.array([mis.Sigma_mis_at_R(Rmi, R, Sigma, M, c, Om, Rmis, kernel='exponential') for Rmi in Rm])
+    npt.assert_array_equal(arr1, arr2)
+
 
 def test_Single():
     arrout = mis.Sigma_mis_single_at_R(Rm, R, Sigma, M, c, Om, Rmis)
