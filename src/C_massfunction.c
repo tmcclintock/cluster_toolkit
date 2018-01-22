@@ -76,7 +76,7 @@ double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, doub
 }
 
 int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*dndM){
-  double rhom = om*rhocrit;
+  double dndMconst = om*rhocrit*0.5/del; //normalization coefficient
   double*M_top = (double*)malloc(sizeof(double)*NM);
   double*M_bot = (double*)malloc(sizeof(double)*NM);
   double*sigma = (double*)malloc(sizeof(double)*NM);
@@ -84,7 +84,6 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
   double*sigma2_bot = (double*)malloc(sizeof(double)*NM);
   double*Gsigma = (double*)malloc(sizeof(double)*NM);
   int i;
-  double dlnsiginvdm;
   for(i = 0; i < NM; i++){
     M_top[i] = M[i]*(1-del*0.5);//M[i]-dM*0.5;
     M_bot[i] = M[i]*(1+del*0.5);//M[i]+dM*0.5;
@@ -99,8 +98,7 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
   //Compute G(sigma), multiplicity function
   G_at_sigma_arr(sigma, NM, d, e, f, g, Gsigma);  
   for(i = 0; i < NM; i++){
-    dlnsiginvdm = log(sigma2_top[i]/sigma2_bot[i])*0.5;
-    dndM[i] = Gsigma[i]*rhom*dlnsiginvdm/(del*M[i]*M[i]);
+    dndM[i] = dndMconst*Gsigma[i]*log(sigma2_top[i]/sigma2_bot[i])/(M[i]*M[i]);
   }
   free(M_top);
   free(M_bot);
