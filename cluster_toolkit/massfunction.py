@@ -9,6 +9,10 @@ def dndM_at_M(M, k, P, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
     """Tinker et al. 2008 appendix C mass function at a given mass. 
     Default behavior is for :math:`M_{200m}` mass definition.
 
+    NOTE: by default, this function is only valid at :math:`z=0`. For use
+    at higher redshifts either recompute the parameters yourself, or
+    wait for this behavior to be patched.
+
     Args:
         M (float or array like): Mass in Msun/h.
         k (array like): Wavenumbers of the matter power spectrum in h/Mpc comoving.
@@ -57,6 +61,10 @@ def G_at_M(M, k, P, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
 def G_at_sigma(sigma, d=1.97, e=1.0, f=0.51, g=1.228):
     """Tinker et al. 2008 appendix C multiplicity funciton G(sigma) as 
     a function of sigma.
+
+    NOTE: by default, this function is only valid at :math:`z=0`. For use
+    at higher redshifts either recompute the parameters yourself, or
+    wait for this behavior to be patched.
 
     Args:
         sigma (float or array like): RMS variance of the matter density field.

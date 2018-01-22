@@ -65,13 +65,14 @@ int G_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d
 
 double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
   double*Marr = (double*)malloc(sizeof(double));
-  Marr[0] = M;
   double*dndM = (double*)malloc(sizeof(double));
+  double result;
+  Marr[0] = M;
   dndM_at_M_arr(Marr, 1, k, P, Nk, om, d, e, f, g, dndM);
-  double res = dndM[0];
+  result = dndM[0];
   free(Marr);
   free(dndM);
-  return res;
+  return result;
 }
 
 int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*dndM){
@@ -82,9 +83,6 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
   double*sigma = (double*)malloc(sizeof(double)*NM);
   double*sigma_top = (double*)malloc(sizeof(double)*NM);
   double*sigma_bot = (double*)malloc(sizeof(double)*NM);
-  double*sigma2 = (double*)malloc(sizeof(double)*NM);
-  double*sigma2_top = (double*)malloc(sizeof(double)*NM);
-  double*sigma2_bot = (double*)malloc(sizeof(double)*NM);
   int i;
   double dM = 0;
   for(i = 0; i < NM; i++){
@@ -93,13 +91,13 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
     M_bot[i] = M[i]+dM*0.5;
   }
   //Can reduce these to one function call by using a longer array
-  sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma2);
-  sigma2_at_M_arr(M_top, NM, k, P, Nk, om, sigma2_top);
-  sigma2_at_M_arr(M_bot, NM, k, P, Nk, om, sigma2_bot);
+  sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma);
+  sigma2_at_M_arr(M_top, NM, k, P, Nk, om, sigma_top);
+  sigma2_at_M_arr(M_bot, NM, k, P, Nk, om, sigma_bot);
   for(i = 0; i < NM; i++){
-    sigma[i] = sqrt(sigma2[i]);
-    sigma_top[i] = sqrt(sigma2_top[i]);
-    sigma_bot[i] = sqrt(sigma2_bot[i]);
+    sigma[i] = sqrt(sigma[i]);
+    sigma_top[i] = sqrt(sigma_top[i]);
+    sigma_bot[i] = sqrt(sigma_bot[i]);
   }
   //Compute g(sigma)
   double*Gsigma = (double*)malloc(sizeof(double)*NM);
@@ -110,9 +108,11 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
     dlnsiginvdm[i] = log(sigma_top[i]/sigma_bot[i])/dM;
     dndM[i] = Gsigma[i]*rhom/M[i]*dlnsiginvdm[i];
   }
-  free(M_top); free(M_bot);
-  free(sigma); free(sigma_top); free(sigma_bot);
-  free(sigma2); free(sigma2_top); free(sigma2_bot);
+  free(M_top);
+  free(M_bot);
+  free(sigma);
+  free(sigma_top);
+  free(sigma_bot);
   free(Gsigma);
   free(dlnsiginvdm);
   return 0;
