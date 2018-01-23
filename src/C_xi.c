@@ -13,9 +13,10 @@
 double xi_nfw_at_R(double R, double Mass, double conc, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*xi  = (double*)malloc(sizeof(double));
+  double result;
   Rarr[0] = R;
   calc_xi_nfw(Rarr, 1, Mass, conc, delta, om, xi);
-  double result = xi[0];
+  result = xi[0];
   free(Rarr);
   free(xi);
   return result;
@@ -50,9 +51,10 @@ double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double
 double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*xi  = (double*)malloc(sizeof(double));
+  double result;
   Rarr[0] = R;
   calc_xi_einasto(Rarr, 1, Mass, rhos, rs, alpha, delta, om, xi);
-  double result = xi[0];
+  result = xi[0];
   free(Rarr);
   free(xi);
   return result;
@@ -100,11 +102,10 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
-  gsl_spline_init(Pspl, k, P, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
-
-  double sum = 0;
+  double sum;  
   int i,j;
+  gsl_spline_init(Pspl, k, P, Nk);
   for(j = 0; j < NR; j++){
     sum = 0;
     for(i = 0; i < N; i++){
@@ -114,7 +115,7 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
       t = h*zero;
       PIsinht = M_PI*sinh(t);
       dpsi = (M_PI*t*cosh(t)+sinh(PIsinht))/(1+cosh(PIsinht));
-      if (dpsi!=dpsi) dpsi=1.0;
+      if (dpsi != dpsi) dpsi=1.0;
       f = x*get_P(x,R[j],k,P,Nk,Pspl,acc);
       sum += f*sin(x)*dpsi;
     }
@@ -162,43 +163,40 @@ typedef struct integrand_params_xi_mm_exact{
 
 double integrand_xi_mm_exact(double k, void*params){
   integrand_params_xi_mm_exact pars = *(integrand_params_xi_mm_exact*)params;
-  gsl_spline*Pspl = pars.spline;
+  gsl_spline*spline = pars.spline;
   gsl_interp_accel*acc = pars.acc;
   double*kp = pars.kp;
   double*Pp = pars.Pp;
   int Nk = pars.Nk;
   double R = pars.r;
   double x  = k*R;
-  double P = get_P(x, R, kp, Pp, Nk, Pspl, acc);
+  double P = get_P(x, R, kp, Pp, Nk, spline, acc);
   return P*k/R; //Note - sin(kR) is taken care of in the qawo table
 }
 
 int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
-  gsl_spline_init(Pspl, k, P, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   gsl_integration_qawo_table*wf;
-
   integrand_params_xi_mm_exact*params=malloc(sizeof(integrand_params_xi_mm_exact));
+  gsl_function F;
+  double kmax = 4e3;
+  double kmin = 5e-8;
+  double result, err;
+  int i;
+  gsl_spline_init(Pspl, k, P, Nk);
   params->acc = acc;
   params->spline = Pspl;
   params->kp = k;
   params->Pp = P;
   params->Nk = Nk;
 
-  gsl_function F;
   F.function=&integrand_xi_mm_exact;
   F.params=params;
 
-  double kmax = 4e3;
-  double kmin = 5e-8;
-  double result, err;
-  
-  int i;
   wf = gsl_integration_qawo_table_alloc(R[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
   for(i = 0; i < NR; i++){
-    //printf("On %d\n",i);
     gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
     params->r=R[i];
     gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
