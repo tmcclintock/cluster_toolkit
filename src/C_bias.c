@@ -9,9 +9,10 @@
 #define ABSERR 0.0
 #define RELERR 1e-7
 #define delta_c 1.686 //Critical collapse density
-#define rhomconst 2.77533742639e+11
+#define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 #define workspace_size 8000
+#define KEY 4 //Used for GSL QAG function
 
 typedef struct integrand_params{
   gsl_spline *spline;
@@ -24,22 +25,19 @@ typedef struct integrand_params{
 
 double M_to_R(double M, double Omega_m){
   //Lagrangian radius Mpc/h
-  return pow(M/(1.33333333333*M_PI*rhomconst*Omega_m),0.3333333333);
+  return pow(M/(1.33333333333*M_PI*rhocrit*Omega_m),0.3333333333);
 }
 
 double R_to_M(double R, double om){
   //Lagrangian mass Msun/h
-  return R*R*R*1.33333333333*M_PI*rhomconst*om;
+  return R*R*R*1.33333333333*M_PI*rhocrit*om;
 }
 
 double integrand(double lk, void*params){
   integrand_params pars = *(integrand_params*)params;
-  gsl_spline*Pspl = pars.spline;
-  gsl_interp_accel*acc = pars.acc;
-  double R = pars.r;
   double k = exp(lk);
-  double x  = k*R;
-  double P = gsl_spline_eval(Pspl, k, acc);
+  double x = k*pars.r;
+  double P = gsl_spline_eval(pars.spline, k, pars.acc);
   double w = (sin(x)-x*cos(x))*3.0/(x*x*x); //Window function
   return k*k*k*P*w*w;
 }
@@ -66,11 +64,15 @@ double sigma2_at_M(double M, double*k, double*P, int Nk, double om){
 int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   //Initialize GSL things and the integrand structure.
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
-  gsl_spline_init(spline,k,P,Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   gsl_function F;
   integrand_params*params = (integrand_params*)malloc(sizeof(integrand_params));
+  double lkmin = log(k[0]);
+  double lkmax = log(k[Nk-1]);
+  double result,abserr;
+  int i;
+  gsl_spline_init(spline,k,P,Nk);
   params->spline = spline;
   params->acc = acc;
   params->kp = k;
@@ -78,14 +80,9 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   params->Nk = Nk;
   F.function = &integrand;
   F.params = params;
-
-  double lo = log(k[0]);
-  double hi = log(k[Nk-1]);
-  double result,abserr;
-  int i;
   for(i = 0; i < NR; i++){
     params->r = R[i];
-    gsl_integration_qag(&F, lo, hi, ABSERR, RELERR, workspace_size, 6, workspace, &result, &abserr);
+    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &abserr);
     s2[i] = result/(2*M_PI*M_PI);
   }
   gsl_spline_free(spline);
