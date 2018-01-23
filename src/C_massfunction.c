@@ -63,6 +63,24 @@ int G_at_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g,
 
 ///////////////// dndM functions below ///////////////////
 
+int dndM_sigma2_precomputed(double*M, double*sigma2, double*sigma2_top, double*sigma2_bot, int NM, double Omega_m, double d, double e, double f, double g, double*dndM){
+  //This function exists to make emulator tests faster with sigma^2(M) precomputed.
+  double dndMconst = Omega_m*rhocrit*0.5/del; //normalization coefficient
+  double*sigma = (double*)malloc(sizeof(double)*NM);
+  double*Gsigma = (double*)malloc(sizeof(double)*NM);
+  int i;
+  for(i = 0; i < NM; i++){
+    sigma[i] = sqrt(sigma2[i]);
+  }
+  G_at_sigma_arr(sigma, NM, d, e, f, g, Gsigma);
+  for(i = 0; i < NM; i++){
+    dndM[i] = dndMconst*Gsigma[i]*log(sigma2_top[i]/sigma2_bot[i])/(M[i]*M[i]);
+  }
+  free(sigma);
+  free(Gsigma);
+  return 0;
+}
+
 double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
   double*Marr = (double*)malloc(sizeof(double));
   double*dndM = (double*)malloc(sizeof(double));
@@ -76,36 +94,25 @@ double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, doub
 }
 
 int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*dndM){
-  double dndMconst = om*rhocrit*0.5/del; //normalization coefficient
   double*M_top = (double*)malloc(sizeof(double)*NM);
   double*M_bot = (double*)malloc(sizeof(double)*NM);
-  double*sigma = (double*)malloc(sizeof(double)*NM);
+  double*sigma2 = (double*)malloc(sizeof(double)*NM);
   double*sigma2_top = (double*)malloc(sizeof(double)*NM);
   double*sigma2_bot = (double*)malloc(sizeof(double)*NM);
-  double*Gsigma = (double*)malloc(sizeof(double)*NM);
   int i;
   for(i = 0; i < NM; i++){
     M_top[i] = M[i]*(1-del*0.5);//M[i]-dM*0.5;
     M_bot[i] = M[i]*(1+del*0.5);//M[i]+dM*0.5;
   }
-  //Can reduce these to one function call by using a longer array
-  sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma);
+  sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma2);
   sigma2_at_M_arr(M_top, NM, k, P, Nk, om, sigma2_top);
   sigma2_at_M_arr(M_bot, NM, k, P, Nk, om, sigma2_bot);
-  for(i = 0; i < NM; i++){
-    sigma[i] = sqrt(sigma[i]);
-  }
-  //Compute G(sigma), multiplicity function
-  G_at_sigma_arr(sigma, NM, d, e, f, g, Gsigma);  
-  for(i = 0; i < NM; i++){
-    dndM[i] = dndMconst*Gsigma[i]*log(sigma2_top[i]/sigma2_bot[i])/(M[i]*M[i]);
-  }
+  dndM_sigma2_precomputed(M, sigma2, sigma2_top, sigma2_bot, NM, om, d, e, f, g, dndM);
   free(M_top);
   free(M_bot);
-  free(sigma);
+  free(sigma2);
   free(sigma2_top);
   free(sigma2_bot);
-  free(Gsigma);  
   return 0;
 }
 
