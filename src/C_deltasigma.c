@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-4
+#define RELERR 1e-3
 #define workspace_size 8000
 #define ulim 5.0
 #define rhocrit 2.77533742639e+11
