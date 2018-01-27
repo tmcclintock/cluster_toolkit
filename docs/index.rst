@@ -12,9 +12,9 @@ The core functionality of the package includes:
  * Projected density and differential profiles :math:`\Sigma(R)` and :math:`\Delta\Sigma`
  * Radially averaged profiles :math:`\overline{\Delta\Sigma}`
  * Boost factor models :math:`\mathcal{B} = (1-f_{\rm cl})^{-1}`
- * Miscentering affects on projected profiles :math:`R_{\rm mis}`
+ * Miscentering effects on projected profiles :math:`R_{\rm mis}`
  * Halo mass functions :math:`\frac{dn}{dM}(M,z)`
- * Mass-concentration relations :math:`M-c` (in development)
+ * Mass-concentration relations :math:`M-c`
  * Sunyaev-Zel'dovich (SZ) cluster signals :math:`Y_{SZ}` (in development)
  * Cluster magnification :math:`\kappa(\theta)` and shear profiles :math:`\gamma(\theta)` (in development)
 
