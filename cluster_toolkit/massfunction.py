@@ -79,6 +79,7 @@ def G_at_sigma(sigma, d=1.97, e=1.0, f=0.51, g=1.228):
     if type(sigma) is list or type(sigma) is np.ndarray:
         G = np.zeros_like(sigma)
         cluster_toolkit._lib.G_at_sigma_arr(_dcast(sigma), len(sigma), d, e, f, g, _dcast(G))
+        return G
     else:
         return cluster_toolkit._lib.G_at_sigma(sigma, d, e, f, g)
 

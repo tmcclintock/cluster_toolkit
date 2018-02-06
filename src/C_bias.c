@@ -191,3 +191,11 @@ int bias_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk, doubl
   free(nu);
   return 0;
 }
+
+////EXTRA FUNCTION FOR EMULATOR DEVELOPMENT////
+int bias_at_nu_arr_FREEPARAMS(double*nu, int Nnu, int delta, double A, double a, double B, double b, double C, double c, double*bias){
+  int i;
+  for(i = 0; i < Nnu; i++)
+    bias[i] = 1 - A*pow(nu[i],a)/(pow(nu[i],a)+pow(delta_c,a)) + B*pow(nu[i],b) + C*pow(nu[i],c);
+  return 0;
+}
