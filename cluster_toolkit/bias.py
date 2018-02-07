@@ -188,3 +188,11 @@ def _calc_bias_at_M(M, k, P, Omega_m, bias, delta=200):
     """
     cluster_toolkit._lib.bias_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), Omega_m, _dcast(bias))
     return
+
+def _bias_at_nu_FREEPARAMS(nu,A,a,B,b,C,c, delta=200):
+    """A special function used only for quickly computing best fit parameters
+    for the halo bias models.
+    """
+    bias = np.zeros_like(nu)
+    cluster_toolkit._lib.bias_at_nu_arr_FREEPARAMS(_dcast(nu), len(nu), delta, A,a,B,b,C,c, _dcast(bias))
+    return bias
