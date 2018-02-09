@@ -1,3 +1,3 @@
 # bash
 
-sphinx-apidoc -f -o api/ ../cluster_toolkit/
+sphinx-apidoc -f -o api/ ../cluster_toolkit/ -e
