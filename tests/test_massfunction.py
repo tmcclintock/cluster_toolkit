@@ -35,12 +35,10 @@ def test_dndM_M():
     npt.assert_array_less(nz1, nz0)
     """
 
-def _test_G():
+def test_G():
     sigma = np.sqrt(bias.sigma2_at_M(M, k, p, Omega_m))
     Gm = mf.G_at_M(M, k, p, Omega_m)
-    print Gm
     Gs = mf.G_at_sigma(sigma)
-    print Gs
     R = Gm/Gs
     ones = np.ones_like(R)
     npt.assert_array_equal(ones, R)
@@ -56,4 +54,7 @@ def test_mf_binned():
     npt.assert_array_equal(n, n2)
 
 if __name__=="__main__":
+    test_dndM()
+    test_dndM_M()
+    test_mf_binned()
     test_G()

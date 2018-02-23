@@ -55,6 +55,7 @@ def G_at_M(M, k, P, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
     if type(M) is list or type(M) is np.ndarray:
         G = np.zeros_like(M)
         cluster_toolkit._lib.G_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), Omega_m, d, e, f, g, _dcast(G))
+        return G
     else:
         return cluster_toolkit._lib.G_at_M(M, _dcast(k), _dcast(P), len(k), Omega_m, d, e, f, g)
 
