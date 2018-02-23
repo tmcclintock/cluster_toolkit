@@ -53,8 +53,20 @@ def test_mf_binned():
     npt.assert_array_less(n2[1:], n2[:-1])
     npt.assert_array_equal(n, n2)
 
+def test_special():
+    sigma2 = bias.sigma2_at_M(M, k, p, Omega_m)
+    Mt = M*(1-1e-6*0.5)
+    Mb = M*(1+1e-6*0.5)
+    sigma2t = bias.sigma2_at_M(Mt, k, p, Omega_m)
+    sigma2b = bias.sigma2_at_M(Mb, k, p, Omega_m)
+    d,e,f,g = 2.16087369917, 1.18309392312, 0.133881834517, -0.0263615354323
+    n = mf._dndM_sigma2_precomputed(M, sigma2, sigma2t, sigma2b, Omega_m,d,e,f,g)
+    npt.assert_array_less(n[1:], n[:-1])
+
+    
 if __name__=="__main__":
     test_dndM()
     test_dndM_M()
     test_mf_binned()
     test_G()
+    test_special()
