@@ -1,10 +1,25 @@
-//////////////////////////////////////////////////////
-//Some routines used to evaluate power spectra////////
-//////////////////////////////////////////////////////
+/** @file C_power.c
+ *  @brief Function for integrands that require P(x/R).
+ *
+ * This file contains a function to access the power
+ * spectrum P(k) in integrands that actually evaluate
+ * P(x/R) where x=kR.
+ * 
+ * @author Tom McClintock
+ */
 
 #include "gsl/gsl_spline.h"
 #include <math.h>
 
+/**
+ * \brief Evaluate the power spectrum P(x/R).
+ *
+ * Certain integrals require evaluating the power spectrum at P(k=x/R).
+ * This function takes in a spline for a pre-computed power spectrum P(k)
+ * and returns the evaluation of P(k) either within the region that
+ * the spline is valid or with power law approximations at smaller or
+ * larger scales.
+ */
 double get_P(double x, double R, double*k, double*P, int Nk, void*void_Pspl, void*void_acc){
   gsl_spline*Pspl = (gsl_spline*)void_Pspl;
   gsl_interp_accel*acc = (gsl_interp_accel*)void_acc;
