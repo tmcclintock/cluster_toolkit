@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define TOL 1e-7
+#define TOL 1e-6
 #define workspace_size 8000
 
 ////////////// AVERAGING FUNCTIONS BELOW////////////////
