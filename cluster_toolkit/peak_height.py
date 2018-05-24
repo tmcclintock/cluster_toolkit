@@ -2,7 +2,7 @@
 
 """
 import cluster_toolkit
-from cluster_toolkit import _dcast as dc
+from cluster_toolkit import _dcast
 import numpy as np
 from numpy import ascontiguousarray as ACA
 

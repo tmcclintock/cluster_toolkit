@@ -1,5 +1,5 @@
 #include "C_concentration.h"
-#include "C_bias.h"
+#include "C_peak_height.h"
 
 #include "gsl/gsl_math.h"
 #include "gsl/gsl_errno.h"

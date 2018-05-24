@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from cluster_toolkit import massfunction as mf
-from cluster_toolkit import bias
+from cluster_toolkit import peak_height as peaks
 import numpy.testing as npt
 from os.path import dirname, join
 
@@ -36,7 +36,7 @@ def test_dndM_M():
     """
 
 def test_G():
-    sigma = np.sqrt(bias.sigma2_at_M(M, k, p, Omega_m))
+    sigma = np.sqrt(peaks.sigma2_at_M(M, k, p, Omega_m))
     Gm = mf.G_at_M(M, k, p, Omega_m)
     Gs = mf.G_at_sigma(sigma)
     R = Gm/Gs
@@ -54,11 +54,11 @@ def test_mf_binned():
     npt.assert_array_equal(n, n2)
 
 def test_special():
-    sigma2 = bias.sigma2_at_M(M, k, p, Omega_m)
+    sigma2 = peaks.sigma2_at_M(M, k, p, Omega_m)
     Mt = M*(1-1e-6*0.5)
     Mb = M*(1+1e-6*0.5)
-    sigma2t = bias.sigma2_at_M(Mt, k, p, Omega_m)
-    sigma2b = bias.sigma2_at_M(Mb, k, p, Omega_m)
+    sigma2t = peaks.sigma2_at_M(Mt, k, p, Omega_m)
+    sigma2b = peaks.sigma2_at_M(Mb, k, p, Omega_m)
     d,e,f,g = 2.16087369917, 1.18309392312, 0.133881834517, -0.0263615354323
     n = mf._dndM_sigma2_precomputed(M, sigma2, sigma2t, sigma2b, Omega_m,d,e,f,g)
     npt.assert_array_less(n[1:], n[:-1])

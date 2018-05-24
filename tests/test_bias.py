@@ -1,5 +1,6 @@
 import pytest
 from cluster_toolkit import bias
+from cluster_toolkit import peak_height as peaks
 from os.path import dirname, join
 import numpy as np
 import numpy.testing as npt
@@ -31,19 +32,19 @@ def test_outputs_bias_at_M():
 
 def test_s2_and_nu_functions():
     #Test the mass calls
-    s2 = bias.sigma2_at_M(Mass, klin, plin, Omega_m)
-    nu = bias.nu_at_M(Mass, klin, plin, Omega_m)
+    s2 = peaks.sigma2_at_M(Mass, klin, plin, Omega_m)
+    nu = peaks.nu_at_M(Mass, klin, plin, Omega_m)
     npt.assert_equal(1.686/np.sqrt(s2), nu)
-    s2 = bias.sigma2_at_M(Ma, klin, plin, Omega_m)
-    nu = bias.nu_at_M(Ma, klin, plin, Omega_m)
+    s2 = peaks.sigma2_at_M(Ma, klin, plin, Omega_m)
+    nu = peaks.nu_at_M(Ma, klin, plin, Omega_m)
     npt.assert_array_equal(1.686/np.sqrt(s2), nu)
     out = bias.bias_at_M(Ma, klin, plin, Omega_m)
     out2 = bias.bias_at_nu(nu)
     npt.assert_array_equal(out, out2)
     #Now test the R calls
     R = 1.0 #Mpc/h; arbitrary
-    s2 = bias.sigma2_at_R(R, klin, plin)
-    nu = bias.nu_at_R(R, klin, plin)
+    s2 = peaks.sigma2_at_R(R, klin, plin)
+    nu = peaks.nu_at_R(R, klin, plin)
     npt.assert_equal(1.686/np.sqrt(s2), nu)
     out = bias.bias_at_R(R, klin, plin)
     out2 = bias.bias_at_nu(nu)
@@ -51,11 +52,11 @@ def test_s2_and_nu_functions():
 
 def test_single_vs_array():
     #First sigma2
-    a1 = bias.sigma2_at_M(Ma, klin, plin, Omega_m)
-    a2 = np.array([bias.sigma2_at_M(Mi, klin, plin, Omega_m) for Mi in Ma])
+    a1 = peaks.sigma2_at_M(Ma, klin, plin, Omega_m)
+    a2 = np.array([peaks.sigma2_at_M(Mi, klin, plin, Omega_m) for Mi in Ma])
     npt.assert_array_equal(a1, a2)
-    a1 = bias.sigma2_at_R(Ra, klin, plin)
-    a2 = np.array([bias.sigma2_at_R(Ri, klin, plin) for Ri in Ra])
+    a1 = peaks.sigma2_at_R(Ra, klin, plin)
+    a2 = np.array([peaks.sigma2_at_R(Ri, klin, plin) for Ri in Ra])
     npt.assert_array_equal(a1, a2)
     #Now the bias
     a1 = bias.bias_at_M(Ma, klin, plin, Omega_m)
@@ -83,7 +84,7 @@ def test_mass_dependence():
     arrout = bias.bias_at_R(Rs, klin, plin)
     for i in range(len(masses)-1):
         assert arrout[i] < arrout[i+1]
-    nus = bias.nu_at_M(masses, klin, plin, Omega_m)
+    nus = peaks.nu_at_M(masses, klin, plin, Omega_m)
     arrout = bias.bias_at_nu(nus)
     for i in range(len(masses)-1):
         assert arrout[i] < arrout[i+1]

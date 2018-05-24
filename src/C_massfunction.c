@@ -1,5 +1,5 @@
 #include "C_massfunction.h"
-#include "C_bias.h"
+#include "C_peak_height.h"
 
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_sf.h"
