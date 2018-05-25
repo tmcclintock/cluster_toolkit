@@ -35,6 +35,7 @@ double R_to_M(double R, double Omega_m){
 }
 
 double sigma2_integrand(double lk, void*params){
+  //Integrand for calculating sigma^2
   integrand_params pars = *(integrand_params*)params;
   double k = exp(lk);
   double x = k*pars.r;
@@ -43,9 +44,25 @@ double sigma2_integrand(double lk, void*params){
   return k*k*k*P*w*w;
 }
 
+double dsigma2dR_integrand(double lk, void*params){
+  //Integrand for calculating dsigma^2/dR, where R is the lagrangian radius
+  /*
+  integrand_params pars = *(integrand_params*)params;
+  double k = exp(lk);
+  double x = k*pars.r;
+  double P = gsl_spline_eval(pars.spline, k, pars.acc);
+  double sx = sin(x);
+  double cx = cos(x);
+  double w = (sx-x*cx)*3.0/(x*x*x); //Window function
+  double dwdR = 0; //Fill this out
+  */
+  return 0; //Fill this out
+}
+
 ///////////// linar matter variance functions /////////////
 
 double sigma2_at_R(double R, double*k, double*P, int Nk){
+  //sigma^2(R) for a single value of R
   double*Rs = (double*)malloc(sizeof(double));
   double*s2 = (double*)malloc(sizeof(double));
   double result;
@@ -58,11 +75,13 @@ double sigma2_at_R(double R, double*k, double*P, int Nk){
 }
 
 double sigma2_at_M(double M, double*k, double*P, int Nk, double om){
+  //sigma^2(M) for a single value of M
   double R=M_to_R(M, om);
   return sigma2_at_R(R, k, P, Nk);
 }
 
 int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
+  //sigma^2(R) for an array of R
   //Initialize GSL things and the integrand structure.
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -107,15 +126,18 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
 ///////////PEAK HEIGHT FUNCTIONS///////////
 
 double nu_at_R(double R, double*k, double*P, int Nk){
+  //peak height at R
   return delta_c/sqrt(sigma2_at_R(R, k, P, Nk));
 }
 
 double nu_at_M(double M, double*k, double*P, int Nk, double om){
+  //peak height at M
   double R=M_to_R(M, om);
   return nu_at_R(R, k, P, Nk);
 }
 
 int nu_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*nu){
+  //peak height at an array of R
   int i;
   double*s2 = (double*)malloc(sizeof(double)*NR);
   sigma2_at_R_arr(R, NR, k, P, Nk, s2);
@@ -127,6 +149,7 @@ int nu_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*nu){
 }
 
 int nu_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double*nu){
+  //peak height at an array of M
   int i;
   double*R = (double*)malloc(sizeof(double)*NM);
   for(i = 0; i < NM; i++){
