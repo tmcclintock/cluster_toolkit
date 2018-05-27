@@ -123,6 +123,13 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
   return 0;
 }
 
+/* The derivative with respect to R of sigma^2. This is needed for the mass
+ * function and replaces having to take a numerical derivative.
+ */
+int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2dR){
+  return 0;
+}
+
 ///////////PEAK HEIGHT FUNCTIONS///////////
 
 double nu_at_R(double R, double*k, double*P, int Nk){
