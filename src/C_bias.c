@@ -1,28 +1,23 @@
+/** @file C_bias.c
+ *  @brief Halo bias functions.
+ * 
+ *  These functions are the halo bias for different
+ *  types of inputs including halo mass, halo radius,
+ *  and halo peak height.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  bug No konwn bugs.
+ */
+
 #include "C_bias.h"
 #include "C_peak_height.h"
-
-#include "gsl/gsl_integration.h"
-#include "gsl/gsl_spline.h"
 
 #include <math.h>
 #include <stdio.h>
 
-#define ABSERR 0.0
-#define RELERR 1e-4
 #define delta_c 1.686 //Critical collapse density
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
-#define workspace_size 8000
-#define KEY 4 //Used for GSL QAG function
-
-typedef struct integrand_params{
-  gsl_spline *spline;
-  gsl_interp_accel *acc;
-  double r;
-  double*kp; //pointer to wavenumbers
-  double*Pp; //pointer to P(k) array
-  int Nk; //length of k and P arrays
-}integrand_params;
 
 ///////////BIAS FUNCTIONS///////////
 
