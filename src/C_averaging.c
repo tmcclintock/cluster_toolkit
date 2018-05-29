@@ -1,3 +1,14 @@
+/** @file C_averaging.c
+ *  @brief Average halo profiles in radial bins.
+ *  
+ *  These functions average projected halo profiles in
+ *  radial bins, assuming that all the specified bins
+ *  are bounded by the input profiles.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_averaging.h"
 
 #include "gsl/gsl_integration.h"

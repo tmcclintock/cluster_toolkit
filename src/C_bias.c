@@ -6,7 +6,7 @@
  *  and halo peak height.
  *  
  *  @author Tom McClintock (tmcclintock)
- *  bug No konwn bugs.
+ *  @bug No known bugs.
  */
 
 #include "C_bias.h"
@@ -14,6 +14,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define delta_c 1.686 //Critical collapse density
 #define rhocrit 2.77533742639e+11
