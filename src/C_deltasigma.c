@@ -1,3 +1,14 @@
+/** @file C_deltasigma.c
+ *  @brief Projected cluster profiles.
+ * 
+ *  These functions compute projected cluster profiles,
+ *  commonly known as "Sigma" profiles or "DeltaSigma"
+ *  profiles for differential profiles.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_deltasigma.h"
 #include "C_xi.h"
 
