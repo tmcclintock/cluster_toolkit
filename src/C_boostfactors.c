@@ -1,3 +1,14 @@
+/** @file C_boostfactors.c
+ *  @brief Models of boost factor distributions.
+ *   
+ *  This file contains models of boost factors.
+ *  All functions implemented here are simple
+ *  analytic functions of radius that include
+ *  various numbers of free parameters.
+ * 
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
 #include "C_boostfactors.h"
 
 #include <math.h>
