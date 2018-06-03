@@ -1,3 +1,12 @@
+/** @file C_massfunction.c
+ *  @brief Halo mass functions.
+ *  
+ *  These functions calculate the halo mass function.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_massfunction.h"
 #include "C_peak_height.h"
 
