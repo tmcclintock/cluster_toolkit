@@ -1,3 +1,13 @@
+/** @file C_concentration.c
+ *  @brief Halo mass-concentration functions.
+ *
+ *  These functions are for calculating the
+ *  halo mass-concentration relation.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_concentration.h"
 #include "C_peak_height.h"
 
