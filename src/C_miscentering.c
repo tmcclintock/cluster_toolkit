@@ -1,3 +1,15 @@
+/** @file C_miscentering
+ *  @brief Miscentering effects on projected cluster profiles.
+ * 
+ *  This file implements the functions that modify projected
+ *  galaxy cluster weak lensing profiles. For stacked clusters,
+ *  this includes different distributions of miscentering lengths,
+ *  or the distribution of the amount that clusters are miscentered.
+ *  
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_miscentering.h"
 #include "C_deltasigma.h"
 
