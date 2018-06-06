@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-1 // Used for miscentering
+#define RELERR 1e-4 // Used for miscentering
 #define workspace_size 8000
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
