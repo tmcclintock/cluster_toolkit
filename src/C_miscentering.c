@@ -23,7 +23,7 @@
 #define workspace_size 8000
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
-#define KEY 1 //Used for GSL QAG function
+#define KEY 3 //Used for GSL QAG function
 
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
@@ -50,11 +50,11 @@ typedef struct integrand_params{
   gsl_function F_radial; // function for the radial part of the miscentering 
 }integrand_params;
 
-/** @brief The integrand the miescentered profile of a 
+/** @brief The integrand the miscentered profile of a 
  *         single cluster.
  *
  *  The miscentered profile of a single cluster with a
- *  known offset is calculated by integrating an annulus.
+ *  known offset is calculated by integrating around an annulus.
  *  See McClintock+ (2018) eq. 38.
  *
  *  @param theta The angle the integral is currently on.
@@ -240,6 +240,18 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
 
 //////////// DELTASIGMA(R) BELOW //////////////////
 
+/** @brief The integrand the miecentered DeltaSigma profile.
+ *
+ *  The miscentered profile of a either a single cluster
+ *  or a stack of clusters is calculated by taking the
+ *  difference between Sigma_mis(<R) and Sigma_mis(R).
+ *  See McClintock+ (2018) eq. 7.
+ *
+ *  @param lR The natural log of the radius the integral is currently on.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand at ln(R).
+ */
 double DS_mis_integrand(double lR, void*params){
   double R = exp(lR);
   integrand_params pars = *(integrand_params*)params;
