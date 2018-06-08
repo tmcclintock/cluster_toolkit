@@ -50,6 +50,18 @@ typedef struct integrand_params{
   gsl_function F_radial; // function for the radial part of the miscentering 
 }integrand_params;
 
+/** @brief The integrand the miescentered profile of a 
+ *         single cluster.
+ *
+ *  The miscentered profile of a single cluster with a
+ *  known offset is calculated by integrating an annulus.
+ *  See McClintock+ (2018) eq. 38.
+ *
+ *  @param theta The angle the integral is currently on.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand at theta.
+ */
 double single_angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
   gsl_spline*spline = pars->spline;
