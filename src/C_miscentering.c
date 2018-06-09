@@ -260,12 +260,25 @@ double DS_mis_integrand(double lR, void*params){
   return R * R * gsl_spline_eval(spline, R, acc);
 }
 
-double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns){
+/** @brief DeltaSigma profile at radius R in Mpc/h comoving.
+ *
+ *  The miscentered DeltaSigma profile of a cluster, given
+ *  its miscentered mass surface density profile, Sigma_mis(R).
+ *  Units of surface density are all in h*Msun/pc^2 comoving.
+ *  This specific function just interfaces DeltaSigma_mis_at_R_arr().
+ *
+ *  @param R Radius in Mpc/h comoving.
+ *  @param Rs Radii at which we know Sigma(R), in Mpc/h comoving.
+ *  @param Sigma_mis Surface mass density profile in h*Msun/pc^2 comoving.
+ *  @param Ns number of elements in Sigma_mis and Rs.
+ *  @return DeltaSigma_mis(R) in h*Msun/pc^2 comoving.
+ */
+double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma_mis, int Ns){
   double*Ra = (double*)malloc(sizeof(double));
   double*DSm = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  DeltaSigma_mis_at_R_arr(Ra, 1, Rs, Sigma, Ns, DSm);
+  DeltaSigma_mis_at_R_arr(Ra, 1, Rs, Sigma_mis, Ns, DSm);
   result = DSm[0];
   free(Ra);
   free(DSm);
