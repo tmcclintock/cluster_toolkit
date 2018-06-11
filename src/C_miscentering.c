@@ -90,6 +90,7 @@ double single_angular_integrand(double theta, void*params){
  *  @param Sigma Surface mass density profile in h*Msun/pc^2 comoving.
  *  @param Ns Number of elements in Sigma_mis and Rs.
  *  @param M Halo mass in Msun/h.
+ *  @param conc Halo concentration.
  *  @param delta Halo overdensity.
  *  @param Omega_m Matter fraction.
  *  @param Rmis Halo projected offset from the true center in Mpc/h comoving.
@@ -107,7 +108,26 @@ double Sigma_mis_single_at_R(double R, double*Rs, double*Sigma, int Ns, double M
   return result;
 }
 
-int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, double*Sigma_mis){
+/** @brief Miscentered Sigma profile at radius R in Mpc/h comoving.
+ *
+ *  The miscentered Sigma profile of a single cluster, given
+ *  a centered  mass surface density profile, Sigma(R).
+ *  Units of surface density are all in h*Msun/pc^2 comoving.
+ *
+ *  @param R Radii in Mpc/h comoving.
+ *  @param NR Number of radii.
+ *  @param Rs Radii at which we know Sigma(R), in Mpc/h comoving.
+ *  @param Sigma Surface mass density profile in h*Msun/pc^2 comoving.
+ *  @param Ns Number of elements in Sigma_mis and Rs.
+ *  @param M Halo mass in Msun/h.
+ *  @param conc Halo concentration.
+ *  @param delta Halo overdensity.
+ *  @param Omega_m Matter fraction.
+ *  @param Rmis Halo projected offset from the true center in Mpc/h comoving.
+ *  @param Sigma_mis Output array for Sigma_mis(R) in h*Msun/pc^2 comoving.
+ *  @return success Integer indicating no errors.
+ */
+int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double Omega_m, double Rmis, double*Sigma_mis){
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
@@ -124,7 +144,7 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   params->M = M;
   params->conc = conc;
   params->delta = delta;
-  params->om = om;
+  params->om = Omega_m;
   params->Rmis = Rmis;
   params->Rmis2 = Rmis*Rmis;
   params->rmin = Rs[0];
