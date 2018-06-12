@@ -169,6 +169,20 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
 
 /////////////////// SIGMA(R) INTEGRANDS BELOW //////////////////////
 
+/** @brief The integrand the miscentered profile of a 
+ *         cluster stack.
+ *
+ *  The miscentered profile of a cluster stack has an 
+ *  integral over the offset distribution, and this
+ *  function is that integrand. At the smallest scales
+ *  this function returns the NFW Sigma(R) profile by default.
+ *
+ *  @param Rc Argument to Sigma(R), with Rc^2=R^2+Rmis^2-2*R*Rmis*cos(theta).
+ *  @param Rc2 Rc^2, used to reduce computation time.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand, Sigma(R),  
+ */
 double get_Sigma(double Rc, double Rc2, void*params){
   integrand_params*pars = (integrand_params*)params;
   gsl_spline*spline = pars->spline;
