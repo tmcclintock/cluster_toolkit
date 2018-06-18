@@ -217,6 +217,14 @@ double exp_radial_integrand(double lRc, void*params){
   return Rc2 * exp(-Rc/Rmis) * Sigma; //normalized outside
 }
 
+/** @brief Integrand for a stack of miscentered clusters
+ *         with a Raleigh distribution.
+ *
+ *  @param lRc Log of the integrand parameter, Rc, in Mpc/h comoving.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand.
+ */
 double g2d_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
