@@ -200,6 +200,14 @@ double get_Sigma(double Rc, double Rc2, void*params){
   return Sigma;
 }
 
+/** @brief Integrand for a stack of miscentered clusters
+ *         with an exponential, rather than Raleigh, distribution.
+ *
+ *  @param lRc Log of the integrand parameter, Rc, in Mpc/h comoving.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand.
+ */
 double exp_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
