@@ -234,6 +234,14 @@ double g2d_radial_integrand(double lRc, void*params){
   return Rc2 * exp(-0.5 * Rc2/Rmis2) * Sigma; //normalized outside
 }
 
+/** @brief Integrand for a stack of miscentered clusters
+ *         around an annulus, for an arbitrary radial distribution.
+ *
+ *  @param theta Angle around the annulus.
+ *  @param params A structure containing the splines and
+ *                other inputs to the integral.
+ *  @return The integrand.
+ */
 double angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
   double cos_theta = cos(theta);
