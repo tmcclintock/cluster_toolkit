@@ -1,3 +1,12 @@
+/** @file C_density.c
+ *  @brief Halo density profiles.
+ *
+ *  These functions are different models of density profiles for halos.
+ *
+ *  @author Tom McClintock (tmcclintock)
+ *  @bug No known bugs.
+ */
+
 #include "C_density.h"
 #include "C_xi.h"
 
