@@ -213,8 +213,7 @@ double DS_integrand_small_scales(double lR, void*params){
 double DS_integrand_medium_scales(double lR, void*params){
   double R = exp(lR);
   integrand_params pars = *(integrand_params*)params;
-  return R * R * gsl_spline_eval(pars.spline, R, pars.acc);
-  //return R * R * exp(gsl_spline_eval(pars.spline, exp(R), pars.acc)); //Not done yet
+  return R * R * gsl_spline_eval(pars.spline, log(R), pars.acc);
 }
 
 double DeltaSigma_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om){
@@ -238,7 +237,11 @@ int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, doubl
   double result1, result2, err1, err2;
   gsl_function F;
   int i;
-  gsl_spline_init(spline, Rs, Sigma, Ns);
+  double*lnRs = (double*)malloc(Ns*sizeof(double));
+  for(i = 0; i < Ns; i++){
+    lnRs[i] = log(Rs[i]);
+  }
+  gsl_spline_init(spline, lnRs, Sigma, Ns);
   params->spline = spline;
   params->acc = acc;
   params->M = M;
@@ -251,11 +254,12 @@ int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, doubl
   F.function = &DS_integrand_medium_scales;
   for(i = 0; i < NR; i++){
     gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size, KEY, workspace, &result2, &err2);
-    DeltaSigma[i] = (result1+result2)*2/(R[i]*R[i]) - gsl_spline_eval(spline, R[i], acc);
+    DeltaSigma[i] = (result1+result2)*2/(R[i]*R[i]) - gsl_spline_eval(spline, log(R[i]), acc);
   }
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
+  free(lnRs);
   free(params);
   return 0;
 }
