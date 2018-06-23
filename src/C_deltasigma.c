@@ -86,7 +86,7 @@ double integrand_medium_scales(double lRz, void*params){
   double Rz = exp(lRz);
   integrand_params pars=*(integrand_params*)params;
   double Rp = pars.Rp;
-  return Rz * gsl_spline_eval(pars.spline, sqrt(Rz*Rz + Rp*Rp), pars.acc);
+  return Rz * gsl_spline_eval(pars.spline, log(Rz*Rz + Rp*Rp)*0.5, pars.acc);
 }
 
 double integrand_large_scales(double lRz, void*params){
@@ -124,7 +124,11 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   gsl_function F;
   double result1, err1, result2, err2;
   int i;
-  gsl_spline_init(spline, Rxi, xi, Nxi);
+  double*lnRxi = (double*)malloc(Nxi*sizeof(double));
+  for(i = 0; i < Nxi; i++){
+    lnRxi[i] = log(Rxi[i]);
+  }
+  gsl_spline_init(spline, lnRxi, xi, Nxi);
   params->acc = acc;
   params->spline = spline;
   params->M = M;
@@ -150,6 +154,7 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
+  free(lnRxi);
   free(params);
   return 0;
 }
@@ -209,6 +214,7 @@ double DS_integrand_medium_scales(double lR, void*params){
   double R = exp(lR);
   integrand_params pars = *(integrand_params*)params;
   return R * R * gsl_spline_eval(pars.spline, R, pars.acc);
+  //return R * R * exp(gsl_spline_eval(pars.spline, exp(R), pars.acc)); //Not done yet
 }
 
 double DeltaSigma_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om){
