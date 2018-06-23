@@ -73,7 +73,7 @@ double single_angular_integrand(double theta, void*params){
   if (arg < rmin){
     return Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }else if(arg < rmax){
-    return gsl_spline_eval(spline, arg ,acc);
+    return gsl_spline_eval(spline, log(arg) ,acc);
   }
   return 0;
 }
@@ -136,7 +136,11 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   gsl_function F;
   double result, err;
   int i;
-  gsl_spline_init(spline, Rs, Sigma, Ns);
+  double*lnRs = (double*)malloc(Ns*sizeof(double));
+  for(i = 0; i < Ns; i++){
+    lnRs[i] = log(Rs[i]);
+  }
+  gsl_spline_init(spline, lnRs, Sigma, Ns);
   params->acc = acc;
   params->spline = spline;
   params->workspace = workspace;
@@ -163,6 +167,7 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
+  free(lnRs);
   free(params);
   return 0;
 }
@@ -193,7 +198,7 @@ double get_Sigma(double Rc, double Rc2, void*params){
   double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
   double Sigma = 0;
   if(arg > rmin && arg < rmax){
-    Sigma = gsl_spline_eval(spline, arg, acc);
+    Sigma = gsl_spline_eval(spline, log(arg), acc);
   }else if(arg < rmin){
     Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }
@@ -276,7 +281,11 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
   gsl_function F_radial;
   double result, err;
   int i;
-  gsl_spline_init(spline, Rs, Sigma, Ns);
+  double*lnRs = (double*)malloc(Ns*sizeof(double));
+  for(i = 0; i < Ns; i++){
+    lnRs[i] = log(Rs[i]);
+  }
+  gsl_spline_init(spline, lnRs, Sigma, Ns);
   params->acc = acc;
   params->spline = spline;
   params->workspace = workspace;
@@ -310,6 +319,7 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
+  free(lnRs);
   return 0;
 }
 
