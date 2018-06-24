@@ -19,9 +19,22 @@
 //#define rhomconst 2.775808e+11 //old value used. Disregard
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
-double rho_nfw_at_R(double R, double Mass, double conc, int delta, double om){
-  double rhom = om*rhomconst;//Msun h^2/Mpc^3
-  double xi = xi_nfw_at_R(R, Mass, conc, delta, om);
+/** @brief The NFW density profile.
+ * 
+ *  The NFW density profile of a halo a distance R from the center,
+ *  assuming the halo has a given mass and concentration. It works 
+ *  with any overdensity parameter and arbitrary matter fraction.
+ * 
+ *  @param r Distance from the center of the halo in Mpc/h comoving.
+ *  @param M Halo mass in Msun/h.
+ *  @param c Concentration.
+ *  @delta Halo overdensity.
+ *  @Omega_m Matter fraction.
+ *  @return NFW halo density.
+ */
+double rho_nfw_at_R(double r, double M, double c, int delta, double Omega_m){
+  double rhom = Omega_m*rhomconst;//Msun h^2/Mpc^3
+  double xi = xi_nfw_at_R(r, M, c, delta, Omega_m);
   return rhom*(1+xi);
 }
 
