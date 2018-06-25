@@ -14,6 +14,8 @@
 
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
+#include <gsl/gsl_errno.h>
+
 #include <math.h>
 #include <stdio.h>
 
@@ -136,14 +138,20 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   params->delta = delta;
   params->om = om;
   F.params = params;
+  int status;
   for(i = 0; i < NR; i++){
     ln_z_max = log(sqrt(Rxi_max*Rxi_max - R[i]*R[i])); //Max distance to integrate to
     params->Rp = R[i];
     if(R[i] < Rxi0){
       F.function = &integrand_small_scales;
-      gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ABSERR, RELERR, workspace_size, KEY, workspace, &result1, &err1);
+      status = gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ABSERR, RELERR, workspace_size, KEY, workspace, &result1, &err1);
+      if (status)
+	fprintf(stderr, "Error in C_deltasigma.c in small scales with\n\t%e\n\t%e\n",M,conc);
       F.function = &integrand_medium_scales;
-      gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ln_z_max, ABSERR, RELERR, workspace_size, KEY, workspace, &result2, &err2);
+      status = gsl_integration_qag(&F, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ln_z_max, ABSERR, RELERR, workspace_size, KEY, workspace, &result2, &err2);
+      if (status)
+	fprintf(stderr, "Error in C_deltasigma.c in medium scales with\n\t%e\n\t%e\n",M,conc);
+
     }else{ //R[i] > Rxi0
       result1 = 0;
       F.function = &integrand_medium_scales;
