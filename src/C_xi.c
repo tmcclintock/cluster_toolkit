@@ -4,6 +4,7 @@
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_sf_gamma.h"
+#include "gsl/gsl_errno.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -185,6 +186,7 @@ int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
   double kmin = 5e-8;
   double result, err;
   int i;
+  int status;
   gsl_spline_init(Pspl, k, P, Nk);
   params->acc = acc;
   params->spline = Pspl;
@@ -197,9 +199,18 @@ int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi){
 
   wf = gsl_integration_qawo_table_alloc(R[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
   for(i = 0; i < NR; i++){
-    gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
+    status = gsl_integration_qawo_table_set(wf, R[i], kmax-kmin, GSL_INTEG_SINE);
+    if (status){
+      printf("Error in calc_xi_mm_exact, first integral.\n");
+      exit(-1);
+    }
     params->r=R[i];
-    gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
+    status = gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
+    if (status){
+      printf("Error in calc_xi_mm_exact, second integral.\n");
+      exit(-1);
+    }
+
     xi[i] = result/(M_PI*M_PI*2);
   }
 
