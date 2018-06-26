@@ -11,6 +11,21 @@
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
 
+
+/** @brief The NFW correlation function profile.
+ * 
+ *  The NFW correlation function profile of a halo a distance R from the center,
+ *  assuming the halo has a given mass and concentration. It works 
+ *  with any overdensity parameter and arbitrary matter fraction.
+ *  This function calls xi_nfw_at_R_arr().
+ * 
+ *  @param r Distance from the center of the halo in Mpc/h comoving.
+ *  @param M Halo mass in Msun/h.
+ *  @param c Concentration.
+ *  @delta Halo overdensity.
+ *  @Omega_m Matter fraction.
+ *  @return NFW halo correlation function.
+ */
 double xi_nfw_at_R(double R, double Mass, double conc, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*xi  = (double*)malloc(sizeof(double));

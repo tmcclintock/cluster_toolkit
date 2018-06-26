@@ -24,6 +24,7 @@
  *  The NFW density profile of a halo a distance R from the center,
  *  assuming the halo has a given mass and concentration. It works 
  *  with any overdensity parameter and arbitrary matter fraction.
+ *  This function calls xi_nfw_at_R().
  * 
  *  @param r Distance from the center of the halo in Mpc/h comoving.
  *  @param M Halo mass in Msun/h.
