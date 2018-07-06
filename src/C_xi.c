@@ -254,17 +254,39 @@ double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
  * Diemer-Kravtsov 2014 profiles below.
  */
 
-int calc_xi_DK14(double*R, int NR, double M, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om, double*xi){
+int calc_xi_DK14(double*R, int NR, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om, double*xi){
   xi[0] = 0;
+  double*rho_ein = (double*)malloc(NR*sizeof(double));
+  double*f_trans = (double*)malloc(NR*sizeof(double));
+  double*rho_outer = (double*)malloc(NR*sizeof(double));
+  int i;
+  double g_b = gamma/beta;
+  double r_t = 0; //NEED nu for this
+  double rhom = rhomconst*om; //SM h^2/Mpc^3
+  double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  if (rhos < 0){ //means it wasn't passed in
+    rhos = rhos_einasto_at_M(M, rs, alpha, delta, om);
+  }
+  calc_xi_einasto(R, NR, M, rhos, rs, alpha, delta, om, rho_ein);
+  //here convert xi_ein to rho_ein
+  for(i = 0; i < NR; i++){
+    rho_ein[i] = rhom*(1+rho_ein[i]); //rho_ein had xi_ein in it
+    f_trans[i] = pow(1+pow(R[i]/r_t,beta), g_b);
+    rho_outer[i] = rhom*(be*pow(R[i]/(5*Rdelta), -se) + 1);
+    xi[i] = (rho_ein[i]*f_trans[i]+rho_outer[i])/rhom - 1;
+  }
+  free(rho_ein);
+  free(f_trans);
+  free(rho_outer);
   return 0;
 }
 
-double xi_DK14(double R, double M, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om){
+double xi_DK14(double R, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om){
   double*Ra = (double*)malloc(sizeof(double));
   double*xi = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  calc_xi_DK14(Ra, 1, M, rs, alpha, be, se, beta, gamma, delta, om, xi);
+  calc_xi_DK14(Ra, 1, M, rhos, rs, alpha, be, se, beta, gamma, delta, om, xi);
   result = xi[0];
   free(Ra);
   free(xi);
