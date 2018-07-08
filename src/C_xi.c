@@ -254,7 +254,7 @@ double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
  * Diemer-Kravtsov 2014 profiles below.
  */
 
-int calc_xi_DK14(double*R, int NR, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om, double*xi){
+int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om, double*xi){
   xi[0] = 0;
   double*rho_ein = (double*)malloc(NR*sizeof(double));
   double*f_trans = (double*)malloc(NR*sizeof(double));
@@ -286,7 +286,7 @@ double xi_DK14(double R, double M, double rhos, double rs, double alpha, double 
   double*xi = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  calc_xi_DK14(Ra, 1, M, rhos, rs, alpha, be, se, beta, gamma, delta, om, xi);
+  calc_xi_DK(Ra, 1, M, rhos, rs, alpha, be, se, beta, gamma, delta, om, xi);
   result = xi[0];
   free(Ra);
   free(xi);
