@@ -281,7 +281,7 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double alpha,
   return 0;
 }
 
-double xi_DK14(double R, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om){
+double xi_DK(double R, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double om){
   double*Ra = (double*)malloc(sizeof(double));
   double*xi = (double*)malloc(sizeof(double));
   double result;
