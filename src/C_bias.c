@@ -22,6 +22,13 @@
 
 ///////////BIAS FUNCTIONS///////////
 
+/**
+ * \brief Compute the bias of a halo of a given peak height, nu.
+ *
+ * This is the header for computing the bias of a single halo
+ * of a known peak height. This function just calls the vectorized
+ * version, but otherwise does nothing.
+ */
 double bias_at_nu(double nu, int delta){
   double*nus = (double*)malloc(sizeof(double));
   double*bias = (double*)malloc(sizeof(double));
@@ -33,6 +40,13 @@ double bias_at_nu(double nu, int delta){
   return result;
 }
 
+/**
+ * \brief Compute the bias of a halo of a given Lagrangian radius, R.
+ *
+ * This is the header for computing the bias of a single halo
+ * with a Lagrangian radius, R. This function just calls the vectorized
+ * version, but otherwise does nothing.
+ */
 double bias_at_R(double R, int delta, double*k, double*P, int Nk){
   double*Rs = (double*)malloc(sizeof(double));
   double*bias = (double*)malloc(sizeof(double));
