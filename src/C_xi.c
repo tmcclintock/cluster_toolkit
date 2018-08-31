@@ -283,7 +283,7 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double be, do
   //here convert xi_ein to rho_ein
   for(i = 0; i < NR; i++){
     rho_ein[i] = rhom*(1+rho_ein[i]); //rho_ein had xi_ein in it
-    f_trans[i] = pow(1+pow(R[i]/r_t,beta), g_b);
+    f_trans[i] = pow(1+pow(R[i]/r_t,beta), -g_b);
     rho_outer[i] = rhom*(be*pow(R[i]/(5*Rdelta), -se) + 1);
     xi[i] = (rho_ein[i]*f_trans[i]+rho_outer[i])/rhom - 1;
   }
