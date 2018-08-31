@@ -255,24 +255,30 @@ double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
  * Diemer-Kravtsov 2014 profiles below.
  */
 
-int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi){
+int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi){
   double rhom = rhomconst*om; //SM h^2/Mpc^3
   xi[0] = 0;
   double*rho_ein = (double*)malloc(NR*sizeof(double));
   double*f_trans = (double*)malloc(NR*sizeof(double));
   double*rho_outer = (double*)malloc(NR*sizeof(double));
   int i;
-  double g_b = gamma/beta;
-  //Compute R200m
-  double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double nu = nu_at_M(M, k, P, Nk, om);
-  double r_t = (1.9-0.18*nu)*Rdelta; //NEED nu for this
   if (alpha < 0){ //means it wasn't passed in
     alpha = 0.155 + 0.0095*nu*nu;
+  }
+  if (beta < 0){ //means it wasn't passed in
+    beta = 4;
+  }
+  if (gamma < 0){ //means it wasn't passed in
+    gamma = 8;
   }
   if (rhos < 0){ //means it wasn't passed in
     rhos = rhos_einasto_at_M(M, rs, alpha, delta, om);
   }
+  double g_b = gamma/beta;
+  //Compute R200m
+  double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double r_t = (1.9-0.18*nu)*Rdelta; //NEED nu for this
   calc_xi_einasto(R, NR, M, rhos, rs, alpha, delta, om, rho_ein);
   //here convert xi_ein to rho_ein
   for(i = 0; i < NR; i++){
@@ -287,12 +293,12 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double alpha,
   return 0;
 }
 
-double xi_DK(double R, double M, double rhos, double rs, double alpha, double be, double se, double beta, double gamma, int delta, double*k, double*P, int Nk, double om){
+double xi_DK(double R, double M, double rhos, double rs, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om){
   double*Ra = (double*)malloc(sizeof(double));
   double*xi = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  calc_xi_DK(Ra, 1, M, rhos, rs, alpha, be, se, beta, gamma, delta, k, P, Nk, om, xi);
+  calc_xi_DK(Ra, 1, M, rhos, rs, be, se, alpha, beta, gamma, delta, k, P, Nk, om, xi);
   result = xi[0];
   free(Ra);
   free(xi);

@@ -117,16 +117,26 @@ def xi_hm(xi_1halo, xi_2halo, combination="max"):
     cluster_toolkit._lib.calc_xi_hm(NR, _dcast(xi_1halo), _dcast(xi_2halo), _dcast(xi), switch)
     return xi
 
+def xi_DK(R, M, rs, be, se, k, P, om, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
+    """Diemer-Kravtsov 2014 profile.
+    """
+    Nk = len(k)
+    if type(R) is list or type(R) is np.ndarray:
+        NR = len(R)
+        xi = np.zeros_like(R)
+        cluster_toolkit._lib.calc_xi_DK(_dcast(R), NR, M, rhos, rs, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, _dcast(xi))
+        return xi
+    else:
+        return cluster_toolkit._lib.xi_DK(R, M, rhos, rs, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om)
+
 def _calc_xi_nfw(R, M, c, om, xi, delta=200):
     """Direct call to the vectorized version of xi_nfw(R).
-
     """
     cluster_toolkit._lib.calc_xi_nfw(_dcast(R), len(R), M, c, delta, om, _dcast(xi))
     return
 
 def _calc_xi_mm(R, k, P, xi, N=200, step=0.005):
     """Direct call to the vectorized version of xi_mm(R).
-
     """
 
     cluster_toolkit._lib.calc_xi_mm(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(xi), N, step)
@@ -134,7 +144,6 @@ def _calc_xi_mm(R, k, P, xi, N=200, step=0.005):
 
 def _calc_xi_2halo(bias, xi_mm, xi_2halo):
     """Direct call to the vectorized version of xi_2halo(R).
-
     """
     NR = len(xi_mm)
     cluster_toolkit._lib.calc_xi_2halo(NR, bias, _dcast(xi_mm), _dcast(xi_2halo))
@@ -142,9 +151,7 @@ def _calc_xi_2halo(bias, xi_mm, xi_2halo):
 
 def _calc_xi_hm(xi_1halo, xi_2halo, xi_hm):
     """Direct call to the vectorized version of xi_hm(R).
-
     """
-
     NR = len(xi_1halo)
     cluster_toolkit._lib.calc_xi_hm(NR, _dcast(xi_1halo), _dcast(xi_2halo), _dcast(xi_hm))
     return

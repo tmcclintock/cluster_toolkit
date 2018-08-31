@@ -64,6 +64,12 @@ def test_xi_mm_at_R_exact():
     arr2 = np.array([xi.xi_mm_at_R(Ri, knl, pnl, exact=True) for Ri in Ra])
     npt.assert_array_equal(arr1, arr2)
 
+def test_xi_DK_at_R():
+    #Required arguments
+    rs = be = se = 1.
+    arr1 = xi.xi_DK(Ra, Mass, rs, be, se, klin, plin, Omega_m)
+    arr2 = np.array([xi.xi_DK(Ri, Mass, rs, be, se, klin, plin, Omega_m) for Ri in Ra])
+    npt.assert_array_equal(arr1, arr2)
 
 def test_nfw_mass_dependence():
     masses = np.array([1e13, 1e14, 1e15])
