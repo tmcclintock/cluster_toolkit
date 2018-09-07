@@ -12,7 +12,7 @@
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 #define workspace_size 8000
-#define KEY 4 //Used for GSL QAG function
+#define KEY 5 //Used for GSL QAG function
 
 typedef struct integrand_params{
   gsl_spline *spline;
