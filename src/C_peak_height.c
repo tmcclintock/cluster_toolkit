@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-6
+#define RELERR 1e-8
 #define delta_c 1.686 //Critical collapse density
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
