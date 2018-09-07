@@ -1,4 +1,5 @@
 #include "C_peak_height.h"
+#include "C_power.h"
 
 #include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
@@ -7,7 +8,7 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-8
+#define RELERR 1e-9
 #define delta_c 1.686 //Critical collapse density
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
@@ -39,6 +40,7 @@ double sigma2_integrand(double lk, void*params){
   integrand_params pars = *(integrand_params*)params;
   double k = exp(lk);
   double x = k*pars.r;
+  //double P = get_P(x, pars.r, pars.kp, pars.Pp, pars.Nk, pars.spline, pars.acc);
   double P = gsl_spline_eval(pars.spline, k, pars.acc);
   double w = (sin(x)-x*cos(x))*3.0/(x*x*x); //Window function
   return k*k*k*P*w*w;
@@ -91,6 +93,7 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   double lkmin = log(k[0]);
   double lkmax = log(k[Nk-1]);
   double result,abserr;
+  double denom_inv = 1./(2*M_PI*M_PI);
   int i;
   gsl_spline_init(spline,k,P,Nk);
   params->spline = spline;
@@ -103,7 +106,7 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   for(i = 0; i < NR; i++){
     params->r = R[i];
     gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &abserr);
-    s2[i] = result/(2*M_PI*M_PI);
+    s2[i] = result * denom_inv; //divide by 2pi^2
   }
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
