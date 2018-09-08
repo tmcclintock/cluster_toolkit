@@ -8,12 +8,12 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-9
+#define RELERR 1e-8
 #define delta_c 1.686 //Critical collapse density
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 #define workspace_size 8000
-#define KEY 5 //Used for GSL QAG function
+#define KEY 6 //Used for GSL QAG function
 
 typedef struct integrand_params{
   gsl_spline *spline;

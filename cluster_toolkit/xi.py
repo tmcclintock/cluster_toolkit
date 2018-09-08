@@ -119,6 +119,17 @@ def xi_hm(xi_1halo, xi_2halo, combination="max"):
 
 def xi_DK(R, M, rs, be, se, k, P, om, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
     """Diemer-Kravtsov 2014 profile.
+
+    Args:
+        r (float or array like): radii in Mpc/h comoving
+        M (float): mass in Msun/h
+        rs (float): Einasto scale radius
+        be (float): DK transition parameter
+        se (float): DK transition parameter
+        k (array like): wavenumbers in h/Mpc
+        P (array like): matter power spectrum in [Mpc/h]^3
+        Omega_m (float): matter density fraction
+        delta (float): 
     """
     Nk = len(k)
     if type(R) is list or type(R) is np.ndarray:
