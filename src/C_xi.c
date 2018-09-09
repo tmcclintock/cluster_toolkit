@@ -255,8 +255,11 @@ double xi_mm_at_R_exact(double R, double*k, double*P, int Nk){
  * Diemer-Kravtsov 2014 profiles below.
  */
 
-int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi){
+int calc_xi_DK(double*R, int NR, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi){
   double rhom = rhomconst*om; //SM h^2/Mpc^3
+  //Compute R200m
+  double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rs = Rdelta * conc; //compute scale radius from concentration
   xi[0] = 0;
   double*rho_ein = (double*)malloc(NR*sizeof(double));
   double*f_trans = (double*)malloc(NR*sizeof(double));
@@ -276,8 +279,6 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double be, do
     rhos = rhos_einasto_at_M(M, rs, alpha, delta, om);
   }
   double g_b = gamma/beta;
-  //Compute R200m
-  double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double r_t = (1.9-0.18*nu)*Rdelta; //NEED nu for this
   calc_xi_einasto(R, NR, M, rhos, rs, alpha, delta, om, rho_ein);
   //here convert xi_ein to rho_ein
@@ -293,12 +294,12 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double rs, double be, do
   return 0;
 }
 
-double xi_DK(double R, double M, double rhos, double rs, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om){
+double xi_DK(double R, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om){
   double*Ra = (double*)malloc(sizeof(double));
   double*xi = (double*)malloc(sizeof(double));
   double result;
   Ra[0] = R;
-  calc_xi_DK(Ra, 1, M, rhos, rs, be, se, alpha, beta, gamma, delta, k, P, Nk, om, xi);
+  calc_xi_DK(Ra, 1, M, rhos, conc, be, se, alpha, beta, gamma, delta, k, P, Nk, om, xi);
   result = xi[0];
   free(Ra);
   free(xi);
