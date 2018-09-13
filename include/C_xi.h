@@ -4,7 +4,7 @@ double xi_mm_at_R(double,double*,double*,int,int,double);
 int calc_xi_nfw(double*, int, double, double, int, double, double*);
 int calc_xi_einasto(double*, int, double, double, double, double, int, double, double*);
 
-double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double om);
+double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta, double om);
 
 int calc_xi_2halo(int, double, double*, double*);
 int calc_xi_hm(int, double*, double*, double*, int);

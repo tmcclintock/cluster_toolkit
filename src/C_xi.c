@@ -53,36 +53,40 @@ int calc_xi_nfw(double*R, int NR, double Mass, double conc, int delta, double om
   return 0;
 }
 
-double rhos_einasto_at_M(double Mass, double rs, double alpha, int delta, double om){
+double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta, double om){
   double rhom = om*rhomconst;//Msun h^2/Mpc^3
   // Rdelta in Mpc/h comoving
   double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
-  double x = 2./alpha * pow(Rdelta/rs, alpha); 
+  double rs = Rdelta/conc; //Scale radius in Mpc/h
+  double x = 2./alpha * pow(conc, alpha); //pow(Rdelta/rs, alpha); 
   double a = 3./alpha;
+  //printf("alpha = %.3e    x = %.3e    R\n",alpha, x);fflush(stdout);
   double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
   double num = delta * rhom * Rdelta*Rdelta*Rdelta * alpha * pow(2./alpha, a);
   double den = 3. * rs*rs*rs * gam;
   return num/den;
 }
 
-double xi_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
+double xi_einasto_at_R(double R, double Mass, double rhos, double conc, double alpha, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*xi  = (double*)malloc(sizeof(double));
   double result;
   Rarr[0] = R;
-  calc_xi_einasto(Rarr, 1, Mass, rhos, rs, alpha, delta, om, xi);
+  calc_xi_einasto(Rarr, 1, Mass, rhos, conc, alpha, delta, om, xi);
   result = xi[0];
   free(Rarr);
   free(xi);
   return result;
 }
 
-int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*xi_einasto){
+int calc_xi_einasto(double*R, int NR, double Mass, double rhos, double conc, double alpha, int delta, double om, double*xi_einasto){
   double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double Rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
+  double rs = Rdelta/conc; //Scale radius in Mpc/h
   double x;
   int i;
   if (rhos < 0)
-    rhos = rhos_einasto_at_M(Mass, rs, alpha, delta, om);
+    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, om);
   for(i = 0; i < NR; i++){
     x = 2./alpha * pow(R[i]/rs, alpha);
     xi_einasto[i] = rhos/rhom * exp(-x) - 1;
@@ -259,7 +263,7 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double conc, double be, 
   double rhom = rhomconst*om; //SM h^2/Mpc^3
   //Compute R200m
   double Rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double rs = Rdelta * conc; //compute scale radius from concentration
+  //double rs = Rdelta / conc; //compute scale radius from concentration
   xi[0] = 0;
   double*rho_ein = (double*)malloc(NR*sizeof(double));
   double*f_trans = (double*)malloc(NR*sizeof(double));
@@ -276,17 +280,17 @@ int calc_xi_DK(double*R, int NR, double M, double rhos, double conc, double be, 
     gamma = 8;
   }
   if (rhos < 0){ //means it wasn't passed in
-    rhos = rhos_einasto_at_M(M, rs, alpha, delta, om);
+    rhos = rhos_einasto_at_M(M, conc, alpha, delta, om);
   }
   double g_b = gamma/beta;
   double r_t = (1.9-0.18*nu)*Rdelta; //NEED nu for this
-  calc_xi_einasto(R, NR, M, rhos, rs, alpha, delta, om, rho_ein);
+  calc_xi_einasto(R, NR, M, rhos, conc, alpha, delta, om, rho_ein);
   //here convert xi_ein to rho_ein
   for(i = 0; i < NR; i++){
     rho_ein[i] = rhom*(1+rho_ein[i]); //rho_ein had xi_ein in it
     f_trans[i] = pow(1+pow(R[i]/r_t,beta), -g_b);
     rho_outer[i] = rhom*(be*pow(R[i]/(5*Rdelta), -se) + 1);
-    xi[i] = (rho_ein[i]*f_trans[i]+rho_outer[i])/rhom - 1;
+    xi[i] = (rho_ein[i]*f_trans[i] + rho_outer[i])/rhom - 1;
   }
   free(rho_ein);
   free(f_trans);

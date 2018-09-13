@@ -36,17 +36,17 @@ def test_outputs_xi_nfw_at_R():
 def test_exceptions_xi_einasto_at_R():
     with pytest.raises(TypeError):
         xi.xi_einasto_at_R() #No args
-        xi.xi_einasto_at_R(R, Mass, Rscale, alpha) #Too few args
-        xi.xi_einasto_at_R(R, Mass, Rscale, alpha, Omega_m, Omega_m) #Too many args
-        xi.xi_einasto_at_R("a string", Mass, Rscale, alpha, Omega_m, Omega_m) #Wrong type
+        xi.xi_einasto_at_R(R, Mass, conc, alpha) #Too few args
+        xi.xi_einasto_at_R(R, Mass, conc, alpha, Omega_m, Omega_m) #Too many args
+        xi.xi_einasto_at_R("a string", Mass, conc, alpha, Omega_m, Omega_m) #Wrong type
 
 def test_outputs_xi_einasto_at_R():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_einasto_at_R(Ra, Mass, Rscale, alpha, Omega_m), xi.xi_einasto_at_R(Ra.tolist(), Mass, Rscale, alpha, Omega_m))
+    npt.assert_array_equal(xi.xi_einasto_at_R(Ra, Mass, conc, alpha, Omega_m), xi.xi_einasto_at_R(Ra.tolist(), Mass, conc, alpha, Omega_m))
     #Single value vs numpy.array
-    arrout = xi.xi_einasto_at_R(Ra, Mass, Rscale, alpha, Omega_m)
+    arrout = xi.xi_einasto_at_R(Ra, Mass, conc, alpha, Omega_m)
     for i in range(len(Ra)):
-        npt.assert_equal(xi.xi_einasto_at_R(Ra[i], Mass, Rscale, alpha, Omega_m), arrout[i])
+        npt.assert_equal(xi.xi_einasto_at_R(Ra[i], Mass, conc, alpha, Omega_m), arrout[i])
 
 def test_xi_mm_at_R():
     #List vs. numpy.array
@@ -81,8 +81,8 @@ def test_nfw_mass_dependence():
 def test_einasto_mass_dependence():
     masses = np.array([1e13, 1e14, 1e15])
     for i in range(len(masses)-1):
-        xi1 = xi.xi_einasto_at_R(Ra, masses[i], Rscale, alpha, Omega_m)
-        xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], Rscale, alpha, Omega_m)
+        xi1 = xi.xi_einasto_at_R(Ra, masses[i], conc, alpha, Omega_m)
+        xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], conc, alpha, Omega_m)
         npt.assert_array_less(xi1, xi2)
 
 def test_combination():

@@ -26,17 +26,17 @@ def xi_nfw_at_R(R, M, c, om, delta=200):
     else:
         return cluster_toolkit._lib.xi_nfw_at_R(R, M, c, delta, om)
 
-def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
+def xi_einasto_at_R(R, M, conc, alpha, om, delta=200, rhos=-1.):
     """Einasto halo profile.
 
     Args:
         R (float or array like): 3d distances from halo center in Mpc/h comoving
         M (float): Mass in Msun/h; not used if rhos is specified
-        rhos (float): Scale density in Msun h^2/Mpc^3 comoving; optional
-        rs (float): Scale radius
+        conc (float): Concentration
         alpha (float): Profile exponent
         om (float): Omega_matter, matter fraction of the density
         delta (int): Overdensity, default is 200
+        rhos (float): Scale density in Msun h^2/Mpc^3 comoving; optional
 
     Returns:
         float or array like: Einasto halo profile.
@@ -44,10 +44,10 @@ def xi_einasto_at_R(R, M, rs, alpha, om, delta=200, rhos=-1.):
     """
     if type(R) is list or type(R) is np.ndarray:
         xi = np.zeros_like(R)
-        cluster_toolkit._lib.calc_xi_einasto(_dcast(R), len(R), M, rhos, rs, alpha, delta, om, _dcast(xi))
+        cluster_toolkit._lib.calc_xi_einasto(_dcast(R), len(R), M, rhos, conc, alpha, delta, om, _dcast(xi))
         return xi
     else:
-        return cluster_toolkit._lib.xi_einasto_at_R(R, M, rhos, rs, alpha, delta, om)
+        return cluster_toolkit._lib.xi_einasto_at_R(R, M, rhos, conc, alpha, delta, om)
 
 def xi_mm_at_R(R, k, P, N=500, step=0.005, exact=False):
     """Matter-matter correlation function.

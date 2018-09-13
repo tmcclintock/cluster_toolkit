@@ -49,20 +49,23 @@ int calc_rho_nfw(double*R, int NR, double Mass, double conc, int delta, double o
   return 0;
 }
 
-double rho_einasto_at_R(double R, double Mass, double rhos, double rs, double alpha, int delta, double om){
+double rho_einasto_at_R(double R, double Mass, double rhos, double conc, double alpha, int delta, double om){
   double*Rarr = (double*)malloc(sizeof(double));
   double*rhoe = (double*)malloc(sizeof(double));
   Rarr[0] = R;
-  calc_rho_einasto(Rarr, 1, Mass, rhos, rs, alpha, delta, om, rhoe);
+  calc_rho_einasto(Rarr, 1, Mass, rhos, conc, alpha, delta, om, rhoe);
   double result = rhoe[0];
   free(Rarr);
   free(rhoe);
   return result;
 }
 
-int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double rs, double alpha, int delta, double om, double*rho_einasto){
+int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double conc, double alpha, int delta, double om, double*rho_einasto){
+  double rhom = rhomconst*om; //SM h^2/Mpc^3
+  double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rs = Rdelta / conc; //compute scale radius from concentration
   if (rhos < 0)
-    rhos = rhos_einasto_at_M(Mass, rs, alpha, delta, om);
+    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, om);
   int i;
   double x;
   for(i = 0; i < NR; i++){
