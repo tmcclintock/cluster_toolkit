@@ -148,6 +148,72 @@ def xi_DK(R, M, conc, be, se, k, P, om, delta=200, rhos=-1., alpha=-1., beta=-1.
     else:
         return cluster_toolkit._lib.xi_DK(R, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om)
 
+def xi_DK_appendix1(R, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
+    """Diemer-Kravtsov 2014 profile, first form from the appendix, eq. A3.
+
+    Args:
+        r (float or array like): radii in Mpc/h comoving
+        M (float): mass in Msun/h
+        conc (float): Einasto concentration
+        be (float): DK transition parameter
+        se (float): DK transition parameter
+        k (array like): wavenumbers in h/Mpc
+        P (array like): matter power spectrum in [Mpc/h]^3
+        Omega_m (float): matter density fraction
+        bias (float): halo bias
+        xi_mm (float or array like): matter correlation function at r
+        delta (float): overdensity of matter. Optional, default is 200
+        rhos (float): Einasto density. Optional, default is compute from the mass
+        alpha (float): Einasto parameter. Optional, default is computed from peak height
+        beta (float): DK 2-halo parameter. Optional, default is 4
+        gamma (float): DK 2-halo parameter. Optional, default is 8
+
+    Returns:
+        float or array like: DK profile evaluated at the input radii
+
+    """
+    Nk = len(k)
+    if type(R) is list or type(R) is np.ndarray:
+        NR = len(R)
+        xi = np.zeros_like(R)
+        cluster_toolkit._lib.calc_xi_DK_app1(_dcast(R), NR, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm), _dcast(xi))
+        return xi
+    else:
+        return cluster_toolkit._lib.xi_DK_app1(R, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm))
+
+def xi_DK_appendix2(R, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
+    """Diemer-Kravtsov 2014 profile, second form from the appendix, eq. A4.
+
+    Args:
+        r (float or array like): radii in Mpc/h comoving
+        M (float): mass in Msun/h
+        conc (float): Einasto concentration
+        be (float): DK transition parameter
+        se (float): DK transition parameter
+        k (array like): wavenumbers in h/Mpc
+        P (array like): matter power spectrum in [Mpc/h]^3
+        Omega_m (float): matter density fraction
+        bias (float): halo bias
+        xi_mm (float or array like): matter correlation function at r
+        delta (float): overdensity of matter. Optional, default is 200
+        rhos (float): Einasto density. Optional, default is compute from the mass
+        alpha (float): Einasto parameter. Optional, default is computed from peak height
+        beta (float): DK 2-halo parameter. Optional, default is 4
+        gamma (float): DK 2-halo parameter. Optional, default is 8
+
+    Returns:
+        float or array like: DK profile evaluated at the input radii
+    """
+    Nk = len(k)
+    if type(R) is list or type(R) is np.ndarray:
+        NR = len(R)
+        xi = np.zeros_like(R)
+        cluster_toolkit._lib.calc_xi_DK_app2(_dcast(R), NR, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm), _dcast(xi))
+        return xi
+    else:
+        return cluster_toolkit._lib.xi_DK_app2(R, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm))
+
+
 def _calc_xi_nfw(R, M, c, om, xi, delta=200):
     """Direct call to the vectorized version of xi_nfw(R).
     """

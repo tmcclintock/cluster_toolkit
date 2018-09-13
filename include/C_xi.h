@@ -15,3 +15,9 @@ int calc_xi_mm_exact(double*R, int NR, double*k, double*P, int Nk, double*xi);
 
 int calc_xi_DK(double*R, int NR, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi);
 double xi_DK(double R, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om);
+
+int calc_xi_DK_app1(double*R, int NR, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm, double*xi);
+double xi_DK_app1(double R, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm);
+
+int calc_xi_DK_app2(double*R, int NR, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm, double*xi);
+double xi_DK_app2(double R, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm);
