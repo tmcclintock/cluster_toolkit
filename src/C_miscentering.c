@@ -28,26 +28,27 @@
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
 typedef struct integrand_params{
+  //Spline, accelerator and integration workspaces.
   gsl_spline*spline;
   gsl_interp_accel*acc;
   gsl_integration_workspace*workspace;
   gsl_integration_workspace*workspace2;
-  double Rp;  //R_perp
-  double Rp2; //R_perp^2
-  double rmin;
-  double rmax;
-  double lrmin;
-  double lrmax;
-  double M;
-  double conc;
-  int delta;
-  double om;
-  double Rmis; //Miscentering length
-  double Rmis2; //Rmis^2
-  double Rp_cos_theta_2;
-  double slope;
-  double intercept;
-  gsl_function F_radial; // function for the radial part of the miscentering 
+  double Rp;             //R_perp (i.e. projected separation)
+  double Rp2;            //R_perp^2
+  double rmin;           //minimum radius of the spline
+  double rmax;           //maximum radius of the spline
+  double lrmin;          //log of the minimum radius of the spline
+  double lrmax;          //log of the maximum radius of the spline
+  double M;              //halo mass; Msun/h
+  double conc;           //concentration
+  int delta;             //overdensity (200 is suggested)
+  double om;             //Omega_m
+  double Rmis;           //Miscentering length
+  double Rmis2;          //Rmis^2
+  double Rp_cos_theta_2; //Variable to hold 2*Rp*cos(theta)
+  double slope;          //slope of the power-law inner profile of Sigma(R); can be removed
+  double intercept;      //intercept of the power-law inner profile of Sigma(R); can be removed
+  gsl_function F_radial; //function for the "inner integral, or the radial part of the miscentering 
 }integrand_params;
 
 /** @brief The integrand the miscentered profile of a 
@@ -271,20 +272,49 @@ double Sigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns, double M, doubl
   return result;
 }
 
+/** @brief Miscentered Sigma profile at radius R in Mpc/h comoving.
+ *
+ *  The miscentered Sigma profile of a cluster stack, given
+ *  a centered mass surface density profile, Sigma(R).
+ *  Units of surface density are all in h*Msun/pc^2 comoving.
+ *
+ *  This function computes equations 38 and 39 in McClintock+ (2018), the
+ *  DES Y1 lensing analysis of redMaPPer clusters.
+ *
+ *  @param R Radii in Mpc/h comoving.
+ *  @param NR Number of radii.
+ *  @param Rs Radii at which we know Sigma(R), in Mpc/h comoving.
+ *  @param Sigma Surface mass density profile in h*Msun/pc^2 comoving.
+ *  @param Ns Number of elements in Sigma_mis and Rs.
+ *  @param M Halo mass in Msun/h.
+ *  @param conc Halo concentration.
+ *  @param delta Halo overdensity.
+ *  @param Omega_m Matter fraction.
+ *  @param Rmis Halo projected offset from the true center in Mpc/h comoving.
+ *  @param Sigma_mis Output array for Sigma_mis(R) in h*Msun/pc^2 comoving.
+ *  @return success Integer indicating no errors.
+ */
 int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch, double*Sigma_mis){
+  //Create the GSL spline objects and integration workspace.
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   gsl_integration_workspace*workspace2 = gsl_integration_workspace_alloc(workspace_size);
+  //Create the integration_params structure, which holds extra information when performing integrals.
+  //See the top of this file where the struct is defined.
   integrand_params*params = malloc(sizeof(integrand_params));
+  //GSL integrals need pointers to the integrands. The variables for these functions are defined here.
   gsl_function F;
   gsl_function F_radial;
+  //Define variable to hold the result and the numerical error.
   double result, err;
-  int i;
+  int i; //iteration variable
+  //Define a new array to hold the log of the radii.
   double*lnRs = (double*)malloc(Ns*sizeof(double));
   for(i = 0; i < Ns; i++){
     lnRs[i] = log(Rs[i]);
   }
+  //Create the pline and add all information to the params struct.
   gsl_spline_init(spline, lnRs, Sigma, Ns);
   params->acc = acc;
   params->spline = spline;
@@ -300,27 +330,35 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
   params->rmax = Rs[Ns-1];
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
+  //The "outer" integral is the angular integral.
   F.function = &angular_integrand;
+  //The "inner" integral is radial over R_mis.
+  //The if statement below swaps between two distributions: a Rayleigh
+  //distribution and a gamma distribution. See the text near eq. 40 in McClintock+ (2018).
   F_radial.function = &g2d_radial_integrand; //integrand_switch == 0
   if(integrand_switch == 1){
     F_radial.function = &exp_radial_integrand;
   }
+  //Assign the params struct to the GSL functions.
   F_radial.params = params;
   params->F_radial = F_radial;
   F.params = params;
+  //Do the integral, with Rp^2 ( precomputed.
   for(i = 0; i < NR; i++){
     params->Rp  = R[i];
     params->Rp2 = R[i] * R[i];
+    //The "outer" integral.
     gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
-    Sigma_mis[i] = result/(M_PI*Rmis*Rmis);
+    Sigma_mis[i] = result/(M_PI*Rmis*Rmis); //Normalization
   }
+  //Free objects and arrays.
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   gsl_integration_workspace_free(workspace2);
   free(params);
   free(lnRs);
-  return 0;
+  return 0; //return success
 }
 
 //////////// DELTASIGMA(R) BELOW //////////////////
