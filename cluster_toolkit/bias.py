@@ -5,7 +5,7 @@ import cluster_toolkit
 from cluster_toolkit import _dcast
 import numpy as np
 from numpy import ascontiguousarray as ACA
-from peak_height import *
+from .peak_height import *
 
 def bias_at_M(M, k, P, Omega_m, delta=200):
     """Tinker et al. 2010 bais at mass M [Msun/h].

@@ -40,11 +40,11 @@ def test_colossus():
         k = np.logspace(-5, 2, num=1000)/h #Mpc^-1
         pcol = colcos.matterPowerSpectrum(k) #(Mpc/h)^3
     except ImportError:
-        print "colossus not installed, skipping test"
+        print("colossus not installed, skipping test")
 
         
 if __name__ == "__main__":
-    print concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="crit")
-    print concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="mean")
+    print(concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="crit"))
+    print(concentration.concentration_at_M(Mass, k, p, ns, Omega_b, Omega_m, h, Mass_type="mean"))
     test_exceptions()
     test_colossus()

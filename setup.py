@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import sys, os, glob
 import setuptools
 from setuptools import setup, Extension
@@ -9,8 +9,8 @@ os.system('ln -s ../include cluster_toolkit/include')
 sources = glob.glob(os.path.join('src','*.c'))
 headers = glob.glob(os.path.join('include','*.h'))
 try:
-    cflags = subprocess.check_output(['gsl-config', '--cflags']).split()
-    lflags = subprocess.check_output(['gsl-config', '--libs']).split()
+    cflags = subprocess.check_output(['gsl-config', '--cflags'], universal_newlines=True).split()
+    lflags = subprocess.check_output(['gsl-config', '--libs'], universal_newlines=True).split()
 except OSError:
     raise Exception("Error: must have GSL installed and gsl-config working")
 
