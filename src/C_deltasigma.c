@@ -121,6 +121,9 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   double Rxi_max = Rxi[Nxi-1];
   double ln_z_max;
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Nxi);
+  //linear interpolators should be used when dealing with simulated data...
+  //gsl_spline*spline = gsl_spline_alloc(gsl_interp_linear, Nxi);
+
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   integrand_params*params = malloc(sizeof(integrand_params));
