@@ -133,6 +133,19 @@ int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2d
   return 0;
 }
 
+double dsigma2dR_at_R(double R, double*k, double*P, int Nk){
+  //sigma^2(R) for a single value of R
+  double*Rs = (double*)malloc(sizeof(double));
+  double*ds2dR = (double*)malloc(sizeof(double));
+  double result;
+  Rs[0] = R;
+  dsigma2dR_at_R_arr(Rs, 1, k, P, Nk, ds2dR);
+  result = ds2dR[0];
+  free(Rs);
+  free(ds2dR);
+  return result;
+}
+
 ///////////PEAK HEIGHT FUNCTIONS///////////
 
 double nu_at_R(double R, double*k, double*P, int Nk){
