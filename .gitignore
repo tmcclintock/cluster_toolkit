@@ -1,3 +1,5 @@
+.DS_Store
+
 # The compiled code used for profiling and debugging
 profiling/*.o
 profiling/*.dSYM
