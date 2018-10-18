@@ -28,12 +28,12 @@ def test_errors():
     with pytest.raises(Exception):
         Redges = [np.min(R)*0.9, 1.6, 1.8]
         averaging.average_profile_in_bins(Redges, R, prof)
+    with pytest.raises(Exception):
         Redges = [.6, 1.6, np.max(R)*1.1]
         averaging.average_profile_in_bins(Redges, R, prof)
+    with pytest.raises(Exception):
         averaging.average_profile_in_bin(np.min(R)*0.9, 1.6, R, prof)
+    with pytest.raises(Exception):
         averaging.average_profile_in_bin(0.6, np.max(R)*1.1, R, prof)
         
 #Regression tests below. TODO
-
-if __name__ =="__main__":
-    test_errors()
