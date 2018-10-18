@@ -48,7 +48,6 @@ double sigma2_integrand(double lk, void*params){
 
 double dsigma2dR_integrand(double lk, void*params){
   //Integrand for calculating dsigma^2/dR, where R is the lagrangian radius
-  /*
   integrand_params pars = *(integrand_params*)params;
   double k = exp(lk);
   double x = k*pars.r;
@@ -56,9 +55,8 @@ double dsigma2dR_integrand(double lk, void*params){
   double sx = sin(x);
   double cx = cos(x);
   double w = (sx-x*cx)*3.0/(x*x*x); //Window function
-  double dwdR = 0; //Fill this out
-  */
-  return 0; //Fill this out
+  double dwdR = k*3*((x*x-3)*sx + 3*x*cx)/(x*x*x*x);
+  return k*k*k*P*w*dwdR;
 }
 
 ///////////// linar matter variance functions /////////////
@@ -130,6 +128,36 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
  * function and replaces having to take a numerical derivative.
  */
 int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2dR){
+  //sigma^2(R) for an array of R
+  //Initialize GSL things and the integrand structure.
+  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
+  gsl_interp_accel*acc = gsl_interp_accel_alloc();
+  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
+  gsl_function F;
+  integrand_params*params = (integrand_params*)malloc(sizeof(integrand_params));
+  double lkmin = log(k[0]);
+  double lkmax = log(k[Nk-1]);
+  double result,abserr;
+  double denom_inv = 1./(2*M_PI*M_PI);
+  int i;
+  gsl_spline_init(spline,k,P,Nk);
+  params->spline = spline;
+  params->acc = acc;
+  params->kp = k;
+  params->Pp = P;
+  params->Nk = Nk;
+  F.function = &dsigma2dR_integrand;
+  F.params = params;
+  for(i = 0; i < NR; i++){
+    params->r = R[i];
+    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &abserr);
+    ds2dR[i] = result * denom_inv; //divide by 2pi^2
+  }
+  gsl_spline_free(spline);
+  gsl_interp_accel_free(acc);
+  gsl_integration_workspace_free(workspace);
+  free(params);
+  return 0;
   return 0;
 }
 
