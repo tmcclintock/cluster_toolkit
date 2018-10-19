@@ -55,12 +55,9 @@ def test_mf_binned():
 
 def test_special():
     sigma2 = peaks.sigma2_at_M(M, k, p, Omega_m)
-    Mt = M*(1-1e-6*0.5)
-    Mb = M*(1+1e-6*0.5)
-    sigma2t = peaks.sigma2_at_M(Mt, k, p, Omega_m)
-    sigma2b = peaks.sigma2_at_M(Mb, k, p, Omega_m)
+    dsigma2dM = peaks.dsigma2dM_at_M(M, k, p, Omega_m)
     d,e,f,g = 2.16087369917, 1.18309392312, 0.133881834517, -0.0263615354323
-    n = mf._dndM_sigma2_precomputed(M, sigma2, sigma2t, sigma2b, Omega_m,d,e,f,g)
+    n = mf._dndM_sigma2_precomputed(M, sigma2, dsigma2dM, Omega_m,d,e,f,g)
     npt.assert_array_less(n[1:], n[:-1])
 
     

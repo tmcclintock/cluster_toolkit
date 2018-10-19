@@ -115,7 +115,7 @@ def n_in_bins(edges, Marr, dndM):
     cluster_toolkit._lib.n_in_bins(_dcast(edges), len(edges), _dcast(Marr), _dcast(dndM), len(Marr), _dcast(n))
     return n
 
-def _dndM_sigma2_precomputed(M, sigma2, sigma2_top, sigma2_bot, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
+def _dndM_sigma2_precomputed(M, sigma2, dsigma2dM, Omega_m, d=1.97, e=1.0, f=0.51, g=1.228):
     dndM = np.zeros_like(M)
-    cluster_toolkit._lib.dndM_sigma2_precomputed(_dcast(M), _dcast(sigma2), _dcast(sigma2_top), _dcast(sigma2_bot), len(M), Omega_m, d, e, f, g, _dcast(dndM))
+    cluster_toolkit._lib.dndM_sigma2_precomputed(_dcast(M), _dcast(sigma2), _dcast(dsigma2dM), len(M), Omega_m, d, e, f, g, _dcast(dndM))
     return dndM

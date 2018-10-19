@@ -35,6 +35,11 @@ double R_to_M(double R, double Omega_m){
   return R*R*R*1.33333333333*M_PI*rhocrit*Omega_m;
 }
 
+double dRdM_at_M(double M, double Omega_m){
+  //Derivative of Lagrangian radius w.r.t. Mass [Msun/h] in Mpc/Msun
+  return pow(36*M_PI*rhocrit*Omega_m,-0.33333333333)*pow(M,-0.6666666666666);
+}
+
 double sigma2_integrand(double lk, void*params){
   //Integrand for calculating sigma^2
   integrand_params pars = *(integrand_params*)params;
@@ -128,7 +133,6 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
  * function and replaces having to take a numerical derivative.
  */
 int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2dR){
-  //sigma^2(R) for an array of R
   //Initialize GSL things and the integrand structure.
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -171,6 +175,39 @@ double dsigma2dR_at_R(double R, double*k, double*P, int Nk){
   result = ds2dR[0];
   free(Rs);
   free(ds2dR);
+  return result;
+}
+
+/* The derivative with respect to M of sigma^2. This is needed for the mass
+ * function and replaces having to take a numerical derivative.
+ */
+int dsigma2dM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double Omega_m, double*ds2dM){
+  int i;
+  double*R = (double*)malloc(sizeof(double)*NM);
+  double*dRdM = (double*)malloc(sizeof(double)*NM);
+  for(i = 0; i < NM; i++){
+    R[i] = M_to_R(M[i], Omega_m);
+    dRdM[i] = dRdM_at_M(M[i], Omega_m);
+  }
+  dsigma2dR_at_R_arr(R, NM, k, P, Nk, ds2dM);
+  //Chain rule to convert dsigma2dR to dsigma2dM
+  for(i = 0; i < NM; i++){
+    ds2dM[i] = ds2dM[i] * dRdM[i];
+  }
+  free(R);
+  free(dRdM);
+  return 0;
+}
+
+double dsigma2dM_at_M(double M, double*k, double*P, int Nk, double Omega_m){
+  double*Ms = (double*)malloc(sizeof(double));
+  double*ds2dM = (double*)malloc(sizeof(double));
+  double result;
+  Ms[0] = M;
+  dsigma2dR_at_R_arr(Ms, 1, k, P, Nk, ds2dM);
+  result = ds2dM[0];
+  free(Ms);
+  free(ds2dM);
   return result;
 }
 
