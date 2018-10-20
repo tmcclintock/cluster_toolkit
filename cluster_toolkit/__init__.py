@@ -22,4 +22,4 @@ def _dcast(x):
     if isinstance(x, list): x = np.asarray(x, dtype=np.float64, order='C')
     return _ffi.cast('double*', x.ctypes.data)
 
-from . import averaging, bias, boostfactors, concentration, deltasigma, density, massfunction, miscentering, peak_height, xi
+from . import averaging, bias, boostfactors, concentration, deltasigma, density, exclusion, massfunction, miscentering, peak_height, xi
