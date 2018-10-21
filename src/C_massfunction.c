@@ -113,6 +113,13 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
   return 0;
 }
 
+///////////////// derivatives of the MF below ///////////////////
+
+int d2ndM2_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double Omega_m, double d, double e, double f, double g, double*d2ndM2){
+  return 0;
+}
+
+
 ///////////////// N in bin functions below ///////////////////
 
 double n_in_bin(double Mlo, double Mhi, double*M, double*dndM, int NM){
