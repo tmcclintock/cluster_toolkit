@@ -119,14 +119,56 @@ int calc_xi_hm(int NR, double*xi_1h, double*xi_2h, double*xi_hm, int flag){
 }
 
 int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, double h){
-  double zero,psi,x,t,dpsi,f,PIsinht;
+  int i,j;
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  double sum;  
-  int i,j;
   gsl_spline_init(Pspl, k, P, Nk);
+  double sum;
+  
+  static int init_flag = 0;
+  static double h_old = -1;
+  static int N_old = -1;
+  static double*x      = NULL;
+  static double*xsinx  = NULL;
+  static double*dpsi   = NULL;
+  static double*xsdpsi = NULL;
+  double t, psi, PIsinht;
+  if ((init_flag == 0) || (h_old != h) || (N_old < N)){
+      if (x!=NULL)      free(x);
+      if (xsinx!=NULL)  free(xsinx);
+      if (dpsi!=NULL)   free(dpsi);
+      if (xsdpsi!=NULL) free(xsdpsi);
+      
+      x      = (double*)malloc(N*sizeof(double));
+      xsinx  = (double*)malloc(N*sizeof(double));
+      dpsi   = (double*)malloc(N*sizeof(double));
+      xsdpsi = (double*)malloc(N*sizeof(double));
+      for(i = 0; i < N; i++){
+	t = h*(i+1);
+	psi = t*tanh(sinh(t)*PI_2);
+	x[i] = psi*PI_h;
+	xsinx[i] = x[i]*sin(x[i]);
+	PIsinht = M_PI*sinh(t);
+	dpsi[i] = (M_PI*t*cosh(t) + sinh(PIsinht))/(1+cosh(PIsinht));
+	if (dpsi[i]!=dpsi[i]) dpsi[i]=1.0;
+	xsdpsi[i] = xsinx[i]*dpsi[i];
+      }
+      h_old = h;
+      N_old = N;
+      init_flag = 1; //been initiated
+    }
+  for(j = 0; j < NR; j++){
+    sum = 0;
+    for(i = 0; i < N; i++){
+      sum += xsdpsi[i] * get_P(x[i], R[j], k, P, Nk, Pspl, acc);
+    }
+    xi[j] = sum/(R[j]*R[j]*R[j]*M_PI*2);
+  }
+  
+  /*
+  double zero,psi,x,t,dpsi,f,PIsinht;
   for(j = 0; j < NR; j++){
     sum = 0;
     for(i = 0; i < N; i++){
@@ -141,7 +183,7 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
       sum += f*sin(x)*dpsi;
     }
     xi[j] = sum/(R[j]*R[j]*R[j]*M_PI*2);
-  }
+    }*/
 
   gsl_spline_free(Pspl);
   gsl_interp_accel_free(acc);
