@@ -44,6 +44,18 @@ int xihm_exclusion_at_r(double*r, int Nr, double M, double c,
   return 0;
 }
 
+int utct_at_r_arr(double*r, int Nr, double rt, double M1, double M2, double conc, int delta, double Omega_m, double*utct){
+  double rhom = Omega_m * rhocrit;//SM h^2/Mpc^3
+  double r1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double r2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rt1 = rt; //this line not really necessary...
+  double con = rt1/r1;
+  double rt2 = con*r2;
+  rt2=0;
+  //more stuff
+  return 0;
+}
+
 int theta_erfc_at_r_arr(double*r, int Nr, double rt, double beta, double*theta){
   int i;
   double invbeta = 1./beta;
