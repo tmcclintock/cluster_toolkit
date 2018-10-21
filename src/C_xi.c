@@ -167,7 +167,7 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
     xi[j] = sum/(R[j]*R[j]*R[j]*M_PI*2);
   }
   
-  /*
+  /* //original code below, left in for testing for now
   double zero,psi,x,t,dpsi,f,PIsinht;
   for(j = 0; j < NR; j++){
     sum = 0;
@@ -183,7 +183,8 @@ int calc_xi_mm(double*R, int NR, double*k, double*P, int Nk, double*xi, int N, d
       sum += f*sin(x)*dpsi;
     }
     xi[j] = sum/(R[j]*R[j]*R[j]*M_PI*2);
-    }*/
+  }
+  */
 
   gsl_spline_free(Pspl);
   gsl_interp_accel_free(acc);
