@@ -18,29 +18,26 @@
 #define pi4      12.5663706144 //pi*4
 #define Nk 1000 //number of wavenumbers
 
-int xihm_exclusion_at_r(double*r, int Nr, double M, double c,
-			double rt, double beta,
-			double Ma, double ca, double Mb, double cb,
-			double bias, double*ximm, int delta, double Omega_m,
-			double*xihm){
+int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
+			    double rt, double beta,
+			    double Ma, double ca, double Mb, double cb,
+			    double bias, double*ximm, int delta, double Omega_m,
+			    double*xihm){
   int i;
   double*xi_1h  = malloc(sizeof(double)*Nr);
   double*xi_2h  = malloc(sizeof(double)*Nr);
   double*xi_c   = malloc(sizeof(double)*Nr);
-  double*ut_conv_thetat_a = malloc(sizeof(double)*Nr);
-  double*ut_conv_thetat_b = malloc(sizeof(double)*Nr);
   xi_1h_at_r_arr(r, Nr, M, c, rt, beta, delta, Omega_m, xi_1h);
   xi_2h_at_r_arr(r, Nr, bias, ximm, xi_2h);
-  //1halo and 2halo terms
+  xi_correction_at_r_arr(r, Nr, M, rt, Ma, ca, Mb, cb, bias, ximm, delta, Omega_m, xi_c);
+  //Resum all terms
   for(i = 0; i < Nr; i++){
-    xi_c[i]  = 0;//-ut_conv_thetat_a[i]*bias*ximm[i] - ut_conv_thetat_b[i];
     xihm[i] = xi_1h[i] + xi_2h[i] + xi_c[i];
   }
   free(xi_1h);
   free(xi_2h);
   free(xi_c);
-  free(ut_conv_thetat_a);
-  free(ut_conv_thetat_b);
+
   return 0;
 }
 
@@ -162,6 +159,24 @@ double xi_2h_at_r(double r, double bias, double ximm){
   free(xi_2h);
   return result;
 }
+
+int xi_correction_at_r_arr(double*r, int Nr, double M, double rt,
+			   double Ma, double ca, double Mb, double cb,
+			   double bias, double*ximm, int delta, double Omega_m,
+			   double*xi_c){
+  int i;
+  double*ut_conv_thetat_a = malloc(sizeof(double)*Nr);
+  double*ut_conv_thetat_b = malloc(sizeof(double)*Nr);
+  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Ma, ca, delta, Omega_m, ut_conv_thetat_a);
+  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Mb, cb, delta, Omega_m, ut_conv_thetat_b);
+  for(i = 0; i < Nr; i++){
+    xi_c[i]  = -ut_conv_thetat_a[i]*bias*ximm[i] - ut_conv_thetat_b[i];
+  }
+  free(ut_conv_thetat_a);
+  free(ut_conv_thetat_b);
+  return 0;
+}
+
 
 int utct_at_r_arr(double*r, int Nr, double rt, double M1, double M2, double conc, int delta, double Omega_m, double*utct){
   double rhom = Omega_m * rhocrit;//SM h^2/Mpc^3

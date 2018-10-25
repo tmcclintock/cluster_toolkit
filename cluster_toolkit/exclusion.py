@@ -28,7 +28,22 @@ def xi_hm_exclusion_at_r(radii, Mass, conc,
         float or array-like: profile at radii
 
     """
-    return 0
+    if type(radii) is list or type(radii) is np.ndarray:
+        xihm = np.zeros_like(radii)
+        cluster_toolkit._lib.xihm_exclusion_at_r_arr(dc(radii), len(radii),
+                                                     Mass, conc, rt, beta, Ma, ca,
+                                                     Mb, cb, bias, dc(ximm), delta,
+                                                     Omega_m, dc(xihm))
+        return xihm
+    else:
+        r = np.array(radii)
+        xihm = np.zeros_like(r)
+        cluster_toolkit._lib.xihm_exclusion_at_r_arr(dc(r), len(r), Mass, conc, rt,
+                                                     beta, Ma, ca, Mb, cb,
+                                                     bias, dc(ximm), delta, Omega_m,
+                                                     dc(xihm))
+        return xihm
+    
 
 def theta_at_r(radii, rt, beta):
     """Truncation function.
