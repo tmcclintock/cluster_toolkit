@@ -83,15 +83,22 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt, double M2, d
     Pthetat[i] = pi4 * (sin(k[i] * re) - k[i]*re*cos(k[i] * re))/(k[i]*k[i]*k[i]);
     PutPthetat[i] = Put[i] * Pthetat[i];
   }
-  double*out1 = malloc(sizeof(double)*Nr);
-  double*out2 = malloc(sizeof(double)*Nr);
-  //fastcorr.calc_corr is equivalent to calc_xi_mm
+  //Transform the fourier space profiles back to realspace, for high and low scales
+  double*out_low  = malloc(sizeof(double)*Nr);
+  double*out_high = malloc(sizeof(double)*Nr);
+  calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_low,  8000, 1e-6);
+  calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_high, 7000, 1e-5);
+  for(i = 0; i < Nr; i++){
+    if (r[i] <= re) out_arr[i] = out_low[i];
+    else            out_arr[i] = out_high[i];
+  }
+  //Free everything
   free(mu);
   free(Put);
   free(Pthetat);
   free(PutPthetat);
-  free(out1);
-  free(out2);
+  free(out_low);
+  free(out_high);
   return 0;
 }
 
