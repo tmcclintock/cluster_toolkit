@@ -23,25 +23,46 @@ int xihm_exclusion_at_r(double*r, int Nr, double M, double c,
 			double*xihm){
   int i;
   double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
-  double*xi_1h  = (double*)malloc(sizeof(double)*Nr);
-  double*thetas = (double*)malloc(sizeof(double)*Nr);
-  double*xi_2h  = (double*)malloc(sizeof(double)*Nr);
-  double*xi_c   = (double*)malloc(sizeof(double)*Nr);
-
+  double*xi_1h  = malloc(sizeof(double)*Nr);
+  double*xi_2h  = malloc(sizeof(double)*Nr);
+  double*xi_c   = malloc(sizeof(double)*Nr);
+  xi_1h_at_r_arr(r, Nr, M, c, rt, beta, delta, Omega_m, xi_1h);
   //1halo and 2halo terms
-  calc_xi_nfw(r, Nr, M, c, delta, Omega_m, xi_1h);
-  theta_erfc_at_r_arr(r, Nr, rt, beta, thetas);
   for(i = 0; i < Nr; i++){
-    xi_1h[i] = xi_1h[i] * thetas[i];
     xi_2h[i] = bias*ximm[i];
     //xi_c[i]  = bias*otherstuff;
   }
   rhom = 0; //suppresses warning for now
   free(xi_1h);
-  free(thetas);
   free(xi_2h);
   free(xi_c);
   return 0;
+}
+
+int xi_1h_at_r_arr(double*r, int Nr, double M, double c,
+		   double rt, double beta, int delta, double Omega_m,
+		   double*xi_1h){
+  int i;
+  double*thetas = malloc(sizeof(double)*Nr);
+  calc_xi_nfw(r, Nr, M, c, delta, Omega_m, xi_1h);
+  theta_erfc_at_r_arr(r, Nr, rt, beta, thetas);
+  for(i = 0; i < Nr; i++){
+    xi_1h[i] = xi_1h[i] * thetas[i];
+  }
+  return 0; //success
+}
+
+double xi_1h_at_r(double r, double M, double c,
+		  double rt, double beta, int delta, double Omega_m){
+  double*rs    = malloc(sizeof(double));
+  double*xi_1h = malloc(sizeof(double));
+  double result;
+  rs[0] = r;
+  xi_1h_at_r_arr(rs, 1, M, c, rt, beta, delta, Omega_m, xi_1h);
+  result = xi_1h[0];
+  free(rs);
+  free(xi_1h);
+  return result;
 }
 
 int utct_at_r_arr(double*r, int Nr, double rt, double M1, double M2, double conc, int delta, double Omega_m, double*utct){
@@ -66,8 +87,8 @@ int theta_erfc_at_r_arr(double*r, int Nr, double rt, double beta, double*theta){
 }
 
 double theta_erfc_at_r(double r, double rt, double beta){
-  double*rs     = (double*)malloc(sizeof(double));
-  double*thetas = (double*)malloc(sizeof(double));
+  double*rs     = malloc(sizeof(double));
+  double*thetas = malloc(sizeof(double));
   double result;
   rs[0] = r;
   theta_erfc_at_r_arr(rs, 1, rt, beta, thetas);
