@@ -43,15 +43,12 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
 
 int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
 			    double M2, double c2,
-			    int delta, double Omega_m, double*out_arr){
-  printf("Conv: M = %.3e   M2 = %.3e  c2 = %.3f   rt=%.3f\n", M1, M2, c2, rt);
-  //printf("Conv: delta = %d   Omega_m = %.3f\n", delta, Omega_m);
-  
+			    int delta, double Omega_m, double*out_arr){  
   double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
   int i;
   //Compute r_delta for M1 and M2
-  double rdelta1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333)*1e-3;
-  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333)*1e-3;
+  double rdelta1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double rt1 = rt; //can get rid of this variable
   double ratio1 = rt1/rdelta1;
   double rt2 = ratio1*rdelta2;
@@ -69,7 +66,7 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
       k[i] = pow(10, -4. + i*dlogk);
     }
   }
-  //Create 'mu = k*rc'
+  //Calculate mu = k*rc
   //Compute Fourier transform of u_t
   //Compute Fourier transform of thetat
   double prefactor = 1./(log(1+c2) - c2/(1+c2)); //save computation time
@@ -81,7 +78,7 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
     mu[i] = rc * k[i]; // k[i] * rt2/c2
     Put[i] = prefactor * (cos(mu[i]) * (gsl_sf_Ci(mu[i]*(1+c2)) - gsl_sf_Ci(mu[i])) +
 			  sin(mu[i]) * (gsl_sf_Si(mu[i]*(1+c2)) - gsl_sf_Si(mu[i])) -
-			  sin(mu[i]*c2)) / (mu[i]*(1+c2));
+			  sin(mu[i]*c2) / (mu[i]*(1+c2)));
     Pthetat[i] = pi4*(sin(k[i] * re) - k[i] * re * cos(k[i] * re))/(k[i]*k[i]*k[i]);
     PutPthetat[i] = Put[i] * Pthetat[i];
   }
@@ -91,7 +88,6 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
   calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_low,  8800, 1e-6);
   calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_high, 7000, 1e-5);
   for(i = 0; i < Nr; i++){
-    printf("ol[%d] = %.2e   oh[%d] = %.2e\n",i, out_low[i], i, out_high[i]);
     if (r[i] < re) out_arr[i] = out_low[i];
     else           out_arr[i] = out_high[i];
   }
@@ -126,7 +122,7 @@ int xi_1h_at_r_arr(double*r, int Nr, double M, double c,
   calc_xi_nfw(r, Nr, M, c, delta, Omega_m, xi_1h);
   theta_erfc_at_r_arr(r, Nr, rt, beta, thetas);
   for(i = 0; i < Nr; i++){
-    xi_1h[i] = xi_1h[i] * thetas[i];
+    xi_1h[i] = (1+xi_1h[i]) * thetas[i];
   }
   return 0; //success
 }
