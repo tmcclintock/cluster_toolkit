@@ -26,16 +26,21 @@ int xihm_exclusion_at_r(double*r, int Nr, double M, double c,
   double*xi_1h  = malloc(sizeof(double)*Nr);
   double*xi_2h  = malloc(sizeof(double)*Nr);
   double*xi_c   = malloc(sizeof(double)*Nr);
+  double*ut_conv_thetae_a = malloc(sizeof(double)*Nr);
+  double*ut_conv_thetae_b = malloc(sizeof(double)*Nr);
   xi_1h_at_r_arr(r, Nr, M, c, rt, beta, delta, Omega_m, xi_1h);
+  xi_2h_at_r_arr(r, Nr, bias, ximm, xi_2h);
   //1halo and 2halo terms
   for(i = 0; i < Nr; i++){
-    xi_2h[i] = bias*ximm[i];
-    //xi_c[i]  = bias*otherstuff;
+    xi_c[i]  = 0;//-ut_conv_thetae_a[i]*bias*ximm[i] - ut_conv_thetae_b[i];
+    xihm[i] = xi_1h[i] + xi_2h[i] + xi_c[i];
   }
   rhom = 0; //suppresses warning for now
   free(xi_1h);
   free(xi_2h);
   free(xi_c);
+  free(ut_conv_thetae_a);
+  free(ut_conv_thetae_b);
   return 0;
 }
 
@@ -62,6 +67,26 @@ double xi_1h_at_r(double r, double M, double c,
   result = xi_1h[0];
   free(rs);
   free(xi_1h);
+  return result;
+}
+
+int xi_2h_at_r_arr(double*r, int Nr, double bias, double*ximm, double*xi2h){
+  int i;
+  for(i = 0; i < Nr; i++){
+    xi2h[i] = bias*ximm[i];
+  }
+  return 0;
+}
+
+double xi_2h_at_r(double r, double bias, double ximm){
+  double*rs    = malloc(sizeof(double));
+  double*xi_2h = malloc(sizeof(double));
+  double result;
+  rs[0] = r;
+  xi_2h_at_r_arr(rs, 1, bias, &ximm, xi_2h);
+  result = xi_2h[0];
+  free(rs);
+  free(xi_2h);
   return result;
 }
 
