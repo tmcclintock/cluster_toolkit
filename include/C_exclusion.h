@@ -12,3 +12,4 @@ double xi_2h_at_r(double r, double bias, double ximm);
 int theta_erfc_at_r_arr(double*r, int Nr, double rt, double beta, double*theta);
 double theta_erfc_at_r(double r, double rt, double beta);
 
+double r_exclusion(double r1, double r2, int scheme);
