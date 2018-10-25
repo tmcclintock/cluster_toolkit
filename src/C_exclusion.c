@@ -41,17 +41,22 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
   return 0;
 }
 
-int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt, double M2, double c2, int delta, double Omega_m, double*out_arr){
+int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
+			    double M2, double c2,
+			    int delta, double Omega_m, double*out_arr){
+  printf("Conv: M = %.3e   M2 = %.3e  c2 = %.3f   rt=%.3f\n", M1, M2, c2, rt);
+  //printf("Conv: delta = %d   Omega_m = %.3f\n", delta, Omega_m);
+  
   double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
   int i;
   //Compute r_delta for M1 and M2
-  double rdelta1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rdelta1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333)*1e-3;
+  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333)*1e-3;
   double rt1 = rt; //can get rid of this variable
   double ratio1 = rt1/rdelta1;
   double rt2 = ratio1*rdelta2;
   double rc = rt2/c2; //scale radius of M2 halo
-  double re = r_exclusion(rt1, rt2, 1); //TODO: make the scheme a variable to pass
+  double re = r_exclusion(rt1, rt2, 0); //TODO: make the scheme a variable to pass
 
   //Create the wavenumbers to do the convolution over
   static int init_flag = 0;
@@ -77,17 +82,18 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt, double M2, d
     Put[i] = prefactor * (cos(mu[i]) * (gsl_sf_Ci(mu[i]*(1+c2)) - gsl_sf_Ci(mu[i])) +
 			  sin(mu[i]) * (gsl_sf_Si(mu[i]*(1+c2)) - gsl_sf_Si(mu[i])) -
 			  sin(mu[i]*c2)) / (mu[i]*(1+c2));
-    Pthetat[i] = pi4 * (sin(k[i] * re) - k[i]*re*cos(k[i] * re))/(k[i]*k[i]*k[i]);
+    Pthetat[i] = pi4*(sin(k[i] * re) - k[i] * re * cos(k[i] * re))/(k[i]*k[i]*k[i]);
     PutPthetat[i] = Put[i] * Pthetat[i];
   }
   //Transform the fourier space profiles back to realspace, for high and low scales
   double*out_low  = malloc(sizeof(double)*Nr);
   double*out_high = malloc(sizeof(double)*Nr);
-  calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_low,  8000, 1e-6);
+  calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_low,  8800, 1e-6);
   calc_xi_mm(r, Nr, k, PutPthetat, Nk, out_high, 7000, 1e-5);
   for(i = 0; i < Nr; i++){
-    if (r[i] <= re) out_arr[i] = out_low[i];
-    else            out_arr[i] = out_high[i];
+    printf("ol[%d] = %.2e   oh[%d] = %.2e\n",i, out_low[i], i, out_high[i]);
+    if (r[i] < re) out_arr[i] = out_low[i];
+    else           out_arr[i] = out_high[i];
   }
   //Free everything
   free(mu);
@@ -102,10 +108,8 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt, double M2, d
 double r_exclusion(double r1, double r2, int scheme){
   switch(scheme){
   case 0 : //max(r1, r2)
-    if (r1 < r2)
-      return r1;
-    else
-      return r2;
+    if (r1 > r2) return r1;
+    else         return r2;
   case 1: // (r1^3 + r2^3)^(1/3)
     return pow(r1*r1*r1 + r2*r2*r2, 0.333333333333);
   case 2: //sum(r1, r2)
@@ -174,19 +178,6 @@ int xi_correction_at_r_arr(double*r, int Nr, double M, double rt,
   }
   free(ut_conv_thetat_a);
   free(ut_conv_thetat_b);
-  return 0;
-}
-
-
-int utct_at_r_arr(double*r, int Nr, double rt, double M1, double M2, double conc, int delta, double Omega_m, double*utct){
-  double rhom = Omega_m * rhocrit;//SM h^2/Mpc^3
-  double r1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double r2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double rt1 = rt; //this line not really necessary...
-  double con = rt1/r1;
-  double rt2 = con*r2;
-  rt2=0;
-  //more stuff
   return 0;
 }
 
