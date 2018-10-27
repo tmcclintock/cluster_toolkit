@@ -28,10 +28,12 @@
  * This is the header for computing the bias of a single halo
  * of a known peak height. This function just calls the vectorized
  * version, but otherwise does nothing.
+ *
+ * This is the Tinker et al. (2010) bias model.
  */
 double bias_at_nu(double nu, int delta){
-  double*nus = (double*)malloc(sizeof(double));
-  double*bias = (double*)malloc(sizeof(double));
+  double*nus  = malloc(sizeof(double));
+  double*bias = malloc(sizeof(double));
   nus[0] = nu;
   bias_at_nu_arr(nus, 1, delta, bias);
   double result = bias[0];
@@ -46,10 +48,12 @@ double bias_at_nu(double nu, int delta){
  * This is the header for computing the bias of a single halo
  * with a Lagrangian radius, R. This function just calls the vectorized
  * version, but otherwise does nothing.
+ *
+ * This is the Tinker et al. (2010) bias model.
  */
 double bias_at_R(double R, int delta, double*k, double*P, int Nk){
-  double*Rs = (double*)malloc(sizeof(double));
-  double*bias = (double*)malloc(sizeof(double));
+  double*Rs = malloc(sizeof(double));
+  double*bias = malloc(sizeof(double));
   Rs[0] = R;
   bias_at_R_arr(Rs, 1, delta, k, P, Nk, bias);
   double result = bias[0];
@@ -58,10 +62,23 @@ double bias_at_R(double R, int delta, double*k, double*P, int Nk){
   return result;
 }
 
+/**
+ * \brief Compute the bias of a halo of mass, M.
+ *
+ * This is the header for computing the bias of a halo
+ * of mass M. This calls bias_at_nu(). 
+ * This is the Tinker et al. (2010) bias model.
+ */
 double bias_at_M(double M, int delta, double*k, double*P, int Nk, double om){
   return bias_at_nu(nu_at_M(M, k, P, Nk, om), delta);
 }
 
+/**
+ * \brief Compute the bias of a halo with peak height nu for an array
+ * of peak heights.
+ *
+ * This is the Tinker et al. (2010) bias model.
+ */
 int bias_at_nu_arr(double*nu, int Nnu, int delta, double*bias){
   double y = log10(delta);
   double xp = exp(-1.0*pow(4./y,4.));
@@ -74,23 +91,39 @@ int bias_at_nu_arr(double*nu, int Nnu, int delta, double*bias){
   return 0;
 }
 
+/**
+ * \brief Compute the bias of a halo with Lagrangian radius R for an array
+ * of radii.
+ *
+ * This is the Tinker et al. (2010) bias model.
+ */
 int bias_at_R_arr(double*R, int NR, int delta, double*k, double*P, int Nk, double*bias){
-  double*nu = (double*)malloc(sizeof(double)*NR);
+  double*nu = malloc(sizeof(double)*NR);
   nu_at_R_arr(R, NR, k, P, Nk, nu);
   bias_at_nu_arr(nu, NR, delta, bias);
   free(nu);
   return 0;
 }
 
+/**
+ * \brief Compute the bias of a halo with mass Mfor an array
+ * of masses.
+ *
+ * This is the Tinker et al. (2010) bias model.
+ */
 int bias_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk, double om, double*bias){
-  double*nu = (double*)malloc(sizeof(double)*NM);
+  double*nu = malloc(sizeof(double)*NM);
   nu_at_M_arr(M, NM, k, P, Nk, om, nu);
   bias_at_nu_arr(nu, NM, delta, bias);
   free(nu);
   return 0;
 }
 
-////EXTRA FUNCTION FOR EMULATOR DEVELOPMENT////
+/**
+ * \brief Compute the bias of a halo with peak height nu for an array
+ * of peak heights, with arbitrary free parameters in a Tinker-like model.
+ *
+ */
 int bias_at_nu_arr_FREEPARAMS(double*nu, int Nnu, int delta, double A, double a, double B, double b, double C, double c, double*bias){
   int i;
   for(i = 0; i < Nnu; i++)
