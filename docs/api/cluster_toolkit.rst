@@ -12,8 +12,10 @@ Submodules
    cluster_toolkit.concentration
    cluster_toolkit.deltasigma
    cluster_toolkit.density
+   cluster_toolkit.exclusion
    cluster_toolkit.massfunction
    cluster_toolkit.miscentering
+   cluster_toolkit.peak_height
    cluster_toolkit.xi
 
 Module contents
