@@ -52,7 +52,7 @@ double bias_at_nu(double nu, int delta){
  * This is the Tinker et al. (2010) bias model.
  */
 double bias_at_R(double R, int delta, double*k, double*P, int Nk){
-  double*Rs = malloc(sizeof(double));
+  double*Rs   = malloc(sizeof(double));
   double*bias = malloc(sizeof(double));
   Rs[0] = R;
   bias_at_R_arr(Rs, 1, delta, k, P, Nk, bias);
@@ -97,7 +97,8 @@ int bias_at_nu_arr(double*nu, int Nnu, int delta, double*bias){
  *
  * This is the Tinker et al. (2010) bias model.
  */
-int bias_at_R_arr(double*R, int NR, int delta, double*k, double*P, int Nk, double*bias){
+int bias_at_R_arr(double*R, int NR, int delta, double*k, double*P, int Nk,
+		  double*bias){
   double*nu = malloc(sizeof(double)*NR);
   nu_at_R_arr(R, NR, k, P, Nk, nu);
   bias_at_nu_arr(nu, NR, delta, bias);
@@ -111,9 +112,10 @@ int bias_at_R_arr(double*R, int NR, int delta, double*k, double*P, int Nk, doubl
  *
  * This is the Tinker et al. (2010) bias model.
  */
-int bias_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk, double om, double*bias){
+int bias_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk,
+		  double Omega_m, double*bias){
   double*nu = malloc(sizeof(double)*NM);
-  nu_at_M_arr(M, NM, k, P, Nk, om, nu);
+  nu_at_M_arr(M, NM, k, P, Nk, Omega_m, nu);
   bias_at_nu_arr(nu, NM, delta, bias);
   free(nu);
   return 0;
@@ -124,7 +126,9 @@ int bias_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk, doubl
  * of peak heights, with arbitrary free parameters in a Tinker-like model.
  *
  */
-int bias_at_nu_arr_FREEPARAMS(double*nu, int Nnu, int delta, double A, double a, double B, double b, double C, double c, double*bias){
+int bias_at_nu_arr_FREEPARAMS(double*nu, int Nnu, int delta,
+			      double A, double a, double B, double b,
+			      double C, double c, double*bias){
   int i;
   for(i = 0; i < Nnu; i++)
     bias[i] = 1 - A*pow(nu[i],a)/(pow(nu[i],a)+pow(delta_c,a)) + B*pow(nu[i],b) + C*pow(nu[i],c);

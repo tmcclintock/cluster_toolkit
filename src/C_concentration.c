@@ -39,6 +39,10 @@ typedef struct mc_params{
   double T_CMB;
 }mc_params;
 
+/**
+ *\brief Function used for root finding to convert M_m to M_c.
+ *
+ */
 double Mm_from_Mc(double Mc, void*params){
   //Mc is M200c
   mc_params*pars = (mc_params*)params;
@@ -65,8 +69,13 @@ double Mm_from_Mc(double Mc, void*params){
   return Mm - Mout;
 }
 
-//This is for M200m(b)
-double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
+/**
+ *\brief Mass-concentration relation for M_200m halos.
+ *
+ * This is the Diemer-Kravtsov (2015) model.
+ */
+double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double n_s,
+				   double Omega_b, double Omega_m, double h, double T_CMB){
   int status;
   mc_params*pars = (mc_params*)malloc(sizeof(mc_params));
   double R = pow(Mass/(1.33333333333*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
@@ -111,12 +120,64 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   return cm;
 }
 
-//Just the signature
-double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB);
+/**
+ *\brief Transfer function for the Eisenstein-Hu (1998) no-BAO model.
+ *
+ */
+double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB){
+  double k, Tk;
+  double omb, om0, omc;
+  double obh2, omh2, och2;
+  double ob_om;
+  double theta2p7, s, q;
+  double Gamma, alphaGamma, L0, C0;
+  omb = Omega_b;
+  om0 = Omega_m;
+  omc = Omega_m - Omega_b;
+  obh2 = Omega_b*h*h;
+  omh2 = Omega_m*h*h;
+  och2 = omc*h*h;
+  ob_om = omb / om0;
+  theta2p7 = T_CMB / 2.7;
+  //convert k from hMpc^-1 to Mpc^-1
+  k = kin * h;
+  //eqn 26
+  s = 44.5*log(9.83/om0/h/h)/sqrt(1.0 + 10.0*pow(omb*h*h,0.75));
+  //eqn 31
+  alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*omb/om0 + 0.38*log(22.3*om0*h*h)*(omb/om0)*(omb/om0);
+  //eqn 30
+  Gamma = om0*h*(alphaGamma + (1.0 - alphaGamma)/(1.0 + pow(0.43*k*s,4.0)));
+  //eqn 28
+  q = kin * theta2p7 * theta2p7 / Gamma;
+  //eqns 29
+  C0 = 14.2 + 731.0 / (1.0 + 62.5 * q);
+  L0 = log(2.0 * exp(1.0) + 1.8 * q);
+  Tk = L0 / (L0 + C0 * q * q);
+  return Tk;
+}
 
+/**
+ *\brief Logarithmic derivative of the EH98-noBAO power spectrum.
+ *
+ * This is used in the Diemer-Kravtsov (2015) model.
+ */
+double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
+  //kin needs to have units of h/Mpc
+  double dlnk = 1e-6;
+  double dk = dlnk*kin;
+  double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
+  double T2 = transferFunc_EH98_zeroBaryon(kin-dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
+  double P1 = pow(kin+dk*0.5, n_s)*T1*T1;
+  double P2 = pow(kin-dk*0.5, n_s)*T2*T2;
+  return log(P1/P2)/dlnk;
+}
 
-//We need to implement the M-c equation just for M200crit first
-//This is the median M-c relation from DK15
+/**
+ *\brief Median mass-concentration relation for M_200c halos.
+ *
+ * This is the Diemer-Kravtsov (2015) model.
+ */
+
 double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
   double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
   double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
@@ -131,63 +192,4 @@ double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int 
   double c0 = phi0 + n * phi1;
   double nu0   = eta0 + n * eta1;
   return 0.5 * c0 * (pow(nu0/nu, alpha) + pow(nu/nu0, beta));
-}
-
-/*
-This is an equation for P(k) of E&H with no BAO.
-this is what the DK15 M-c relation uses in its derivative.
-It may not be feasible to incorporate it into here, given the amount of
-front end overhaul it would require.
-*/
-double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB){
-
-
-  double k, Tk;
-  double omb, om0, omc;
-  double obh2, omh2, och2;
-  double ob_om;
-  double theta2p7, s, q;
-  double Gamma, alphaGamma, L0, C0;
-  
-  omb = Omega_b;
-  om0 = Omega_m;
-  omc = Omega_m - Omega_b;
-  obh2 = Omega_b*h*h;
-  omh2 = Omega_m*h*h;
-  och2 = omc*h*h;
-  ob_om = omb / om0;
-  theta2p7 = T_CMB / 2.7;
-  
-  //convert k from hMpc^-1 to Mpc^-1
-  k = kin * h;
-
-  //eqn 26
-  s = 44.5*log(9.83/om0/h/h)/sqrt(1.0 + 10.0*pow(omb*h*h,0.75));
-
-  //eqn 31
-  alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*omb/om0 + 0.38*log(22.3*om0*h*h)*(omb/om0)*(omb/om0);
-
-  //eqn 30
-  Gamma = om0*h*(alphaGamma + (1.0 - alphaGamma)/(1.0 + pow(0.43*k*s,4.0)));
-
-  //eqn 28
-  q = kin * theta2p7 * theta2p7 / Gamma;
-
-  //eqns 29
-  C0 = 14.2 + 731.0 / (1.0 + 62.5 * q);
-  L0 = log(2.0 * exp(1.0) + 1.8 * q);
-  Tk = L0 / (L0 + C0 * q * q);
-
-  return Tk;
-}
-
-double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
-  //kin needs to have units of h/Mpc
-  double dlnk = 1e-6;
-  double dk = dlnk*kin;
-  double T1 = transferFunc_EH98_zeroBaryon(kin+dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
-  double T2 = transferFunc_EH98_zeroBaryon(kin-dk*0.5, Omega_b,  Omega_m,  h,  T_CMB);
-  double P1 = pow(kin+dk*0.5, n_s)*T1*T1;
-  double P2 = pow(kin-dk*0.5, n_s)*T2*T2;
-  return log(P1/P2)/dlnk;
 }

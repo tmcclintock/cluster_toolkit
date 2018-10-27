@@ -14,6 +14,11 @@
 #include <math.h>
 #include <stdio.h>
 
+/**
+ *\brief Boost factor assuming a projected NFW profile at a single radii.
+ *
+ * Used in McClintock et al. (2018).
+ */
 double boost_nfw_at_R(double R, double B0, double Rs){
   double x2m1 = R*R/(Rs*Rs)-1; //x^2 -1
   double sqx2m1;
@@ -28,6 +33,11 @@ double boost_nfw_at_R(double R, double B0, double Rs){
   }
 }
 
+/**
+ *\brief Boost factor assuming a projected NFW profile at an array of radii.
+ *
+ * Used in McClintock et al. (2018).
+ */
 int boost_nfw_at_R_arr(double*R, int NR, double B0, double Rs, double*boost){
   int i;
   for(i = 0; i < NR; i++){
@@ -36,10 +46,20 @@ int boost_nfw_at_R_arr(double*R, int NR, double B0, double Rs, double*boost){
   return 0;
 }
 
+/**
+ *\brief Boost factor assuming a power law at one radii.
+ *
+ * Used in Melchior et al. (2017).
+ */
 double boost_powerlaw_at_R(double R, double B0, double Rs, double alpha){
   return 1+B0*pow(R/Rs,alpha);
 }
 
+/**
+ *\brief Boost factor assuming a power law at an array of radii.
+ *
+ * Used in Melchior et al. (2017).
+ */
 int boost_powerlaw_at_R_arr(double*R, int NR, double B0, double Rs, double alpha, double*boost){
   int i;
   for(i = 0; i < NR; i++){
