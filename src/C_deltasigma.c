@@ -29,6 +29,12 @@
 
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
+/**
+ * \brief Projected surface mass density Sigma in units
+ * of h*Msun/pc^2 assuming an NFW model at a radius R in Mpc/h.
+ *
+ * Note: all distances are comoving.
+ */
 double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
   double*Rs = (double*)malloc(sizeof(double));
   double*Sigma = (double*)malloc(sizeof(double));
@@ -41,6 +47,13 @@ double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
   return result;
 }
 
+/**
+ * \brief Projected surface mass density Sigma in units
+ * of h*Msun/pc^2 assuming an NFW model at an array of
+ * radii R in Mpc/h.
+ *
+ * Note: all distances are comoving.
+ */
 int Sigma_nfw_at_R_arr(double*R, int NR, double M, double c, int delta, double om, double*Sigma){
   double rhom = om*rhocrit;//SM h^2/Mpc^3
   double deltac = delta*0.3333333333*c*c*c/(log(1.+c)-c/(1.+c));
@@ -73,6 +86,12 @@ typedef struct integrand_params{
   double intercept;
 }integrand_params;
 
+/**
+ * \brief Integrand (r*\xi_hm(r)) for computing
+ * Sigma(R) at small scales.
+ *
+ * Note: all distances are comoving.
+ */
 double integrand_small_scales(double lRz, void*params){
   double Rz = exp(lRz);
   integrand_params pars=*(integrand_params*)params;
@@ -84,6 +103,12 @@ double integrand_small_scales(double lRz, void*params){
   return Rz * xi_nfw_at_R(sqrt(Rz*Rz + Rp*Rp), M, conc, delta, om);
 }
 
+/**
+ * \brief Integrand (r*\xi_hm(r)) for computing
+ * Sigma(R) at intermediate scales.
+ *
+ * Note: all distances are comoving.
+ */
 double integrand_medium_scales(double lRz, void*params){
   double Rz = exp(lRz);
   integrand_params pars=*(integrand_params*)params;
@@ -91,6 +116,12 @@ double integrand_medium_scales(double lRz, void*params){
   return Rz * gsl_spline_eval(pars.spline, log(Rz*Rz + Rp*Rp)*0.5, pars.acc);
 }
 
+/**
+ * \brief Integrand (r*\xi_hm(r)) for computing
+ * Sigma(R) at large scales.
+ *
+ * Note: all distances are comoving.
+ */
 double integrand_large_scales(double lRz, void*params){
   //Use a power law approximation. This is fine as long as xi_hm
   //doesn't have wiggles in it (i.e. it doesn't stop at BAO)
@@ -102,6 +133,13 @@ double integrand_large_scales(double lRz, void*params){
   return Rz * intercept*pow(sqrt(Rz*Rz + Rp*Rp), slope);
 }
 
+/**
+ * \brief Projected surface mass density Sigma in units
+ * of h*Msun/pc^2 at a radius R in Mpc/h, given a 
+ * 3D halo-matter correlation function.
+ *
+ * Note: all distances are comoving.
+ */
 double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
   double*Rs = (double*)malloc(sizeof(double));
   double*Sigma = (double*)malloc(sizeof(double));
@@ -114,6 +152,13 @@ double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double con
   return result;
 }
 
+/**
+ * \brief Projected surface mass density Sigma in units
+ * of h*Msun/pc^2 at an array of radii R in Mpc/h, given a 
+ * 3D halo-matter correlation function.
+ *
+ * Note: all distances are comoving.
+ */
 int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   gsl_set_error_handler_off();
   double rhom = om*rhocrit*1e-12; //SM h^2/pc^2/Mpc; integral is over Mpc/h
@@ -171,6 +216,14 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   return 0;
 }
 
+/**
+ * \brief Projected surface mass density Sigma in units
+ * of h*Msun/pc^2 at an array of radii R in Mpc/h, given a 
+ * 3D halo-matter correlation function, and including
+ * the large scales.
+ *
+ * Note: all distances are comoving.
+ */
 double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
   double*Ra = (double*)malloc(sizeof(double));
   double*Sigma = (double*)malloc(sizeof(double));
