@@ -54,7 +54,7 @@ int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
   double ratio1 = rt1/rdelta1;
   double rt2 = ratio1*rdelta2;
   double rc = rt2/c2; //scale radius of M2 halo
-  double re = r_exclusion(rt1, rt2, 0); //TODO: make the scheme a variable to pass
+  double re = r_exclusion(rt1, rt2, scheme); //TODO: make the scheme a variable to pass
 
   //Create the wavenumbers to do the convolution over
   static int init_flag = 0;
