@@ -22,14 +22,14 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
 			    double rt, double beta,
 			    double Ma, double ca, double Mb, double cb,
 			    double bias, double*ximm, int delta, double Omega_m,
-			    double*xihm){
+			    int scheme, double*xihm){
   int i;
   double*xi_1h  = malloc(sizeof(double)*Nr);
   double*xi_2h  = malloc(sizeof(double)*Nr);
   double*xi_c   = malloc(sizeof(double)*Nr);
   xi_1h_at_r_arr(r, Nr, M, c, rt, beta, delta, Omega_m, xi_1h);
   xi_2h_at_r_arr(r, Nr, bias, ximm, xi_2h);
-  xi_correction_at_r_arr(r, Nr, M, rt, Ma, ca, Mb, cb, bias, ximm, delta, Omega_m, xi_c);
+  xi_correction_at_r_arr(r, Nr, M, rt, Ma, ca, Mb, cb, bias, ximm, delta, Omega_m, scheme, xi_c);
   //Resum all terms
   for(i = 0; i < Nr; i++){
     xihm[i] = xi_1h[i] + xi_2h[i] + xi_c[i];
@@ -43,7 +43,8 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
 
 int ut_conv_thetat_at_r_arr(double*r, int Nr, double M1, double rt,
 			    double M2, double c2,
-			    int delta, double Omega_m, double*out_arr){  
+			    int delta, double Omega_m, int scheme,
+			    double*out_arr){  
   double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
   int i;
   //Compute r_delta for M1 and M2
@@ -163,12 +164,12 @@ double xi_2h_at_r(double r, double bias, double ximm){
 int xi_correction_at_r_arr(double*r, int Nr, double M, double rt,
 			   double Ma, double ca, double Mb, double cb,
 			   double bias, double*ximm, int delta, double Omega_m,
-			   double*xi_c){
+			   int scheme, double*xi_c){
   int i;
   double*ut_conv_thetat_a = malloc(sizeof(double)*Nr);
   double*ut_conv_thetat_b = malloc(sizeof(double)*Nr);
-  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Ma, ca, delta, Omega_m, ut_conv_thetat_a);
-  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Mb, cb, delta, Omega_m, ut_conv_thetat_b);
+  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Ma, ca, delta, Omega_m, scheme, ut_conv_thetat_a);
+  ut_conv_thetat_at_r_arr(r, Nr, M, rt, Mb, cb, delta, Omega_m, scheme, ut_conv_thetat_b);
   for(i = 0; i < Nr; i++){
     xi_c[i]  = -ut_conv_thetat_a[i]*bias*ximm[i] - ut_conv_thetat_b[i];
   }
