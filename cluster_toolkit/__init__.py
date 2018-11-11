@@ -7,7 +7,7 @@ import glob
 import os
 import numpy as np
 
-__author__ = "Tom McClintock <tmcclintock@email.arizona.edu>"
+__author__ = "Tom McClintock <mcclintock@bnl.gov>"
 
 cluster_toolkit_dir = os.path.dirname(__file__)
 include_dir = os.path.join(cluster_toolkit_dir,'include')

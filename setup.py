@@ -23,7 +23,7 @@ ext=Extension("cluster_toolkit._cluster_toolkit",
 
 dist = setup(name="cluster_toolkit",
              author="Tom McClintock",
-             author_email="tmcclintock89@gmail.com",
+             author_email="mcclintock@bnl.gov",
              description="Modules for modeling galaxy clusters and related systematics.",
              license="MIT License",
              url="https://github.com/tmcclintock/cluster_toolkit",
