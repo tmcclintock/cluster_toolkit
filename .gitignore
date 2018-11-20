@@ -1,3 +1,4 @@
+.pytest_cache
 .DS_Store
 
 # The compiled code used for profiling and debugging
