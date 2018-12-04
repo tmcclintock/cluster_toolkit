@@ -8,9 +8,11 @@
  */
 
 #include "C_density.h"
+#include "C_power.h"
 #include "C_profile_derivatives.h"
 #include "C_xi.h"
 
+#include "gsl/gsl_integration.h"
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_sf_gamma.h"
 #include <math.h>
@@ -45,4 +47,43 @@ int drho_nfw_dr_at_R_arr(double*R, int NR, double Mass, double conc,
     drhodr[i] = - rho0*(1+3*R_Rs) / (Rscale * R_Rs*R_Rs * (1+R_Rs)*(1+R_Rs));
   }
   return 0;
+}
+
+typedef struct integrand_params_profile_derivs{
+  gsl_spline*spline;
+  gsl_interp_accel*acc;
+  gsl_integration_workspace * workspace;
+  double r; //3d r; Mpc/h, or inverse units of k
+  double*kp; //pointer to wavenumbers
+  double*Pp; //pointer to P(k) array
+  int Nk; //length of k and P arrays
+}integrand_params_profile_derivs;
+
+
+double integrand_dxi_mm_dr_COSINE(double k, void*params){
+  integrand_params_profile_derivs pars
+    = *(integrand_params_profile_derivs*)params;
+  gsl_spline*spline = pars.spline;
+  gsl_interp_accel*acc = pars.acc;
+  double*kp = pars.kp;
+  double*Pp = pars.Pp;
+  int Nk = pars.Nk;
+  double R = pars.r;
+  double x  = k*R;
+  double P = get_P(x, R, kp, Pp, Nk, spline, acc);
+  return P*k*k/R; //Note - cos(kR) is taken care of in the qawo table
+}
+
+double integrand_dxi_mm_dr_SINE(double k, void*params){
+  integrand_params_profile_derivs pars
+    = *(integrand_params_profile_derivs*)params;
+  gsl_spline*spline = pars.spline;
+  gsl_interp_accel*acc = pars.acc;
+  double*kp = pars.kp;
+  double*Pp = pars.Pp;
+  int Nk = pars.Nk;
+  double R = pars.r;
+  double x  = k*R;
+  double P = get_P(x, R, kp, Pp, Nk, spline, acc);
+  return P*k/(R*R); //Note - sin(kR) is taken care of in the qawo table
 }
