@@ -19,19 +19,19 @@
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
-double drho_nfw_dr_at_r(double R, double Mass, double conc, int delta, double Omega_m){
+double drho_nfw_dr_at_R(double R, double Mass, double conc, int delta, double Omega_m){
   double*Rarr = (double*)malloc(sizeof(double));
   double*drhodr  = (double*)malloc(sizeof(double));
   double result;
   Rarr[0] = R;
-  drho_nfw_dr_at_r_arr(Rarr, 1, Mass, conc, delta, Omega_m, drhodr);
+  drho_nfw_dr_at_R_arr(Rarr, 1, Mass, conc, delta, Omega_m, drhodr);
   result = drhodr[0];
   free(Rarr);
   free(drhodr);
   return result;
 }
 
-int drho_nfw_dr_at_r_arr(double*R, int NR, double Mass, double conc,
+int drho_nfw_dr_at_R_arr(double*R, int NR, double Mass, double conc,
 			 int delta, double Omega_m, double*drhodr){
   int i;
   double rhom = Omega_m*rhocrit;//Msun h^2/Mpc^3
