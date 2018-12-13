@@ -4,7 +4,7 @@ import setuptools
 from setuptools import setup, Extension
 import subprocess
 
-os.system('ln -s ../include cluster_toolkit/include')
+os.system('ln -h -s ../include cluster_toolkit/include')
 
 sources = glob.glob(os.path.join('src','*.c'))
 headers = glob.glob(os.path.join('include','*.h'))
