@@ -29,7 +29,7 @@ typedef struct mc_params{
   double Rm;
   double cm;//will be the output
   double*k;
-  double*P;
+  double*Plin;
   int Nk;
   int delta;
   double n_s;
@@ -49,7 +49,7 @@ double Mm_from_Mc(double Mc, void*params){
   double Mm = pars->Mm;
   double Rm = pars->Rm; //R200m
   double*k = pars->k;
-  double*P = pars->P;
+  double*Plin = pars->Plin;
   int Nk = pars->Nk;
   int delta = pars->delta;
   double n_s = pars->n_s;
@@ -57,7 +57,7 @@ double Mm_from_Mc(double Mc, void*params){
   double Omega_m = pars->Omega_m;
   double h = pars->h;
   double T_CMB = pars->T_CMB;
-  double cc = DK15_concentration_at_Mcrit(Mc, k, P, Nk, delta, n_s, Omega_b, Omega_m, h, T_CMB);
+  double cc = DK15_concentration_at_Mcrit(Mc, k, Plin, Nk, delta, n_s, Omega_b, Omega_m, h, T_CMB);
   //Figure out the total mass, but first figure out rho0 for Mcrit
   double Rc = pow(Mc/(1.3333333333*M_PI*rhocrit*delta), 0.33333333); //R200c
   double Rs_c = Rc/cc; //Scale radius of Mcrit
@@ -74,8 +74,9 @@ double Mm_from_Mc(double Mc, void*params){
  *
  * This is the Diemer-Kravtsov (2015) model.
  */
-double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int delta, double n_s,
-				   double Omega_b, double Omega_m, double h, double T_CMB){
+double DK15_concentration_at_Mmean(double Mass, double*k, double*Plin, int Nk, int delta,
+				   double n_s,double Omega_b, double Omega_m,
+				   double h, double T_CMB){
   int status;
   mc_params*pars = (mc_params*)malloc(sizeof(mc_params));
   double R = pow(Mass/(1.33333333333*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
@@ -90,7 +91,7 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   pars->Mm = Mass;
   pars->Rm = R;
   pars->k = k;
-  pars->P = P;
+  pars->Plin = Plin;
   pars->Nk = Nk;
   pars->delta = delta;
   pars->h = h;
@@ -180,8 +181,8 @@ double dlnP_dlnk(double kin, double n_s, double Omega_b, double Omega_m, double 
  * This is the Diemer-Kravtsov (2015) model.
  */
 
-double DK15_concentration_at_Mcrit(double Mass, double*k, double*P, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
-  double nu = nu_at_M(Mass, k, P, Nk, Omega_m);
+double DK15_concentration_at_Mcrit(double Mass, double*k, double*Plin, int Nk, int delta, double n_s, double Omega_b, double Omega_m, double h, double T_CMB){
+  double nu = nu_at_M(Mass, k, Plin, Nk, Omega_m);
   double R = M_to_R(Mass, Omega_m); //Lagrangian Radius
   double k_R = 0.69 * 2*M_PI/R;
   double n = dlnP_dlnk(k_R, n_s, Omega_b, Omega_m, h, T_CMB);  
