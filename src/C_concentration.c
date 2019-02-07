@@ -81,7 +81,7 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   double R = pow(Mass/(1.33333333333*M_PI*rhocrit*Omega_m*delta), 0.33333333); //R200m
   double M_lo = Mass/10;
   double M_hi = Mass*10;
-  double Mm;
+  //double Mm;
   double cm = -1; //will have result
   const gsl_root_fsolver_type*T=gsl_root_fsolver_bisection;
   gsl_root_fsolver*s = gsl_root_fsolver_alloc(T);
@@ -107,7 +107,8 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
   do{
     iter++;
     status = gsl_root_fsolver_iterate(s);
-    Mm = gsl_root_fsolver_root(s);
+    //Mm = gsl_root_fsolver_root(s); //Mm isn't used at all..
+    gsl_root_fsolver_root(s);
     M_lo = gsl_root_fsolver_x_lower(s);
     M_hi = gsl_root_fsolver_x_upper(s);
     status = gsl_root_test_interval(M_lo, M_hi, 0, 0.001);
@@ -126,17 +127,17 @@ double DK15_concentration_at_Mmean(double Mass, double*k, double*P, int Nk, int 
  */
 double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, double h, double T_CMB){
   double k, Tk;
-  double omb, om0, omc;
-  double obh2, omh2, och2;
+  double omb, om0;//, omc;
+  //double omh2;//, obh2;//, och2;
   double ob_om;
   double theta2p7, s, q;
   double Gamma, alphaGamma, L0, C0;
   omb = Omega_b;
   om0 = Omega_m;
-  omc = Omega_m - Omega_b;
-  obh2 = Omega_b*h*h;
-  omh2 = Omega_m*h*h;
-  och2 = omc*h*h;
+  //omc = Omega_m - Omega_b;
+  //obh2 = Omega_b*h*h;
+  //omh2 = Omega_m*h*h;
+  //och2 = omc*h*h;
   ob_om = omb / om0;
   theta2p7 = T_CMB / 2.7;
   //convert k from hMpc^-1 to Mpc^-1
@@ -144,7 +145,8 @@ double transferFunc_EH98_zeroBaryon(double kin, double Omega_b, double Omega_m, 
   //eqn 26
   s = 44.5*log(9.83/om0/h/h)/sqrt(1.0 + 10.0*pow(omb*h*h,0.75));
   //eqn 31
-  alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*omb/om0 + 0.38*log(22.3*om0*h*h)*(omb/om0)*(omb/om0);
+  //alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*omb/om0 + 0.38*log(22.3*om0*h*h)*(omb/om0)*(omb/om0);
+  alphaGamma = 1.0 - 0.328*log(431.0*om0*h*h)*ob_om + 0.38*log(22.3*om0*h*h)*(ob_om)*(ob_om);
   //eqn 30
   Gamma = om0*h*(alphaGamma + (1.0 - alphaGamma)/(1.0 + pow(0.43*k*s,4.0)));
   //eqn 28

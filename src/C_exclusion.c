@@ -125,6 +125,7 @@ int xi_1h_at_r_arr(double*r, int Nr, double M, double c,
   for(i = 0; i < Nr; i++){
     xi_1h[i] = (1+xi_1h[i]) * thetas[i];
   }
+  free(thetas);
   return 0; //success
 }
 
