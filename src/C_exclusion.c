@@ -19,8 +19,8 @@
 #define pi4      12.5663706144 //pi*4
 #define Nk 1000 //number of wavenumbers
 #define Nrm 1000 //number of radial sampling points
-#define rm_min 0.001 //Mpc/h minimum of the radial splines
-#define rm_max 1000. //Mpc/h maximum of the radial splines
+#define rm_min 0.0001 //Mpc/h minimum of the radial splines
+#define rm_max 10000. //Mpc/h maximum of the radial splines
 
 int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
 			    double rt, double beta,
@@ -45,6 +45,9 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
   //Resum all terms
   for(i = 0; i < Nr; i++){
     xihm[i] = xi_1h[i] + xi_2h[i] - xi_ct1[i]*xi_2h[i] - xi_ct2[i];
+    //if (i < 0){
+    //  printf("%d %.3e   %.3e   %.3e  %.3e \n",i,xi_1h[i],xi_2h[i],xi_ct1[i],xi_ct2[i]);
+    //}
   }
   free(xi_1h);
   free(xi_2h);
@@ -146,28 +149,31 @@ int xi_2hcorrection_at_r_arr(double*r, int Nr, double M1, double rt,
 /////////////////////////////////////////////
 double I_term(double r, double R, double re, double beta){
   //Note (sqrt2/beta*sqrtPI) has been pulled out
-  double u2 = ((R+r)*(R+r)-re)/(re*beta*sqrt2);
-  double u1 = ((R+r)*(R+r)-re)/(re*beta*sqrt2);
-  double expu2 = exp(u2*u2);
-  double expu1 = exp(u1*u1);
-  double erfcu2 = gsl_sf_erfc(u2);
-  double erfcu1 = gsl_sf_erfc(u1);
-  return ((beta*sqrt2*u2+2)*(sqrtPI*expu2*u2*erfcu2-1)/expu2 + erfcu2 +
-	  (beta*sqrt2*u1+2)*(sqrtPI*expu1*u1*erfcu1-1)/expu1 + erfcu1 ); 
+  double v2 = (R+r-re)/(re*beta*sqrt2);
+  double v1 = (R-r-re)/(re*beta*sqrt2);
+  double expv2 = exp(-v2*v2);
+  double expv1 = exp(-v1*v1);
+  double erfv2 = gsl_sf_erf(v2);
+  double erfv1 = gsl_sf_erf(v1);
+  double erfcv2 = gsl_sf_erfc(v2);
+  double erfcv1 = gsl_sf_erfc(v1);
+  return (erfv2/4 + erfcv2*(v2*v2/2 + v2/(beta*sqrt2)) - expv2/sqrtPI*(v2/2+1)) -
+    (erfv1/4 + erfcv1*(v1*v1/2 + v1/(beta*sqrt2)) - expv1/sqrtPI*(v1/2+1));
 }
 
 int xi_correction_at_r_arr(double*r, int Nr, double M1, double rt, double beta,
 			   double M2, double c2, int delta, double Omega_m,
 			   int scheme, double*xict){
-  int i, j;
-  static gsl_spline*spline = NULL;
-  static gsl_interp_accel*acc = NULL;
+  int i;//, j;
+  //static gsl_spline*spline = NULL;
+  //static gsl_interp_accel*acc = NULL;
 
   //Step 0 - make radial points to sample the profiles more easily
   //as well as all other static variables
   static int init_flag = 0;
   static double*rm = NULL;
   static double*lnrm = NULL;
+  static double*k = NULL;
   if (init_flag == 0){
     init_flag = 1;
     rm = malloc(sizeof(double)*Nrm);
@@ -179,24 +185,33 @@ int xi_correction_at_r_arr(double*r, int Nr, double M1, double rt, double beta,
       rm[i] = pow(10, log10rm_min + i*dlogrm);
       lnrm[i] = log(rm[i]);
     }
-    spline = gsl_spline_alloc(gsl_interp_cspline, Nrm);
-    acc = gsl_interp_accel_alloc();
+    //spline = gsl_spline_alloc(gsl_interp_cspline, Nrm);
+    //acc = gsl_interp_accel_alloc();
+    k = malloc(sizeof(double)*Nk);
+    double dlogk = 6./(Nk-1); //step size in log10(k)
+    for(i = 0; i < Nk; i++){
+      k[i] = pow(10, -2. + i*dlogk);
+    }
   }
 
-  double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
-  double rt2 = rt * pow(M2/M1, 0.33333333333);// rt * rdelta2/rdelta1;
-  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  double rs2 = rdelta2/c2; //scale factor of M2
-  double x2 = rt2 / rs2; //upper limit for integral of M2 density profile
-  //Calculate the mass integrated out to rt2 of M2's density profile
-  double Mrt2 = 4*M_PI*rhom*(log(1+c2)-c2/(1+c2))*rs2*rs2*rs2*(log(x2+1) - x2/(x2+1));
-  //Calculate the ut(r) profile
+  //Start with the truncated 1halo term for M2
+  //note: u = (1+xi) * rhom / M
   double*utr = malloc(sizeof(double)*Nrm);
+  calc_xi_nfw(rm, Nrm, M2, c2, delta, Omega_m, utr);//contains xi_nfw, not rho_nfw for now
+  double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
+  double rdelta1 = pow(M1/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rdelta2 = pow(M2/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
+  double rt2 = rt * rdelta2/rdelta1;
+  double rs2 = rdelta2/c2; //scale factor of M2
+  //upper limit for integral of M2 density profile
+  double x2 = rt2 / rs2;
+  //Calculate the mass integrated out to rt2 of M2's density profile
+  double Mrt2 = M2*(log(1+x2)-x2/(1+x2))/(log(1+c2)-c2/(1+c2));
+  //Calculate the ut(r) profile
   double*utrtt = malloc(sizeof(double)*Nrm);
-  calc_xi_nfw(rm, Nrm, M2, c2, delta, Omega_m, utr);
   theta_erfc_at_r_arr(rm, Nrm, rt, beta, utrtt);
   for( i = 0; i < Nrm; i++){
-    utr[i] = (utr[i]+1)*utrtt[i]*Mrt2/rhom; //correctly normalized; units are h^3/Mpc^3
+    utr[i] = (utr[i]+1)*utrtt[i]*rhom/Mrt2; //correctly normalized; units are h^3/Mpc^3
   }
   
   //Get the exclusion radius
@@ -205,25 +220,30 @@ int xi_correction_at_r_arr(double*r, int Nr, double M1, double rt, double beta,
   double*thetat = malloc(sizeof(double)*Nrm);
   theta_erfc_at_r_arr(rm, Nrm, re, beta, thetat);
 
-  //Get the angle-integrated exclusion term
-  //initialize the spline as the whole integrand, and evaluate the integral
-  //Note: rm is the integration variable
-  double*Ir = malloc(sizeof(double)*Nrm);
-  double*integrand = malloc(sizeof(double)*Nrm);
-  for( i = 0; i < Nr; i++){
-    for( j = 0; j < Nrm; j++){
-      Ir[j] = I_term(rm[j], r[i], re, beta);
-      integrand[j] = rm[j]*utr[j]*thetat[j]*Ir[j];//rm[i] picked up from log integral
-    }
-    gsl_spline_init(spline, lnrm, integrand, Nrm);
-    xict[i] = (2*sqrtPI*sqrt2/beta) * gsl_spline_eval_integ(spline, lnrm[0], lnrm[Nrm-1], acc);
+  //Take fourier transforms of both utr and thetat
+  double*utr_k = malloc(sizeof(double)*Nk);
+  double*thetat_k = malloc(sizeof(double)*Nk);
+  double*utr_thetat_k = malloc(sizeof(double)*Nk);
+  calc_xi_mm(k, Nk, rm, utr, Nrm, utr_k, 500, 1e-5); //missing 8pi^3
+  calc_xi_mm(k, Nk, rm, thetat, Nrm, thetat_k, 500, 1e-5); //missing 8pi^3
+  for(i = 0; i < Nk; i++){
+    utr_thetat_k[i] = 64*pow(M_PI, 6)*utr_k[i]*thetat_k[i];
+    //if (i < 10){
+    //  printf("%e   %e   \n", utr[i], thetat[i]);
+    //}
   }
+  //Fourier transform back
+  calc_xi_mm(r, Nr, k, utr_thetat_k, Nk, xict, 500, 5e-3);
+  
   //Free everything
   free(utr);
   free(utrtt);
   free(thetat);
-  free(Ir);
-  free(integrand);
+  free(utr_k);
+  free(thetat_k);
+  free(utr_thetat_k);
+  //free(Ir);
+  //free(integrand);
   return 0;
 }
 
