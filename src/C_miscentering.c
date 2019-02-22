@@ -201,7 +201,8 @@ double get_Sigma(double Rc, double Rc2, void*params){
   if(arg > rmin && arg < rmax){
     Sigma = gsl_spline_eval(spline, log(arg), acc);
   }else if(arg < rmin){
-    Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
+    Sigma = gsl_spline_eval(spline, log(rmin), acc);
+    //Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
   }
   return Sigma;
 }
