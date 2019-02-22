@@ -67,4 +67,5 @@ def test_nomis():
     npt.assert_array_almost_equal(ones[lo:hi], Smis[lo:hi], decimal=dec)
 
 if __name__ == "__main__":
-    test_errors()
+    test_Sigma_mis()
+    #test_errors()

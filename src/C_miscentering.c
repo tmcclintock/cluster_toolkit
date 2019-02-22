@@ -84,36 +84,6 @@ double single_angular_integrand(double theta, void*params){
  *  The miscentered Sigma profile of a single cluster, given
  *  a centered  mass surface density profile, Sigma(R).
  *  Units of surface density are all in h*Msun/pc^2 comoving.
- *  This specific function just interfaces Sigma_mis_single_at_R_arr().
- *
- *  @param R Radius in Mpc/h comoving.
- *  @param Rs Radii at which we know Sigma(R), in Mpc/h comoving.
- *  @param Sigma Surface mass density profile in h*Msun/pc^2 comoving.
- *  @param Ns Number of elements in Sigma_mis and Rs.
- *  @param M Halo mass in Msun/h.
- *  @param conc Halo concentration.
- *  @param delta Halo overdensity.
- *  @param Omega_m Matter fraction.
- *  @param Rmis Halo projected offset from the true center in Mpc/h comoving.
- *  @return Sigma_mis(R) in h*Msun/pc^2 comoving.
- */
-double Sigma_mis_single_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double Omega_m, double Rmis){
-  double*Ra = (double*)malloc(sizeof(double));
-  double*Smis = (double*)malloc(sizeof(double));
-  double result;
-  Ra[0] = R;
-  Sigma_mis_single_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, Omega_m, Rmis, Smis);
-  result = Smis[0];
-  free(Ra);
-  free(Smis);
-  return result;
-}
-
-/** @brief Miscentered Sigma profile at radius R in Mpc/h comoving.
- *
- *  The miscentered Sigma profile of a single cluster, given
- *  a centered  mass surface density profile, Sigma(R).
- *  Units of surface density are all in h*Msun/pc^2 comoving.
  *
  *  @param R Radii in Mpc/h comoving.
  *  @param NR Number of radii.
@@ -261,18 +231,6 @@ double angular_integrand(double theta, void*params){
   return result;
 }
 
-double Sigma_mis_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch){
-  double*Ra = (double*)malloc(sizeof(double));
-  double*Sigma_mis = (double*)malloc(sizeof(double));
-  double result;
-  Ra[0] = R;
-  Sigma_mis_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, Rmis, integrand_switch, Sigma_mis);
-  result = Sigma_mis[0];
-  free(Ra);
-  free(Sigma_mis);
-  return result;
-}
-
 /** @brief Miscentered Sigma profile at radius R in Mpc/h comoving.
  *
  *  The miscentered Sigma profile of a cluster stack, given
@@ -386,6 +344,8 @@ double DS_mis_integrand(double lR, void*params){
 
 /** @brief DeltaSigma profile at radius R in Mpc/h comoving.
  *
+ *  NEED TO UPDATE THIS COMMENT
+ *
  *  The miscentered DeltaSigma profile of a cluster, given
  *  its miscentered mass surface density profile, Sigma_mis(R).
  *  Units of surface density are all in h*Msun/pc^2 comoving.
@@ -397,18 +357,6 @@ double DS_mis_integrand(double lR, void*params){
  *  @param Ns number of elements in Sigma_mis and Rs.
  *  @return DeltaSigma_mis(R) in h*Msun/pc^2 comoving.
  */
-double DeltaSigma_mis_at_R(double R, double*Rs, double*Sigma_mis, int Ns){
-  double*Ra = (double*)malloc(sizeof(double));
-  double*DSm = (double*)malloc(sizeof(double));
-  double result;
-  Ra[0] = R;
-  DeltaSigma_mis_at_R_arr(Ra, 1, Rs, Sigma_mis, Ns, DSm);
-  result = DSm[0];
-  free(Ra);
-  free(DSm);
-  return result;
-}
-
 int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
   double lrmin = log(Rs[0]);
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
