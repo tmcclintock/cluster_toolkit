@@ -41,9 +41,9 @@ def Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200):
         return np.squeeze(Sigma_mis)
     return Sigma_mis
 
-def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="gaussian"):
-    """Miscentered surface mass density [Msun h/pc^2 comoving] convolved with a distribution for Rmis. 
-    Units are Msun h/pc^2 comoving.
+def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="rayleigh"):
+    """Miscentered surface mass density [Msun h/pc^2 comoving] 
+    convolved with a distribution for Rmis. Units are Msun h/pc^2 comoving.
 
     Args:
         R (float or array like): Projected radii Mpc/h comoving.
@@ -54,7 +54,7 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
         Omega_m (float): Matter density fraction.
         Rmis (float): Miscentered distance in Mpc/h comoving.
         delta (int; optional): Overdensity, default is 200.
-        kernel (string; optional): Kernal for convolution, default is gaussian, options are gaussian or exponential.
+        kernel (string; optional): Kernal for convolution. Options: rayleigh or gamma.
 
     Returns:
         float or array like: Miscentered projected surface mass density.
@@ -73,9 +73,9 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
         raise Exception("Minimum R must be >= min(R_Sigma)")
     if np.max(R) > np.max(Rsigma):
         raise Exception("Maximum R must be <= max(R_Sigma)")
-    if kernel == "gaussian":
+    if kernel == "rayleigh":
         integrand_switch = 0
-    elif kernel == "exponential":
+    elif kernel == "gamma":
         integrand_switch = 1
     else:
         raise Exception("Miscentering kernel must be either 'gaussian' or 'exponential'")

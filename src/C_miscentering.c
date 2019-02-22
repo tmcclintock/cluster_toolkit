@@ -42,7 +42,7 @@ typedef struct integrand_params{
   double M;              //halo mass; Msun/h
   double conc;           //concentration
   int delta;             //overdensity (200 is suggested)
-  double om;             //Omega_m
+  double Omega_m;        //Omega_m
   double Rmis;           //Miscentering length
   double Rmis2;          //Rmis^2
   double Rp_cos_theta_2; //Variable to hold 2*Rp*cos(theta)
@@ -65,18 +65,13 @@ typedef struct integrand_params{
  */
 double single_angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
-  gsl_spline*spline = pars->spline;
-  gsl_interp_accel*acc = pars->acc;
-  double Rp = pars->Rp;
-  double Rmis = pars->Rmis;
-  double arg = sqrt(Rp*Rp + Rmis*Rmis - 2*Rp*Rmis*cos(theta));
-  double rmin = pars->rmin,rmax = pars->rmax;
-  if (arg < rmin){
-    return Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
-  }else if(arg < rmax){
-    return gsl_spline_eval(spline, log(arg) ,acc);
+  double arg = sqrt(pars->Rp2 + pars->Rmis2 - 2*pars->Rp*pars->Rmis*cos(theta));
+  if(arg < pars->rmin){
+    return Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->Omega_m);
+  }else if(arg < pars->rmax){
+    return gsl_spline_eval(pars->spline, log(arg), pars->acc);
   }
-  return 0;
+  return 0;//arg > rmax
 }
 
 /** @brief Miscentered Sigma profile at radius R in Mpc/h comoving.
@@ -98,48 +93,63 @@ double single_angular_integrand(double theta, void*params){
  *  @param Sigma_mis Output array for Sigma_mis(R) in h*Msun/pc^2 comoving.
  *  @return success Integer indicating no errors.
  */
-int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double Omega_m, double Rmis, double*Sigma_mis){
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  gsl_integration_workspace*workspace2 = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params = malloc(sizeof(integrand_params));
-  gsl_function F;
-  double result, err;
+int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
+			      double M, double conc, int delta, double Omega_m,
+			      double Rmis, double*Sigma_mis){
   int i;
+  double result, err;
+  gsl_function F;
+
+  //Precomputing to save time
   double*lnRs = (double*)malloc(Ns*sizeof(double));
   for(i = 0; i < Ns; i++){
     lnRs[i] = log(Rs[i]);
   }
+
+  //Allocate things
+  static int init_flag = 0;
+  static gsl_spline*spline = NULL;
+  static gsl_interp_accel*acc = NULL;
+  static gsl_integration_workspace*workspace = NULL;
+  static integrand_params*params = NULL;
+  if (init_flag == 0){
+    init_flag = 1;
+    spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
+    acc = gsl_interp_accel_alloc();
+    workspace = gsl_integration_workspace_alloc(workspace_size);
+    params = malloc(sizeof(integrand_params));
+  }
+
   gsl_spline_init(spline, lnRs, Sigma, Ns);
+
   params->acc = acc;
   params->spline = spline;
   params->workspace = workspace;
-  params->workspace2 = workspace2;
   params->M = M;
   params->conc = conc;
   params->delta = delta;
-  params->om = Omega_m;
+  params->Omega_m = Omega_m;
   params->Rmis = Rmis;
   params->Rmis2 = Rmis*Rmis;
   params->rmin = Rs[0];
   params->rmax = Rs[Ns-1];
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
+
+  //Angular integral
   F.function=&single_angular_integrand;
   F.params=params;
+  
   for(i = 0; i < NR; i++){
     params->Rp  = R[i];
     params->Rp2 = R[i] * R[i];
-    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size,
+			KEY, workspace, &result, &err);
     Sigma_mis[i] = result/M_PI;
   }
-  gsl_spline_free(spline);
-  gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  gsl_integration_workspace_free(workspace2);
+
+  //Static objects aren't freed
   free(lnRs);
-  free(params);
   return 0;
 }
 
@@ -161,20 +171,13 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
  */
 double get_Sigma(double Rc, double Rc2, void*params){
   integrand_params*pars = (integrand_params*)params;
-  gsl_spline*spline = pars->spline;
-  gsl_interp_accel*acc = pars->acc;
-  double rmin = pars->rmin,rmax = pars->rmax;
-  double Rp2 = pars->Rp2;
-  double Rp_cos_theta_2 = pars->Rp_cos_theta_2;
-  double arg = sqrt(Rp2 + Rc2 - Rc*Rp_cos_theta_2);
-  double Sigma = 0;
-  if(arg > rmin && arg < rmax){
-    Sigma = gsl_spline_eval(spline, log(arg), acc);
-  }else if(arg < rmin){
-    //Sigma = gsl_spline_eval(spline, log(rmin), acc);
-    Sigma = Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->om);
+  double arg = sqrt(pars->Rp2 + Rc2 - Rc*pars->Rp_cos_theta_2);
+  if(arg < pars->rmin){
+    return Sigma_nfw_at_R(arg, pars->M, pars->conc, pars->delta, pars->Omega_m);
+  }else if(arg < pars->rmax){
+    return gsl_spline_eval(pars->spline, log(arg), pars->acc);
   }
-  return Sigma;
+  return 0;//arg > rmax
 }
 
 /** @brief Integrand for a stack of miscentered clusters
@@ -185,13 +188,12 @@ double get_Sigma(double Rc, double Rc2, void*params){
  *                other inputs to the integral.
  *  @return The integrand.
  */
-double exp_radial_integrand(double lRc, void*params){
+double Gamma_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
   double Rc2 = Rc*Rc;
   double Rmis = pars->Rmis;
-  double Sigma = get_Sigma(Rc, Rc2, params);
-  return Rc2 * exp(-Rc/Rmis) * Sigma; //normalized outside
+  return Rc2 * exp(-Rc/Rmis) * get_Sigma(Rc, Rc2, pars);//normalized outside
 }
 
 /** @brief Integrand for a stack of miscentered clusters
@@ -202,13 +204,12 @@ double exp_radial_integrand(double lRc, void*params){
  *                other inputs to the integral.
  *  @return The integrand.
  */
-double g2d_radial_integrand(double lRc, void*params){
+double Rayleigh_radial_integrand(double lRc, void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
   double Rc2 = Rc*Rc;
   double Rmis2 = pars->Rmis2;
-  double Sigma = get_Sigma(Rc, Rc2, pars);
-  return Rc2 * exp(-0.5 * Rc2/Rmis2) * Sigma; //normalized outside
+  return Rc2 * exp(-0.5 * Rc2/Rmis2) * get_Sigma(Rc, Rc2, pars);//normalized outside
 }
 
 /** @brief Integrand for a stack of miscentered clusters
@@ -220,14 +221,12 @@ double g2d_radial_integrand(double lRc, void*params){
  *  @return The integrand.
  */
 double angular_integrand(double theta, void*params){
-  integrand_params*pars = (integrand_params*)params;
-  double cos_theta = cos(theta);
-  double lrmin = pars->lrmin, lrmax = pars->lrmax;
-  gsl_integration_workspace*workspace = pars->workspace2;
-  gsl_function F = pars->F_radial;
   double result, err;
-  pars->Rp_cos_theta_2 = pars->Rp*cos_theta*2;
-  gsl_integration_qag(&F, lrmin-10, lrmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+  integrand_params*pars = (integrand_params*)params;
+  pars->Rp_cos_theta_2 = pars->Rp*cos(theta)*2;
+  //\int_0^\inf dRc p(Rc|Rmis) Sigma_mis(R, Rc, Rmis)
+  gsl_integration_qag(&pars->F_radial, pars->lrmin-10, pars->lrmax, ABSERR, RELERR, workspace_size,
+		      KEY, pars->workspace2, &result, &err);
   return result;
 }
 
@@ -253,74 +252,88 @@ double angular_integrand(double theta, void*params){
  *  @param Sigma_mis Output array for Sigma_mis(R) in h*Msun/pc^2 comoving.
  *  @return success Integer indicating no errors.
  */
-int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double Rmis, int integrand_switch, double*Sigma_mis){
-  //Create the GSL spline objects and integration workspace.
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  gsl_integration_workspace*workspace2 = gsl_integration_workspace_alloc(workspace_size);
-  //Create the integration_params structure, which holds extra information when performing integrals.
-  //See the top of this file where the struct is defined.
-  integrand_params*params = malloc(sizeof(integrand_params));
-  //GSL integrals need pointers to the integrands. The variables for these functions are defined here.
+int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
+		       double M, double conc, int delta, double Omega_m, double Rmis,
+		       int integrand_switch, double*Sigma_mis){
+  int i;
+  double result, err;
   gsl_function F;
   gsl_function F_radial;
-  //Define variable to hold the result and the numerical error.
-  double result, err;
-  int i; //iteration variable
-  //Define a new array to hold the log of the radii.
+
+  //Precomputing to save time
   double*lnRs = (double*)malloc(Ns*sizeof(double));
   for(i = 0; i < Ns; i++){
     lnRs[i] = log(Rs[i]);
   }
-  //Create the pline and add all information to the params struct.
+
+  //Allocate things
+  static int init_flag = 0;
+  static gsl_spline*spline = NULL;
+  static gsl_interp_accel*acc = NULL;
+  static gsl_integration_workspace*workspace = NULL;
+  static gsl_integration_workspace*workspace2 = NULL;
+  static integrand_params*params = NULL;
+  if (init_flag == 0){
+    init_flag = 1;
+    spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
+    acc = gsl_interp_accel_alloc();
+    workspace = gsl_integration_workspace_alloc(workspace_size);
+    workspace2 = gsl_integration_workspace_alloc(workspace_size);
+    params = malloc(sizeof(integrand_params));
+  }
+
   gsl_spline_init(spline, lnRs, Sigma, Ns);
-  params->acc = acc;
+
   params->spline = spline;
+  params->acc = acc;
   params->workspace = workspace;
   params->workspace2 = workspace2;
   params->M = M;
   params->conc = conc;
   params->delta = delta;
-  params->om = om;
+  params->Omega_m = Omega_m;
   params->Rmis = Rmis;
   params->Rmis2 = Rmis*Rmis;
   params->rmin = Rs[0];
   params->rmax = Rs[Ns-1];
   params->lrmin = log(Rs[0]);
   params->lrmax = log(Rs[Ns-1]);
-  //The "outer" integral is the angular integral.
+  
+  //Angular integral
   F.function = &angular_integrand;
-  //The "inner" integral is radial over R_mis.
-  //The if statement below swaps between two distributions: a Rayleigh
-  //distribution and a gamma distribution. See the text near eq. 40 in McClintock+ (2018).
-  F_radial.function = &g2d_radial_integrand; //integrand_switch == 0
-  if(integrand_switch == 1){
-    F_radial.function = &exp_radial_integrand;
+  //Radial integral. Choice between rayliegh and gamma distributions
+  //See Johnston+ 2007, Simet+ 2018, Melchior+ 2018, McClintock+ 2019
+  switch(integrand_switch){
+  case 0:
+    F_radial.function = &Rayleigh_radial_integrand;
+    break;
+  case 1:
+    F_radial.function = &Gamma_integrand;
+    break;
   }
+  
   //Assign the params struct to the GSL functions.
   F_radial.params = params;
   params->F_radial = F_radial;
   F.params = params;
-  //Do the integral, with Rp^2 ( precomputed.
+  
+  //Angular integral first
   for(i = 0; i < NR; i++){
     params->Rp  = R[i];
-    params->Rp2 = R[i] * R[i];
-    //The "outer" integral.
-    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+    params->Rp2 = R[i] * R[i]; //Optimization
+    
+    gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size,
+			KEY, workspace, &result, &err);
     Sigma_mis[i] = result/(M_PI*Rmis*Rmis); //Normalization
   }
-  //Free objects and arrays.
-  gsl_spline_free(spline);
-  gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  gsl_integration_workspace_free(workspace2);
-  free(params);
+  //Static objects aren't freed
   free(lnRs);
-  return 0; //return success
+  return 0;
 }
 
+///////////////////////////////////////////////////
 //////////// DELTASIGMA(R) BELOW //////////////////
+///////////////////////////////////////////////////
 
 /** @brief The integrand the miecentered DeltaSigma profile.
  *
@@ -337,49 +350,62 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double
 double DS_mis_integrand(double lR, void*params){
   double R = exp(lR);
   integrand_params pars = *(integrand_params*)params;
-  gsl_spline*spline = pars.spline;//Sigma(R) spline
-  gsl_interp_accel*acc = pars.acc;
-  return R * R * gsl_spline_eval(spline, R, acc);
+  return R * R * gsl_spline_eval(pars.spline, R, pars.acc);
 }
 
-/** @brief DeltaSigma profile at radius R in Mpc/h comoving.
- *
- *  NEED TO UPDATE THIS COMMENT
+/** @brief DeltaSigma profile at an array of radii R in Mpc/h comoving.
  *
  *  The miscentered DeltaSigma profile of a cluster, given
  *  its miscentered mass surface density profile, Sigma_mis(R).
  *  Units of surface density are all in h*Msun/pc^2 comoving.
  *  This specific function just interfaces DeltaSigma_mis_at_R_arr().
  *
- *  @param R Radius in Mpc/h comoving.
+ *  @param R Radii in Mpc/h comoving.
+ *  @param NR Number of radii.
  *  @param Rs Radii at which we know Sigma(R), in Mpc/h comoving.
  *  @param Sigma_mis Surface mass density profile in h*Msun/pc^2 comoving.
  *  @param Ns number of elements in Sigma_mis and Rs.
  *  @return DeltaSigma_mis(R) in h*Msun/pc^2 comoving.
  */
-int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double*DeltaSigma_mis){
+int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma_mis, int Ns, double*DeltaSigma_mis){
+  int i;
   double lrmin = log(Rs[0]);
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
-  gsl_interp_accel*acc = gsl_interp_accel_alloc();
-  gsl_integration_workspace* workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
-  double slope = log(Sigma[0]/Sigma[1])/log(Rs[0]/Rs[1]);
-  double intercept = Sigma[0]*pow(Rs[0], -slope);
-  double low_part = intercept*pow(Rs[0], slope+2)/(slope+2);
   double result,  err;
   gsl_function F;
-  int i;
-  gsl_spline_init(spline, Rs, Sigma, Ns);
+
+  //Compute the integral from 0 to Rs[0] assuming that
+  //Sigma_mis(R) is a power law
+  double slope = log(Sigma_mis[0]/Sigma_mis[1])/log(Rs[0]/Rs[1]);
+  double intercept = Sigma_mis[0]*pow(Rs[0], -slope);
+  double low_part = intercept*pow(Rs[0], slope+2)/(slope+2);
+
+  //Allocate things
+  static int init_flag = 0;
+  static gsl_spline*spline = NULL;
+  static gsl_interp_accel*acc = NULL;
+  static gsl_integration_workspace*workspace = NULL;
+  static integrand_params*params = NULL;
+  if (init_flag == 0){
+    init_flag = 1;
+    spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
+    acc = gsl_interp_accel_alloc();
+    workspace = gsl_integration_workspace_alloc(workspace_size);
+    params = malloc(sizeof(integrand_params));
+  }
+
+  gsl_spline_init(spline, Rs, Sigma_mis, Ns);
+  
   params->spline = spline;
   params->acc = acc;
   F.params = params;
   F.function = &DS_mis_integrand;
+
   for(i = 0; i < NR; i++){
-    gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size, KEY, workspace, &result, &err);
+    gsl_integration_qag(&F, lrmin, log(R[i]), ABSERR, RELERR, workspace_size,
+			KEY, workspace, &result, &err);
     DeltaSigma_mis[i] = (low_part+result)*2/(R[i]*R[i]) - gsl_spline_eval(spline, R[i], acc);
   }
-  gsl_spline_free(spline),gsl_interp_accel_free(acc);
-  gsl_integration_workspace_free(workspace);
-  free(params);
+
+  //No free() since we use static variables.
   return 0;
 }

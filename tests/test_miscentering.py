@@ -30,8 +30,8 @@ def test_Sigma_mis():
     arr1 = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis)
     arr2 = np.array([mis.Sigma_mis_at_R(Rmi, R, Sigma, M, c, Om, Rmis) for Rmi in Rm])
     npt.assert_array_equal(arr1, arr2)
-    arr1 = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis, kernel='exponential')
-    arr2 = np.array([mis.Sigma_mis_at_R(Rmi, R, Sigma, M, c, Om, Rmis, kernel='exponential') for Rmi in Rm])
+    arr1 = mis.Sigma_mis_at_R(Rm, R, Sigma, M, c, Om, Rmis, kernel='gamma')
+    arr2 = np.array([mis.Sigma_mis_at_R(Rmi, R, Sigma, M, c, Om, Rmis, kernel='gamma') for Rmi in Rm])
     npt.assert_array_equal(arr1, arr2)
 
 
