@@ -21,58 +21,6 @@
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are Msun h^2/Mpc^3
 
 ///////////BIAS FUNCTIONS///////////
-
-/**
- * \brief Compute the bias of a halo of a given peak height, nu.
- *
- * This is the header for computing the bias of a single halo
- * of a known peak height. This function just calls the vectorized
- * version, but otherwise does nothing.
- *
- * This is the Tinker et al. (2010) bias model.
- */
-double bias_at_nu(double nu, int delta){
-  double*nus  = malloc(sizeof(double));
-  double*bias = malloc(sizeof(double));
-  nus[0] = nu;
-  bias_at_nu_arr(nus, 1, delta, bias);
-  double result = bias[0];
-  free(nus);
-  free(bias);
-  return result;
-}
-
-/**
- * \brief Compute the bias of a halo of a given Lagrangian radius, R.
- *
- * This is the header for computing the bias of a single halo
- * with a Lagrangian radius, R. This function just calls the vectorized
- * version, but otherwise does nothing.
- *
- * This is the Tinker et al. (2010) bias model.
- */
-double bias_at_R(double R, int delta, double*k, double*P, int Nk){
-  double*Rs   = malloc(sizeof(double));
-  double*bias = malloc(sizeof(double));
-  Rs[0] = R;
-  bias_at_R_arr(Rs, 1, delta, k, P, Nk, bias);
-  double result = bias[0];
-  free(Rs);
-  free(bias);
-  return result;
-}
-
-/**
- * \brief Compute the bias of a halo of mass, M.
- *
- * This is the header for computing the bias of a halo
- * of mass M. This calls bias_at_nu(). 
- * This is the Tinker et al. (2010) bias model.
- */
-double bias_at_M(double M, int delta, double*k, double*P, int Nk, double om){
-  return bias_at_nu(nu_at_M(M, k, P, Nk, om), delta);
-}
-
 /**
  * \brief Compute the bias of a halo with peak height nu for an array
  * of peak heights.

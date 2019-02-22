@@ -22,8 +22,8 @@ def test_exceptions_bias_at_M():
         bias.bias_at_M(Mass, klin, plin)
     with pytest.raises(TypeError):
         bias.bias_at_M(Mass, klin, plin, Omega_m, Omega_m)
-    with pytest.raises(TypeError):
-        bias.bias_at_M("a string", klin, plin, Omega_m)
+    #with pytest.raises(TypeError):
+    #    bias.bias_at_M("a string", klin, plin, Omega_m)
 
 def test_outputs_bias_at_M():
     #List vs. numpy.array
@@ -102,3 +102,6 @@ def test_Cordering():
     bt = bias.bias_at_M(Me, ke, pe, Omega_m)
     r = be/bt
     npt.assert_array_almost_equal(r, np.ones_like(r), decimal=3)
+
+if __name__ == "__main__":
+    test_Cordering()

@@ -35,22 +35,22 @@
  *  @Omega_m Matter fraction.
  *  @return NFW halo density.
  */
-int calc_rho_nfw(double*r, int Nr, double Mass, double conc, int delta, double om, double*rho_nfw){
+int calc_rho_nfw(double*r, int Nr, double Mass, double conc, int delta, double Omega_m, double*rho_nfw){
   int i;
-  double rhom = om*rhomconst;//Msun h^2/Mpc^3
-  calc_xi_nfw(r, Nr, Mass, conc, delta, om, rho_nfw); //rho_nfw actually holds xi_nfw here
+  double rhom = Omega_m*rhomconst;//Msun h^2/Mpc^3
+  calc_xi_nfw(r, Nr, Mass, conc, delta, Omega_m, rho_nfw); //rho_nfw actually holds xi_nfw here
   for(i = 0; i < Nr; i++){
     rho_nfw[i] = rhom*(1+rho_nfw[i]);
   }
   return 0;
 }
 
-int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double conc, double alpha, int delta, double om, double*rho_einasto){
-  double rhom = rhomconst*om; //SM h^2/Mpc^3
+int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double conc, double alpha, int delta, double Omega_m, double*rho_einasto){
+  double rhom = rhomconst*Omega_m; //SM h^2/Mpc^3
   double Rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double rs = Rdelta / conc; //compute scale radius from concentration
   if (rhos < 0)
-    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, om);
+    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, Omega_m);
   int i;
   double x;
   for(i = 0; i < NR; i++){
