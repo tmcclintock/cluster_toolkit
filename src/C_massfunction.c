@@ -20,18 +20,6 @@
 #define del 1e-6
 
 ///////////////// G multiplicity function///////////////////
-double G_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
-  double*Marr = (double*)malloc(sizeof(double));
-  double*G = (double*)malloc(sizeof(double));
-  double result;
-  Marr[0] = M;
-  G_at_M_arr(Marr, 1, k, P, Nk, om, d, e, f, g, G);
-  result = G[0];
-  free(Marr);
-  free(G);
-  return result;
-}
-
 int G_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*G){
   double*sigma = (double*)malloc(sizeof(double)*NM);
   sigma2_at_M_arr(M, NM, k, P, Nk, om, sigma);
@@ -42,18 +30,6 @@ int G_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d
   G_at_sigma_arr(sigma, NM, d, e, f, g, G);
   free(sigma);
   return 0;
-}
-
-double G_at_sigma(double sigma, double d, double e, double f, double g){
-  double*sig = (double*)malloc(sizeof(double));
-  double*G = (double*)malloc(sizeof(double));
-  double result;
-  sig[0] = sigma;
-  G_at_sigma_arr(sig, 1, d, e, f, g, G);
-  result = G[0];
-  free(sig);
-  free(G);
-  return result;
 }
 
 int G_at_sigma_arr(double*sigma, int Ns, double d, double e, double f, double g, double*G){
@@ -90,18 +66,6 @@ int dndM_sigma2_precomputed(double*M, double*sigma2, double*dsigma2dM, int NM, d
   return 0;
 }
 
-double dndM_at_M(double M, double*k, double*P, int Nk, double om, double d, double e, double f, double g){
-  double*Marr = (double*)malloc(sizeof(double));
-  double*dndM = (double*)malloc(sizeof(double));
-  double result;
-  Marr[0] = M;
-  dndM_at_M_arr(Marr, 1, k, P, Nk, om, d, e, f, g, dndM);
-  result = dndM[0];
-  free(Marr);
-  free(dndM);
-  return result;
-}
-
 int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, double d, double e, double f, double g, double*dndM){
   double*dsigma2dM = (double*)malloc(sizeof(double)*NM);
   double*sigma2 = (double*)malloc(sizeof(double)*NM);
@@ -115,26 +79,13 @@ int dndM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double om, doubl
 
 ///////////////// derivatives of the MF below ///////////////////
 
-int d2ndM2_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double Omega_m, double d, double e, double f, double g, double*d2ndM2){
+int d2ndM2_at_M_arr(double*M, int NM, double*k, double*P, int Nk,
+		    double Omega_m, double d, double e, double f,
+		    double g, double*d2ndM2){
   return 0;
 }
 
-
 ///////////////// N in bin functions below ///////////////////
-
-double n_in_bin(double Mlo, double Mhi, double*M, double*dndM, int NM){
-  double*N = (double*)malloc(sizeof(double));
-  double*edges = (double*)malloc(2*sizeof(double));
-  double result;
-  edges[0] = Mlo;
-  edges[1] = Mhi;
-  n_in_bins(edges, 2, M, dndM, NM, N);
-  result = N[0];
-  free(N);
-  free(edges);
-  return result;
-}
-
 int n_in_bins(double*edges, int Nedges, double*M, double*dndM, int NM, double*N){
   //Note: N is one element less long than edges
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, NM);

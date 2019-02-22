@@ -35,8 +35,6 @@ def average_profile_in_bins(Redges, R, prof):
     cluster_toolkit._lib.average_profile_in_bins(_dcast(Redges), len(Redges),
                                                  _dcast(R), len(R), _dcast(prof),
                                                  _dcast(ave_prof))
-    if len(Redges) == 2:#Single bin
-        return np.squeeze(ave_prof)
     return ave_prof
 
 def average_profile_in_bin(Rlow, Rhigh, R, prof):
@@ -55,4 +53,4 @@ def average_profile_in_bin(Rlow, Rhigh, R, prof):
         float: Average profile in the radial bin, or annulus.
 
     """
-    return average_profile_in_bins([Rlow, Rhigh], R, prof)
+    return np.squeeze(average_profile_in_bins([Rlow, Rhigh], R, prof))
