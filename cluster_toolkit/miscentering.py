@@ -6,7 +6,8 @@ from cluster_toolkit import _dcast
 import numpy as np
 
 def Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200):
-    """Miscentered surface mass density [Msun h/pc^2 comoving] of a profile miscentered by an amount Rmis Mpc/h comoving. Units are Msun h/pc^2 comoving.
+    """Miscentered surface mass density [Msun h/pc^2 comoving] of a profile miscentered by an 
+    amount Rmis Mpc/h comoving. Units are Msun h/pc^2 comoving.
 
     Args:
         R (float or array like): Projected radii Mpc/h comoving.
@@ -34,13 +35,15 @@ def Sigma_mis_single_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200):
     if np.max(R) > np.max(Rsigma):
         raise Exception("Maximum R must be <= max(R_Sigma)")
     Sigma_mis = np.zeros_like(R)
-    cluster_toolkit._lib.Sigma_mis_single_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, Omega_m, Rmis, _dcast(Sigma_mis))
+    cluster_toolkit._lib.Sigma_mis_single_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma),
+                                                   len(Rsigma), M, conc, delta, Omega_m, Rmis, _dcast(Sigma_mis))
     if scalar_input:
         return np.squeeze(Sigma_mis)
     return Sigma_mis
 
 def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="gaussian"):
-    """Miscentered surface mass density [Msun h/pc^2 comoving] convolved with a distribution for Rmis. Units are Msun h/pc^2 comoving.
+    """Miscentered surface mass density [Msun h/pc^2 comoving] convolved with a distribution for Rmis. 
+    Units are Msun h/pc^2 comoving.
 
     Args:
         R (float or array like): Projected radii Mpc/h comoving.
@@ -62,6 +65,8 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
     if R.ndim == 0:
         R = R[None] #makes R 1D
         scalar_input = True
+
+    #Exception checking
     if R.ndim > 1:
         raise Exception("R cannot be a >1D array.")
     if np.min(R) < np.min(Rsigma):
@@ -74,9 +79,10 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
         integrand_switch = 1
     else:
         raise Exception("Miscentering kernel must be either 'gaussian' or 'exponential'")
-    
+
     Sigma_mis = np.zeros_like(R)
-    cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma), M, conc, delta, Omega_m, Rmis, integrand_switch, _dcast(Sigma_mis))
+    cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma),
+                                            M, conc, delta, Omega_m, Rmis, integrand_switch, _dcast(Sigma_mis))
     if scalar_input:
         return np.squeeze(Sigma_mis)
     return Sigma_mis
@@ -100,13 +106,14 @@ def DeltaSigma_mis_at_R(R, Rsigma, Sigma_mis):
         scalar_input = True
     if R.ndim > 1:
         raise Exception("R cannot be a >1D array.")
-
     if np.min(R) < np.min(Rsigma):
         raise Exception("Minimum R must be >= min(R_Sigma)")
     if np.max(R) > np.max(Rsigma):
         raise Exception("Maximum R must be <= max(R_Sigma)")
+    
     DeltaSigma_mis = np.zeros_like(R)
-    cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis), len(Rsigma), _dcast(DeltaSigma_mis))
+    cluster_toolkit._lib.DeltaSigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma_mis),
+                                                 len(Rsigma), _dcast(DeltaSigma_mis))
     if scalar_input:
         return np.squeeze(DeltaSigma_mis)
     return DeltaSigma_mis

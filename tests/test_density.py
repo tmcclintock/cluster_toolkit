@@ -14,20 +14,20 @@ Omega_m = 0.3 #arbitrary
 rhocrit = 2.77533742639e+11
 rhom = rhocrit*Omega_m
 
-def test_exceptions_rho_nfw_at_R():
+def test_exceptions_rho_nfw_at_r():
     with pytest.raises(TypeError):
-        density.rho_nfw_at_R() #No args
-        density.rho_nfw_at_R(R, Mass, conc) #Too few args
-        density.rho_nfw_at_R(R, Mass, conc, Omega_m, Omega_m) #Too many args
-        density.rho_nfw_at_R("a string", Mass, conc, Omega_m, Omega_m) #Wrong type
+        density.rho_nfw_at_r() #No args
+        density.rho_nfw_at_r(R, Mass, conc) #Too few args
+        density.rho_nfw_at_r(R, Mass, conc, Omega_m, Omega_m) #Too many args
+        density.rho_nfw_at_r("a string", Mass, conc, Omega_m, Omega_m) #Wrong type
 
-def test_outputs_rho_nfw_at_R():
+def test_outputs_rho_nfw_at_r():
     #List vs. numpy.array
-    npt.assert_array_equal(density.rho_nfw_at_R(R_arr, Mass, conc, Omega_m), density.rho_nfw_at_R(R_arr.tolist(), Mass, conc, Omega_m))
+    npt.assert_array_equal(density.rho_nfw_at_r(R_arr, Mass, conc, Omega_m), density.rho_nfw_at_r(R_arr.tolist(), Mass, conc, Omega_m))
     #Single value vs numpy.array
-    arrout = density.rho_nfw_at_R(R_arr, Mass, conc, Omega_m)
+    arrout = density.rho_nfw_at_r(R_arr, Mass, conc, Omega_m)
     for i in range(len(R_arr)):
-        npt.assert_equal(density.rho_nfw_at_R(R_arr[i], Mass, conc, Omega_m), arrout[i])
+        npt.assert_equal(density.rho_nfw_at_r(R_arr[i], Mass, conc, Omega_m), arrout[i])
 
 def test_exceptions_rho_einasto_at_R():
     with pytest.raises(TypeError):
@@ -48,8 +48,8 @@ def test_outputs_rho_einasto_at_R():
 
 def test_rho_vs_xi_nfw():
     #Note: testing fractional precision to avoid numerical issues
-    arr1 = density.rho_nfw_at_R(R_arr, Mass, conc, Omega_m)
-    arr2 = xi.xi_nfw_at_R(R_arr, Mass, conc, Omega_m)
+    arr1 = density.rho_nfw_at_r(R_arr, Mass, conc, Omega_m)
+    arr2 = xi.xi_nfw_at_r(R_arr, Mass, conc, Omega_m)
     arr2 = rhom*(1+arr2)
     arr2 = arr2/arr1
     ones = np.ones_like(arr1)
@@ -57,7 +57,7 @@ def test_rho_vs_xi_nfw():
     
 def test_rho_vs_xi_einasto():
     arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
-    arr2 = xi.xi_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = xi.xi_einasto_at_r(R_arr, Mass, Rscale, alpha, Omega_m)
     arr2 = rhom*(1+arr2)
     arr2 = arr2/arr1
     ones = np.ones_like(arr1)
@@ -65,5 +65,6 @@ def test_rho_vs_xi_einasto():
 
 
 if __name__ == "__main__":
-    #test_outputs_rho_nfw_at_R()
-    test_outputs_rho_einasto_at_R()
+    #test_outputs_rho_nfw_at_r()
+    #test_outputs_rho_einasto_at_R()
+    test_outputs_rho_nfw_at_r()

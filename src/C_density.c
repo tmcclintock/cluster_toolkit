@@ -21,10 +21,12 @@
 
 /** @brief The NFW density profile.
  * 
+ *  NEED TO UPDATE THIS COMMENT
+ *
  *  The NFW density profile of a halo a distance R from the center,
  *  assuming the halo has a given mass and concentration. It works 
  *  with any overdensity parameter and arbitrary matter fraction.
- *  This function calls xi_nfw_at_R().
+ *  This function calls xi_nfw_at_r().
  * 
  *  @param r Distance from the center of the halo in Mpc/h comoving.
  *  @param M Halo mass in Msun/h.
@@ -33,31 +35,14 @@
  *  @Omega_m Matter fraction.
  *  @return NFW halo density.
  */
-double rho_nfw_at_R(double r, double M, double c, int delta, double Omega_m){
-  double rhom = Omega_m*rhomconst;//Msun h^2/Mpc^3
-  double xi = xi_nfw_at_R(r, M, c, delta, Omega_m);
-  return rhom*(1+xi);
-}
-
-int calc_rho_nfw(double*R, int NR, double Mass, double conc, int delta, double om, double*rho_nfw){
+int calc_rho_nfw(double*r, int Nr, double Mass, double conc, int delta, double om, double*rho_nfw){
   int i;
   double rhom = om*rhomconst;//Msun h^2/Mpc^3
-  calc_xi_nfw(R, NR, Mass, conc, delta, om, rho_nfw); //rho_nfw actually holds xi_nfw here
-  for(i = 0; i < NR; i++){
+  calc_xi_nfw(r, Nr, Mass, conc, delta, om, rho_nfw); //rho_nfw actually holds xi_nfw here
+  for(i = 0; i < Nr; i++){
     rho_nfw[i] = rhom*(1+rho_nfw[i]);
   }
   return 0;
-}
-
-double rho_einasto_at_R(double R, double Mass, double rhos, double conc, double alpha, int delta, double om){
-  double*Rarr = (double*)malloc(sizeof(double));
-  double*rhoe = (double*)malloc(sizeof(double));
-  Rarr[0] = R;
-  calc_rho_einasto(Rarr, 1, Mass, rhos, conc, alpha, delta, om, rhoe);
-  double result = rhoe[0];
-  free(Rarr);
-  free(rhoe);
-  return result;
 }
 
 int calc_rho_einasto(double*R, int NR, double Mass, double rhos, double conc, double alpha, int delta, double om, double*rho_einasto){

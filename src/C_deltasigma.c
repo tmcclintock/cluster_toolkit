@@ -100,7 +100,7 @@ double integrand_small_scales(double lRz, void*params){
   double M = pars.M;
   double conc = pars.conc;
   int delta = pars.delta;
-  return Rz * xi_nfw_at_R(sqrt(Rz*Rz + Rp*Rp), M, conc, delta, om);
+  return Rz * xi_nfw_at_r(sqrt(Rz*Rz + Rp*Rp), M, conc, delta, om);
 }
 
 /**

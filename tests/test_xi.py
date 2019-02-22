@@ -5,11 +5,11 @@ import numpy as np
 import numpy.testing as npt
 
 #Halo properties that are inputs
-R = 1.0 #Mpc/h
-Ra = np.array([0.1, 1.0, 10.0]) #Mpc/h
+r = 1.0 #Mpc/h
+ra = np.array([0.1, 1.0, 10.0]) #Mpc/h
 Mass = 1e14 #Msun/h
 conc = 5 #concentration; no units, for NFW
-Rscale = 1.0 #Mph/h; for Einasto
+rscale = 1.0 #Mph/h; for Einasto
 alpha = 0.19 #typical value; for Einasto
 Omega_m = 0.3 #arbitrary
 datapath = "./data_for_testing/"
@@ -18,76 +18,76 @@ pnl = np.loadtxt(join(dirname(__file__),datapath+"pnl.txt")) #[Mpc/h]^3 nonlinea
 klin = np.loadtxt(join(dirname(__file__),datapath+"klin.txt")) #h/Mpc; wavenumber
 plin = np.loadtxt(join(dirname(__file__),datapath+"plin.txt")) #[Mpc/h]^3 linear power spectrum
 
-def test_exceptions_xi_nfw_at_R():
+def test_exceptions_xi_nfw_at_r():
     with pytest.raises(TypeError):
-        xi.xi_nfw_at_R() #No args
-        xi.xi_nfw_at_R(R, Mass, conc) #Too few args
-        xi.xi_nfw_at_R(R, Mass, conc, Omega_m, Omega_m) #Too many args
-        xi.xi_nfw_at_R("a string", Mass, conc, Omega_m, Omega_m) #Wrong type
+        xi.xi_nfw_at_r() #No args
+        xi.xi_nfw_at_r(r, Mass, conc) #Too few args
+        xi.xi_nfw_at_r(r, Mass, conc, Omega_m, Omega_m) #Too many args
+        xi.xi_nfw_at_r("a string", Mass, conc, Omega_m, Omega_m) #Wrong type
 
-def test_outputs_xi_nfw_at_R():
+def test_outputs_xi_nfw_at_r():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m), xi.xi_nfw_at_R(Ra.tolist(), Mass, conc, Omega_m))
+    npt.assert_array_equal(xi.xi_nfw_at_r(ra, Mass, conc, Omega_m), xi.xi_nfw_at_r(ra.tolist(), Mass, conc, Omega_m))
     #Single value vs numpy.array
-    arrout = xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m)
-    for i in range(len(Ra)):
-        npt.assert_equal(xi.xi_nfw_at_R(Ra[i], Mass, conc, Omega_m), arrout[i])
+    arrout = xi.xi_nfw_at_r(ra, Mass, conc, Omega_m)
+    for i in range(len(ra)):
+        npt.assert_equal(xi.xi_nfw_at_r(ra[i], Mass, conc, Omega_m), arrout[i])
 
-def test_exceptions_xi_einasto_at_R():
+def test_exceptions_xi_einasto_at_r():
     with pytest.raises(TypeError):
-        xi.xi_einasto_at_R() #No args
-        xi.xi_einasto_at_R(R, Mass, conc, alpha) #Too few args
-        xi.xi_einasto_at_R(R, Mass, conc, alpha, Omega_m, Omega_m) #Too many args
-        xi.xi_einasto_at_R("a string", Mass, conc, alpha, Omega_m, Omega_m) #Wrong type
+        xi.xi_einasto_at_r() #No args
+        xi.xi_einasto_at_r(r, Mass, conc, alpha) #Too few args
+        xi.xi_einasto_at_r(r, Mass, conc, alpha, Omega_m, Omega_m) #Too many args
+        xi.xi_einasto_at_r("a string", Mass, conc, alpha, Omega_m, Omega_m) #Wrong type
 
-def test_outputs_xi_einasto_at_R():
+def test_outputs_xi_einasto_at_r():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_einasto_at_R(Ra, Mass, conc, alpha, Omega_m), xi.xi_einasto_at_R(Ra.tolist(), Mass, conc, alpha, Omega_m))
+    npt.assert_array_equal(xi.xi_einasto_at_r(ra, Mass, conc, alpha, Omega_m), xi.xi_einasto_at_r(ra.tolist(), Mass, conc, alpha, Omega_m))
     #Single value vs numpy.array
-    arrout = xi.xi_einasto_at_R(Ra, Mass, conc, alpha, Omega_m)
-    for i in range(len(Ra)):
-        npt.assert_equal(xi.xi_einasto_at_R(Ra[i], Mass, conc, alpha, Omega_m), arrout[i])
+    arrout = xi.xi_einasto_at_r(ra, Mass, conc, alpha, Omega_m)
+    for i in range(len(ra)):
+        npt.assert_equal(xi.xi_einasto_at_r(ra[i], Mass, conc, alpha, Omega_m), arrout[i])
 
-def test_xi_mm_at_R():
+def test_xi_mm_at_r():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_mm_at_R(Ra, knl, pnl), xi.xi_mm_at_R(Ra.tolist(), knl, pnl))
+    npt.assert_array_equal(xi.xi_mm_at_r(ra, knl, pnl), xi.xi_mm_at_r(ra.tolist(), knl, pnl))
     #Single value vs numpy.array
-    arr1 = xi.xi_mm_at_R(Ra, knl, pnl)
-    arr2 = np.array([xi.xi_mm_at_R(Ri, knl, pnl) for Ri in Ra])
+    arr1 = xi.xi_mm_at_r(ra, knl, pnl)
+    arr2 = np.array([xi.xi_mm_at_r(ri, knl, pnl) for ri in ra])
     npt.assert_array_equal(arr1, arr2)
 
-def test_xi_mm_at_R_exact():
+def test_xi_mm_at_r_exact():
     #List vs. numpy.array
-    npt.assert_array_equal(xi.xi_mm_at_R(Ra, knl, pnl, exact=True), xi.xi_mm_at_R(Ra.tolist(), knl, pnl, exact=True))
+    npt.assert_array_equal(xi.xi_mm_at_r(ra, knl, pnl, exact=True), xi.xi_mm_at_r(ra.tolist(), knl, pnl, exact=True))
     #Single value vs numpy.array
-    arr1 = xi.xi_mm_at_R(Ra, knl, pnl, exact=True)
-    arr2 = np.array([xi.xi_mm_at_R(Ri, knl, pnl, exact=True) for Ri in Ra])
+    arr1 = xi.xi_mm_at_r(ra, knl, pnl, exact=True)
+    arr2 = np.array([xi.xi_mm_at_r(ri, knl, pnl, exact=True) for ri in ra])
     npt.assert_array_equal(arr1, arr2)
 
-def test_xi_DK_at_R():
-    #Required arguments
+def test_xi_DK_at_r():
+    #required arguments
     rs = be = se = 1.
-    arr1 = xi.xi_DK(Ra, Mass, rs, be, se, klin, plin, Omega_m)
-    arr2 = np.array([xi.xi_DK(Ri, Mass, rs, be, se, klin, plin, Omega_m) for Ri in Ra])
+    arr1 = xi.xi_DK(ra, Mass, rs, be, se, klin, plin, Omega_m)
+    arr2 = np.array([xi.xi_DK(ri, Mass, rs, be, se, klin, plin, Omega_m) for ri in ra])
     npt.assert_array_equal(arr1, arr2)
 
 def test_nfw_mass_dependence():
     masses = np.array([1e13, 1e14, 1e15])
     for i in range(len(masses)-1):
-        xi1 = xi.xi_nfw_at_R(Ra, masses[i], conc, Omega_m)
-        xi2 = xi.xi_nfw_at_R(Ra, masses[i+1], conc, Omega_m)
+        xi1 = xi.xi_nfw_at_r(ra, masses[i], conc, Omega_m)
+        xi2 = xi.xi_nfw_at_r(ra, masses[i+1], conc, Omega_m)
         npt.assert_array_less(xi1, xi2)
 
 def test_einasto_mass_dependence():
     masses = np.array([1e13, 1e14, 1e15])
     for i in range(len(masses)-1):
-        xi1 = xi.xi_einasto_at_R(Ra, masses[i], conc, alpha, Omega_m)
-        xi2 = xi.xi_einasto_at_R(Ra, masses[i+1], conc, alpha, Omega_m)
+        xi1 = xi.xi_einasto_at_r(ra, masses[i], conc, alpha, Omega_m)
+        xi2 = xi.xi_einasto_at_r(ra, masses[i+1], conc, alpha, Omega_m)
         npt.assert_array_less(xi1, xi2)
 
 def test_combination():
-    xinfw = xi.xi_nfw_at_R(Ra, Mass, conc, Omega_m)
-    ximm = xi.xi_mm_at_R(Ra, knl, pnl)
+    xinfw = xi.xi_nfw_at_r(ra, Mass, conc, Omega_m)
+    ximm = xi.xi_mm_at_r(ra, knl, pnl)
     from cluster_toolkit import bias
     b = bias.bias_at_M(Mass, klin, plin, Omega_m)
     xi2h = xi.xi_2halo(b, ximm)
