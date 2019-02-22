@@ -23,6 +23,9 @@ def test_bins():
     Redges = [.6, 1.6, 1.8]
     aves = np.array([true_ave(Rlo, Rhi) for Rlo,Rhi in Rbins])
     npt.assert_array_almost_equal(aves, averaging.average_profile_in_bins(Redges, R, prof))
+    arr1 = averaging.average_profile_in_bins(Redges, R, prof)
+    arr2 = np.array([averaging.average_profile_in_bin(Redges[i], Redges[i+1], R, prof) for i in range(len(Redges)-1)])
+    npt.assert_array_equal(arr1, arr2)
 
 def test_errors():
     with pytest.raises(Exception):
