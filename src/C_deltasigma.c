@@ -135,25 +135,6 @@ double integrand_large_scales(double lRz, void*params){
 
 /**
  * \brief Projected surface mass density Sigma in units
- * of h*Msun/pc^2 at a radius R in Mpc/h, given a 
- * 3D halo-matter correlation function.
- *
- * Note: all distances are comoving.
- */
-double Sigma_at_R(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
-  double*Rs = (double*)malloc(sizeof(double));
-  double*Sigma = (double*)malloc(sizeof(double));
-  double result;
-  Rs[0] = R;
-  Sigma_at_R_arr(Rs, 1, Rxi, xi, Nxi, M, conc, delta, om, Sigma);
-  result = Sigma[0];
-  free(Rs);
-  free(Sigma);
-  return result;
-}
-
-/**
- * \brief Projected surface mass density Sigma in units
  * of h*Msun/pc^2 at an array of radii R in Mpc/h, given a 
  * 3D halo-matter correlation function.
  *
@@ -224,18 +205,6 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
  *
  * Note: all distances are comoving.
  */
-double Sigma_at_R_full(double R, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om){
-  double*Ra = (double*)malloc(sizeof(double));
-  double*Sigma = (double*)malloc(sizeof(double));
-  double result;
-  Ra[0] = R;
-  Sigma_at_R_full_arr(Ra, 1, Rxi, xi, Nxi, M, conc, delta, om, Sigma);
-  result = Sigma[0];
-  free(Ra);
-  free(Sigma);
-  return result;
-}
-
 int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, double conc, int delta, double om, double*Sigma){
   //This function just adds on the powerlaw part at the end
   //It can actually be done analytically...
@@ -279,18 +248,6 @@ double DS_integrand_medium_scales(double lR, void*params){
   double R = exp(lR);
   integrand_params pars = *(integrand_params*)params;
   return R * R * gsl_spline_eval(pars.spline, log(R), pars.acc);
-}
-
-double DeltaSigma_at_R(double R, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om){
-  double*Ra = (double*)malloc(sizeof(double));
-  double*DS = (double*)malloc(sizeof(double));
-  double result;
-  Ra[0] = R;
-  DeltaSigma_at_R_arr(Ra, 1, Rs, Sigma, Ns, M, conc, delta, om, DS);
-  result = DS[0];
-  free(Ra);
-  free(DS);
-  return result;
 }
 
 int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, double M, double conc, int delta, double om, double*DeltaSigma){
