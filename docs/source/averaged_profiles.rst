@@ -25,4 +25,4 @@ This can be computed in the code by using
 
 .. note::
 
-   The returned average profile will be an array of length :math:`N_{bins}`. 
+   The returned average profile will be an array of length :math:`N_{\rm bins}`. 

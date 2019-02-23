@@ -16,6 +16,7 @@ Submodules
    cluster_toolkit.massfunction
    cluster_toolkit.miscentering
    cluster_toolkit.peak_height
+   cluster_toolkit.profile_derivatives
    cluster_toolkit.xi
 
 Module contents

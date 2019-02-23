@@ -8,7 +8,7 @@ To summarize, if a cluster center is incorrectly identified on the sky by a dist
 
 .. math::
 
-   \Sigma_{\rm mis}(R| R_{\rm mis}) = \int_0^{2\pi} \frac{{\rm d}\theta}{2\pi}\ \Sigma\left(\sqrt{R^2+R_{\rm mis}^2 + 2RR_{\rm mis}\cos\theta}\right).
+   \Sigma_{\rm mis}^{\rm single\ cluster}(R, R_{\rm mis}) = \int_0^{2\pi} \frac{{\rm d}\theta}{2\pi}\ \Sigma\left(\sqrt{R^2+R_{\rm mis}^2 + 2RR_{\rm mis}\cos\theta}\right).
 
 That is, the average surface mass density at distance :math:`R` away from the incorrect center is the average of the circle drawn around that incorrect center. To get the miscentered profiles of a *single cluster* you would use
 
@@ -28,7 +28,7 @@ The :math:`\Delta\Sigma` profile is defined the usual way
 
 .. math::
 
-   \Delta\Sigma(R|R_{\rm mis}) = \bar{\Sigma}(<R|R_{\rm mis}) - \Sigma(R|R_{\rm mis})
+   \Delta\Sigma(R,R_{\rm mis}) = \bar{\Sigma}_{\rm mis}(<R,R_{\rm mis}) - \Sigma_{\rm mis}(R,R_{\rm mis})
 
 which can be calculated using this module using
 
@@ -43,15 +43,21 @@ In a stack of clusters, the amount of miscentering will follow a distribution :m
 
 .. math::
 
-   P(R'|R_{\rm mis}) = \frac{R'}{R^2_{\rm mis}}\exp[-R'^2/2R_{\rm mis}^2].
+   P(R'|R_{\rm mis}) = \frac{R'}{R^2_{\rm mis}}\exp[-R'^2/2R_{\rm mis}^2]\,.
 
-This means that :math:`R_{\rm mis}` is a free parameter in your analysis. This gives rise to a miscentered projected density profile:
+In `McClintock et al. (2019) <http://adsabs.harvard.edu/abs/2019MNRAS.482.1352M>`_ we used a Gamma profile for the mistnering:
 
 .. math::
 
-   \Sigma_{\rm mis}(R) = \int_0^\infty{\rm d}R'\ P(R'|R_{\rm mis})\Sigma(R|R')
+   P(R'|R_{\rm mis}) =  \frac{R'}{R^2_{\rm mis}}\exp[-R'/R_{\rm mis}]\,.
 
-which can then itself be integrated to get :math:`\Delta\Sigma_{\rm mis}`. To calculate these in the code you would use:
+Both of these are available in the toolkit. We see that :math:`R_{\rm mis}` is a free parameter, giving rise to a miscentered projected stacked density profile:
+
+.. math::
+
+   \Sigma_{\rm mis}^{\rm stack}(R) = \int_0^\infty{\rm d}R'\ P(R'|R_{\rm mis})\Sigma_{\rm mis}^{\rm single\ cluster}(R, R')
+
+which can then itself be integrated to get :math:`\Delta\Sigma_{\rm mis^{\rm stack}}`. To calculate these in the code you would use:
 
 .. code::
 

@@ -11,12 +11,12 @@ The projected density (or the surface mass density) is defined as
 
 .. math::
 
-   \Sigma(R) = \Omega_m\rho_{crit}\int_{-\infty}^{+\infty}{\rm d}z\ \xi_{hm}(\sqrt{R^2+z^2}).
+   \Sigma(R) = \Omega_m\rho_{\rm crit}\int_{-\infty}^{+\infty}{\rm d}z\ \xi_{\rm hm}(\sqrt{R^2+z^2}).
 
 Where :math:`\xi_{hm}` is the halo-matter correlation function (link to the correlation function documentation). The integral is along the line of site, meaning that :math:`R` is the distance on the sky from the center of the cluster.
 
 .. note::
-   :math:`\Sigma` and :math:`\Delta\Sigma` use units of :math:`{\rm M}_\odot h/{\rm pc}^2`, following convention in the literature.
+   :math:`\Sigma` and :math:`\Delta\Sigma` use units of :math:`h{\rm M_\odot/pc^2}`, following convention in the literature.
 
 .. note::
    This module is called :code:`cluster_toolkit.deltasigma`, even though it contains routines to calculate :math:`\Sigma` as well as :math:`\Delta\Sigma`.
@@ -64,7 +64,7 @@ where :math:`\Sigma` is given above and
 
    \bar{\Sigma}(<R) = \frac{2}{R^2}\int_0^R {\rm d}R'\ \Sigma(R'),
 
-or the average surface mass density over the circle enclosed by :math:`R`. To calculate this using this modele you would use
+or the average surface mass density within the circle of radius:math:`R`. To calculate this you would use
 
 .. code::
 

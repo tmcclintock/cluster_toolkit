@@ -6,7 +6,7 @@ In galaxy cluster weak lensing, a significant systematic issue is cluster member
 
 .. math::
 
-   \Delta\Sigma_{corrected}(R) = (1-f_{\rm cl})^{-1}(R)\Delta\Sigma(R)
+   \Delta\Sigma_{\rm corrected}(R) = (1-f_{\rm cl})^{-1}(R)\Delta\Sigma(R)
 
 where :math:`f_{\rm cl}` is the fraction of cluster members misidentified as being source galaxies. For shorthand, we write :math:`\mathcal{B} = (1-f_{\rm cl})^{-1}`. This module provides multiple models for :math:`\mathcal{B}`.
 
@@ -23,7 +23,7 @@ where :math:`x=R/R_s` and
 
 .. math::
 
-   F(x) = \Biggl \lbrace
+   F(x) = \Biggl\lbrace
    \begin{eqnarray}
    \frac{\tan^{-1}\sqrt{x^2-1}}{\sqrt{x^2-1}} : x > 1\\
    1 : x = 1\\
