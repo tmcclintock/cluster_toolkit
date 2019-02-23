@@ -109,12 +109,11 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
   int i,j;
   double PI_h = M_PI/h;
   double PI_2 = M_PI*0.5;
-  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
-  gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  gsl_spline_init(Pspl, k, P, Nk);
   double sum;
   
   static int init_flag = 0;
+  static gsl_spline*Pspl = NULL;
+  static gsl_interp_accel*acc = NULL;
   static double h_old = -1;
   static int N_old = -1;
   static double*x      = NULL;
@@ -122,6 +121,15 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
   static double*dpsi   = NULL;
   static double*xsdpsi = NULL;
   double t, psi, PIsinht;
+  
+  //Create the spline and accelerator
+  if (init_flag == 0){
+      Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
+      acc = gsl_interp_accel_alloc();
+  }
+  gsl_spline_init(Pspl, k, P, Nk);
+  
+  //Compute things
   if ((init_flag == 0) || (h_old != h) || (N_old < N)){
     h_old = h;
     N_old = N;
@@ -147,6 +155,8 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
       xsdpsi[i] = xsinx[i]*dpsi[i];
     }
   }
+
+  //Compute the transform
   for(j = 0; j < Nr; j++){
     sum = 0;
     for(i = 0; i < N; i++){
@@ -154,28 +164,7 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
     }
     xi[j] = sum/(r[j]*r[j]*r[j]*M_PI*2);
   }
-  
-  /* //original code below, left in for testing for now
-  double zero,psi,x,t,dpsi,f,PIsinht;
-  for(j = 0; j < Nr; j++){
-    sum = 0;
-    for(i = 0; i < N; i++){
-      zero = i+1;
-      psi = h*zero*tanh(sinh(h*zero)*PI_2);
-      x = psi*PI_h;
-      t = h*zero;
-      PIsinht = M_PI*sinh(t);
-      dpsi = (M_PI*t*cosh(t)+sinh(PIsinht))/(1+cosh(PIsinht));
-      if (dpsi != dpsi) dpsi=1.0;
-      f = x*get_P(x,r[j],k,P,Nk,Pspl,acc);
-      sum += f*sin(x)*dpsi;
-    }
-    xi[j] = sum/(r[j]*r[j]*r[j]*M_PI*2);
-  }
-  */
 
-  gsl_spline_free(Pspl);
-  gsl_interp_accel_free(acc);
   return 0; //Note: factor of pi picked up in the quadrature rule
   //See Ogata 2005 for details, especially eq. 5.2
 }
