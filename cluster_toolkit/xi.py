@@ -28,7 +28,8 @@ def xi_nfw_at_r(r, M, c, Omega_m, delta=200):
         raise Exception("r cannot be a >1D array.")
 
     xi = np.zeros_like(r)
-    cluster_toolkit._lib.calc_xi_nfw(_dcast(r), len(r), M, c, delta, Omega_m, _dcast(xi))
+    cluster_toolkit._lib.calc_xi_nfw(_dcast(r), len(r), M, c, delta,
+                                     Omega_m, _dcast(xi))
     if scalar_input:
         return np.squeeze(xi)
     return xi
@@ -49,12 +50,21 @@ def xi_einasto_at_r(r, M, conc, alpha, om, delta=200, rhos=-1.):
         float or array like: Einasto halo profile.
 
     """
-    if type(r) is list or type(r) is np.ndarray:
-        xi = np.zeros_like(r)
-        cluster_toolkit._lib.calc_xi_einasto(_dcast(r), len(r), M, rhos, conc, alpha, delta, om, _dcast(xi))
-        return xi
-    else:
-        return cluster_toolkit._lib.xi_einasto_at_r(r, M, rhos, conc, alpha, delta, om)
+    r = np.asarray(r)
+    scalar_input = False
+    if r.ndim == 0:
+        r = r[None] #makes r 1D
+        scalar_input = True
+    if r.ndim > 1:
+        raise Exception("r cannot be a >1D array.")
+    
+    xi = np.zeros_like(r)
+    cluster_toolkit._lib.calc_xi_einasto(_dcast(r), len(r), M, rhos,
+                                         conc, alpha, delta, om, _dcast(xi))
+    
+    if scalar_input:
+        return np.squeeze(xi)
+    return xi
 
 def xi_mm_at_r(r, k, P, N=500, step=0.005, exact=False):
     """Matter-matter correlation function.
@@ -71,17 +81,27 @@ def xi_mm_at_r(r, k, P, N=500, step=0.005, exact=False):
         float or array like: Matter-matter correlation function
 
     """
-    if type(r) is list or type(r) is np.ndarray:
-        xi = np.zeros_like(r)
-        if not exact:
-            cluster_toolkit._lib.calc_xi_mm(_dcast(r), len(r), _dcast(k), _dcast(P), len(k), _dcast(xi), N, step)
-        else:
-            cluster_toolkit._lib.calc_xi_mm_exact(_dcast(r), len(r), _dcast(k), _dcast(P), len(k), _dcast(xi))
-        return xi
+    r = np.asarray(r)
+    scalar_input = False
+    if r.ndim == 0:
+        r = r[None] #makes r 1D
+        scalar_input = True
+    if r.ndim > 1:
+        raise Exception("r cannot be a >1D array.")
+    
+    xi = np.zeros_like(r)
     if not exact:
-        return cluster_toolkit._lib.xi_mm_at_r(r, _dcast(k), _dcast(P), len(k), N, step)
+        cluster_toolkit._lib.calc_xi_mm(_dcast(r), len(r), _dcast(k),
+                                        _dcast(P), len(k), _dcast(xi),
+                                        N, step)
     else:
-        return cluster_toolkit._lib.xi_mm_at_r_exact(r, _dcast(k), _dcast(P), len(k))
+        cluster_toolkit._lib.calc_xi_mm_exact(_dcast(r), len(r),
+                                              _dcast(k), _dcast(P),
+                                              len(k), _dcast(xi))
+
+    if scalar_input:
+        return np.squeeze(xi)
+    return xi
 
 def xi_2halo(bias, xi_mm):
     """2-halo term in halo-matter correlation function
@@ -94,9 +114,9 @@ def xi_2halo(bias, xi_mm):
         float or array like: 2-halo term in halo-matter correlation function
 
     """
-    Nr = len(xi_mm)
     xi = np.zeros_like(xi_mm)
-    cluster_toolkit._lib.calc_xi_2halo(Nr, bias, _dcast(xi_mm), _dcast(xi))
+    cluster_toolkit._lib.calc_xi_2halo(len(xi_mm), bias, _dcast(xi_mm),
+                                       _dcast(xi))
     return xi
 
 def xi_hm(xi_1halo, xi_2halo, combination="max"):
@@ -119,9 +139,10 @@ def xi_hm(xi_1halo, xi_2halo, combination="max"):
         switch = 1
     else:
         raise Exception("Combinations other than maximum not implemented yet")
-    Nr = len(xi_1halo)
+
     xi = np.zeros_like(xi_1halo)
-    cluster_toolkit._lib.calc_xi_hm(Nr, _dcast(xi_1halo), _dcast(xi_2halo), _dcast(xi), switch)
+    cluster_toolkit._lib.calc_xi_hm(len(xi_1halo), _dcast(xi_1halo),
+                                    _dcast(xi_2halo), _dcast(xi), switch)
     return xi
 
 def xi_DK(r, M, conc, be, se, k, P, om, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
@@ -146,14 +167,20 @@ def xi_DK(r, M, conc, be, se, k, P, om, delta=200, rhos=-1., alpha=-1., beta=-1.
         float or array like: DK profile evaluated at the input radii
 
     """
-    Nk = len(k)
-    if type(r) is list or type(r) is np.ndarray:
-        Nr = len(r)
-        xi = np.zeros_like(r)
-        cluster_toolkit._lib.calc_xi_DK(_dcast(r), Nr, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, _dcast(xi))
-        return xi
-    else:
-        return cluster_toolkit._lib.xi_DK(r, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om)
+    r = np.asarray(r)
+    scalar_input = False
+    if r.ndim == 0:
+        r = r[None] #makes r 1D
+        scalar_input = True
+    if r.ndim > 1:
+        raise Exception("r cannot be a >1D array.")
+    
+    xi = np.zeros_like(r)
+    cluster_toolkit._lib.calc_xi_DK(_dcast(r), len(r), M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), len(k), om, _dcast(xi))
+
+    if scalar_input:
+        return np.squeeze(xi)
+    return xi
 
 def xi_DK_appendix1(r, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
     """Diemer-Kravtsov 2014 profile, first form from the appendix, eq. A3.
@@ -179,14 +206,20 @@ def xi_DK_appendix1(r, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-
         float or array like: DK profile evaluated at the input radii
 
     """
-    Nk = len(k)
-    if type(r) is list or type(r) is np.ndarray:
-        Nr = len(r)
-        xi = np.zeros_like(r)
-        cluster_toolkit._lib.calc_xi_DK_app1(_dcast(r), Nr, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm), _dcast(xi))
-        return xi
-    else:
-        return cluster_toolkit._lib.xi_DK_app1(r, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm))
+    r = np.asarray(r)
+    scalar_input = False
+    if r.ndim == 0:
+        r = r[None] #makes r 1D
+        scalar_input = True
+    if r.ndim > 1:
+        raise Exception("r cannot be a >1D array.")
+
+    xi = np.zeros_like(r)
+    cluster_toolkit._lib.calc_xi_DK_app1(_dcast(r), len(r), M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), len(k), om, bias, _dcast(xi_mm), _dcast(xi))
+
+    if scalar_input:
+        return np.squeeze(xi)
+    return xi
 
 def xi_DK_appendix2(r, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-1., alpha=-1., beta=-1., gamma=-1.):
     """Diemer-Kravtsov 2014 profile, second form from the appendix, eq. A4.
@@ -211,11 +244,17 @@ def xi_DK_appendix2(r, M, conc, be, se, k, P, om, bias, xi_mm, delta=200, rhos=-
     Returns:
         float or array like: DK profile evaluated at the input radii
     """
-    Nk = len(k)
-    if type(r) is list or type(r) is np.ndarray:
-        Nr = len(r)
-        xi = np.zeros_like(r)
-        cluster_toolkit._lib.calc_xi_DK_app2(_dcast(r), Nr, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm), _dcast(xi))
-        return xi
-    else:
-        return cluster_toolkit._lib.xi_DK_app2(r, M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), Nk, om, bias, _dcast(xi_mm))
+    r = np.asarray(r)
+    scalar_input = False
+    if r.ndim == 0:
+        r = r[None] #makes r 1D
+        scalar_input = True
+    if r.ndim > 1:
+        raise Exception("r cannot be a >1D array.")
+
+    xi = np.zeros_like(r)
+    cluster_toolkit._lib.calc_xi_DK_app2(_dcast(r), len(r), M, rhos, conc, be, se, alpha, beta, gamma, delta, _dcast(k), _dcast(P), len(k), om, bias, _dcast(xi_mm), _dcast(xi))
+
+    if scalar_input:
+        return np.squeeze(xi)
+    return xi

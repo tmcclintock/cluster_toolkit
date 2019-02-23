@@ -42,13 +42,13 @@ double xi_nfw_at_r(double r, double Mass, double conc, int delta, double om){
 int calc_xi_nfw(double*r, int Nr, double Mass, double conc, int delta, double om, double*xi_nfw){
   int i;
   double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double rho0_rhom = delta/(3.*(log(1.+conc)-conc/(1.+conc)));
   double rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double rscale = rdelta/conc;
-  double fc = log(1.+conc)-conc/(1.+conc);
   double r_rs;
   for(i = 0; i < Nr; i++){
     r_rs = r[i]/rscale;
-    xi_nfw[i] = Mass/(4.*M_PI*rscale*rscale*rscale*fc)/(r_rs*(1+r_rs)*(1+r_rs))/rhom - 1.0;
+    xi_nfw[i] = rho0_rhom/(r_rs*(1+r_rs)*(1+r_rs)) - 1.;
   }
   return 0;
 }
@@ -60,23 +60,10 @@ double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta, doub
   double rs = rdelta/conc; //Scale radius in Mpc/h
   double x = 2./alpha * pow(conc, alpha); //pow(rdelta/rs, alpha); 
   double a = 3./alpha;
-  //printf("alpha = %.3e    x = %.3e    r\n",alpha, x);fflush(stdout);
   double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
   double num = delta * rhom * rdelta*rdelta*rdelta * alpha * pow(2./alpha, a);
   double den = 3. * rs*rs*rs * gam;
   return num/den;
-}
-
-double xi_einasto_at_r(double r, double Mass, double rhos, double conc, double alpha, int delta, double om){
-  double*rarr = malloc(sizeof(double));
-  double*xi  = malloc(sizeof(double));
-  double result;
-  rarr[0] = r;
-  calc_xi_einasto(rarr, 1, Mass, rhos, conc, alpha, delta, om, xi);
-  result = xi[0];
-  free(rarr);
-  free(xi);
-  return result;
 }
 
 int calc_xi_einasto(double*r, int Nr, double Mass, double rhos, double conc, double alpha, int delta, double om, double*xi_einasto){
@@ -195,18 +182,6 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
 
 ///////Functions for calc_xi_mm/////////
 
-double xi_mm_at_r(double r, double*k, double*P, int Nk, int N, double h){
-  double*ra = malloc(sizeof(double));
-  double*xi = malloc(sizeof(double));
-  double result;
-  ra[0] = r;
-  calc_xi_mm(ra, 1, k, P, Nk, xi, N, h);
-  result = xi[0];
-  free(ra);
-  free(xi);
-  return result;
-}
-
 //////////////////////////////////////////
 //////////////Xi(r) exact below //////////
 //////////////////////////////////////////
@@ -305,9 +280,8 @@ double xi_mm_at_r_exact(double r, double*k, double*P, int Nk){
 
 int calc_xi_DK(double*r, int Nr, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double*xi){
   double rhom = rhomconst*om; //SM h^2/Mpc^3
-  //Compute r200m
+  //Compute rDeltam
   double rdelta = pow(M/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
-  //double rs = rdelta / conc; //compute scale radius from concentration
   xi[0] = 0;
   double*rho_ein = malloc(Nr*sizeof(double));
   double*f_trans = malloc(Nr*sizeof(double));
@@ -327,7 +301,7 @@ int calc_xi_DK(double*r, int Nr, double M, double rhos, double conc, double be, 
     rhos = rhos_einasto_at_M(M, conc, alpha, delta, om);
   }
   double g_b = gamma/beta;
-  double r_t = (1.9-0.18*nu)*rdelta; //NEED nu for this
+  double r_t = (1.9-0.18*nu)*rdelta;
   calc_xi_einasto(r, Nr, M, rhos, conc, alpha, delta, om, rho_ein);
   //here convert xi_ein to rho_ein
   for(i = 0; i < Nr; i++){
@@ -340,18 +314,6 @@ int calc_xi_DK(double*r, int Nr, double M, double rhos, double conc, double be, 
   free(f_trans);
   free(rho_outer);
   return 0;
-}
-
-double xi_DK(double r, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om){
-  double*ra = malloc(sizeof(double));
-  double*xi = malloc(sizeof(double));
-  double result;
-  ra[0] = r;
-  calc_xi_DK(ra, 1, M, rhos, conc, be, se, alpha, beta, gamma, delta, k, P, Nk, om, xi);
-  result = xi[0];
-  free(ra);
-  free(xi);
-  return result;
 }
 
 //////////////////////////////
@@ -396,18 +358,6 @@ int calc_xi_DK_app1(double*r, int Nr, double M, double rhos, double conc, double
   return 0;
 }
 
-double xi_DK_app1(double r, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm){
-  double*ra = malloc(sizeof(double));
-  double*xi = malloc(sizeof(double));
-  double result;
-  ra[0] = r;
-  calc_xi_DK_app1(ra, 1, M, rhos, conc, be, se, alpha, beta, gamma, delta, k, P, Nk, om, bias, xi_mm, xi);
-  result = xi[0];
-  free(ra);
-  free(xi);
-  return result;
-}
-
 //////////////////////////////
 //////Appendix version 2//////
 //////////////////////////////
@@ -448,17 +398,4 @@ int calc_xi_DK_app2(double*r, int Nr, double M, double rhos, double conc, double
   free(f_trans);
   free(rho_outer);
   return 0;
-}
-
-double xi_DK_app2(double r, double M, double rhos, double conc, double be, double se, double alpha, double beta, double gamma, int delta, double*k, double*P, int Nk, double om, double bias, double*xi_mm){
-  double*ra = malloc(sizeof(double));
-  double*xi = malloc(sizeof(double));
-  double result;
-  ra[0] = r;
-  calc_xi_DK_app2(ra, 1, M, rhos, conc, be, se, alpha, beta, gamma, delta, k, P, Nk, om, bias, xi_mm, xi);
-  result = xi[0];
-  free(ra);
-  free(xi);
-  return result;
-
 }
