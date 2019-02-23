@@ -29,21 +29,21 @@ def test_outputs_rho_nfw_at_r():
     for i in range(len(R_arr)):
         npt.assert_equal(density.rho_nfw_at_r(R_arr[i], Mass, conc, Omega_m), arrout[i])
 
-def test_exceptions_rho_einasto_at_R():
+def test_exceptions_rho_einasto_at_r():
     with pytest.raises(TypeError):
-        density.rho_einasto_at_R() #No args
-        density.rho_einasto_at_R(R, Mass, Rscale, alpha) #Too few args
-        density.rho_einasto_at_R(R, Mass, Rscale, alpha, Omega_m, Omega_m) #Too many args
-        density.rho_einasto_at_R("a string", Mass, Rscale, alpha, Omega_m, Omega_m) #Wrong type
+        density.rho_einasto_at_r() #No args
+        density.rho_einasto_at_r(R, Mass, Rscale, alpha) #Too few args
+        density.rho_einasto_at_r(R, Mass, Rscale, alpha, Omega_m, Omega_m) #Too many args
+        density.rho_einasto_at_r("a string", Mass, Rscale, alpha, Omega_m, Omega_m) #Wrong type
 
-def test_outputs_rho_einasto_at_R():
+def test_outputs_rho_einasto_at_r():
     #List vs. numpy.array
-    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
-    arr2 = density.rho_einasto_at_R(R_arr.tolist(), Mass, Rscale, alpha, Omega_m)
+    arr1 = density.rho_einasto_at_r(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = density.rho_einasto_at_r(R_arr.tolist(), Mass, Rscale, alpha, Omega_m)
     npt.assert_array_equal(arr1, arr2)
     #Single value vs numpy.array
-    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
-    arr2 = np.array([density.rho_einasto_at_R(R_arr[i], Mass, Rscale, alpha, Omega_m) for i in range(len(R_arr))])
+    arr1 = density.rho_einasto_at_r(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr2 = np.array([density.rho_einasto_at_r(R_arr[i], Mass, Rscale, alpha, Omega_m) for i in range(len(R_arr))])
     npt.assert_array_equal(arr1, arr2)
 
 def test_rho_vs_xi_nfw():
@@ -56,7 +56,7 @@ def test_rho_vs_xi_nfw():
     npt.assert_array_equal(ones, arr2)
     
 def test_rho_vs_xi_einasto():
-    arr1 = density.rho_einasto_at_R(R_arr, Mass, Rscale, alpha, Omega_m)
+    arr1 = density.rho_einasto_at_r(R_arr, Mass, Rscale, alpha, Omega_m)
     arr2 = xi.xi_einasto_at_r(R_arr, Mass, Rscale, alpha, Omega_m)
     arr2 = rhom*(1+arr2)
     arr2 = arr2/arr1
@@ -66,5 +66,5 @@ def test_rho_vs_xi_einasto():
 
 if __name__ == "__main__":
     #test_outputs_rho_nfw_at_r()
-    #test_outputs_rho_einasto_at_R()
+    #test_outputs_rho_einasto_at_r()
     test_outputs_rho_nfw_at_r()

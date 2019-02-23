@@ -35,7 +35,7 @@ def rho_nfw_at_r(r, M, c, Omega_m, delta=200):
     return rho
 
 
-def rho_einasto_at_R(r, M, rs, alpha, Omega_m, delta=200, rhos=-1.):
+def rho_einasto_at_r(r, M, rs, alpha, Omega_m, delta=200, rhos=-1.):
     """Einasto halo density profile. Distances are Mpc/h comoving.
 
     Args:
