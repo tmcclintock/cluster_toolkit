@@ -42,13 +42,16 @@ double xi_nfw_at_r(double r, double Mass, double conc, int delta, double om){
 int calc_xi_nfw(double*r, int Nr, double Mass, double conc, int delta, double om, double*xi_nfw){
   int i;
   double rhom = om*rhomconst;//SM h^2/Mpc^3
-  double rho0_rhom = delta/(3.*(log(1.+conc)-conc/(1.+conc)));
+  //double rho0_rhom = delta/(3.*(log(1.+conc)-conc/(1.+conc)));
   double rdelta = pow(Mass/(1.33333333333*M_PI*rhom*delta), 0.33333333333);
   double rscale = rdelta/conc;
+  double fc = log(1.+conc)-conc/(1.+conc);
   double r_rs;
   for(i = 0; i < Nr; i++){
     r_rs = r[i]/rscale;
-    xi_nfw[i] = rho0_rhom/(r_rs*(1+r_rs)*(1+r_rs)) - 1.;
+    //xi_nfw[i] = rho0_rhom/(r_rs*(1+r_rs)*(1+r_rs)) - 1.;
+    xi_nfw[i] = Mass/(4.*M_PI*rscale*rscale*rscale*fc)/(r_rs*(1+r_rs)*(1+r_rs))/rhom - 1.0;
+
   }
   return 0;
 }
