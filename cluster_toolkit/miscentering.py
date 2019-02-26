@@ -78,7 +78,8 @@ def Sigma_mis_at_R(R, Rsigma, Sigma, M, conc, Omega_m, Rmis, delta=200, kernel="
     elif kernel == "gamma":
         integrand_switch = 1
     else:
-        raise Exception("Miscentering kernel must be either 'gaussian' or 'exponential'")
+        raise Exception("Miscentering kernel must be either "+
+                        "'rayleigh' or 'gamma'")
 
     Sigma_mis = np.zeros_like(R)
     cluster_toolkit._lib.Sigma_mis_at_R_arr(_dcast(R), len(R), _dcast(Rsigma), _dcast(Sigma), len(Rsigma),
