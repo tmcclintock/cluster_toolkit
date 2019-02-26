@@ -19,11 +19,11 @@
 #include <stdio.h>
 
 #define ABSERR 0.0
-#define RELERR 1e-4 // Used for miscentering
+#define RELERR 1e-2 // Used for miscentering
 #define workspace_size 8000
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
-#define KEY 3 //Used for GSL QAG function
+#define KEY 1 //Used for GSL QAG function
 
 ////////////// SIGMA(R) FUNCTIONS BELOW////////////////
 
