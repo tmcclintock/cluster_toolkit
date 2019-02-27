@@ -7,8 +7,8 @@ int xi_1h_at_r_arr(double*r, int Nr, double M, double c,
 int xi_2h_at_r_arr(double*r, int Nr, double bias, double*ximm, double*xi2h);
 
 int xi_2hcorrection_at_r_arr(double*r, int Nr, double M1, double rt,
-			     double M2, double conc2, double bias,
-			     int delta, double Omega_m, double*xi_2hc);
+			     double M2, double conc2, double Omega_m,
+			     double*xi_2hc);
 
 double I_term(double r, double R, double re, double beta);
 

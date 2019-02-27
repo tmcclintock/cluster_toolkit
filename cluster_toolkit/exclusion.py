@@ -30,26 +30,29 @@ def xi_hm_exclusion_at_r(radii, Mass, conc,
         float or array-like: exclusion profile at each radii
 
     """
+    radii = np.asarray(radii)
+    ximm = np.asarray(ximm)
+    scalar_input = False
+    if radii.ndim == 0:
+        radii = radii[None] #makes r 1D
+        scalar_input = True
+    if radii.ndim > 1:
+        raise Exception("radii cannot be a >1D array.")
+
+    if len(radii) != len(ximm):
+        raise Exception("len(r) must equal len(ximm)")
+
     if exclusion_scheme not in [0,1,2]:
         raise Exception("Halo exclusion_scheme must be in [0,1,2].")
     lib =  cluster_toolkit._lib
-    if type(radii) is list or type(radii) is np.ndarray:
-        xihm = np.zeros_like(radii)
-        lib.xihm_exclusion_at_r_arr(dc(radii), len(radii),
-                                    Mass, conc, rt, beta, Ma, ca,
-                                    Mb, cb, bias, dc(ximm), delta,
-                                    Omega_m, exclusion_scheme, dc(xihm))
-        return xihm
-    else:
-        r = np.array(radii)
-        xihm = np.zeros_like(r)
-        if len(r) != len(np.atleast_1d(ximm)):
-            raise Exception("xi_hm_exclusion: Supply single xi_mm value for a single radii.")
-        lib.xihm_exclusion_at_r_arr(dc(r), len(r), Mass, conc, rt,
-                                    beta, Ma, ca, Mb, cb,
-                                    bias, dc(np.array(ximm)), delta, Omega_m,
-                                    exclusion_scheme, dc(xihm))
-        return xihm
+    xihm = np.zeros_like(radii)
+    lib.xihm_exclusion_at_r_arr(dc(radii), len(radii),
+                                Mass, conc, rt, beta, Ma, ca,
+                                Mb, cb, bias, dc(ximm), delta,
+                                Omega_m, exclusion_scheme, dc(xihm))
+    if scalar_input:
+        return np.squeeze(xihm)
+    return xihm
 
 def xi_1h_exclusion_at_r(radii, Mass, conc,
                          rt, beta, Omega_m, delta=200):
@@ -69,15 +72,22 @@ def xi_1h_exclusion_at_r(radii, Mass, conc,
         float or array-like: 1-halo of the exclusion profile at each radii
 
     """
+    radii = np.asarray(radii)
+    scalar_input = False
+    if radii.ndim == 0:
+        radii = radii[None] #makes r 1D
+        scalar_input = True
+    if radii.ndim > 1:
+        raise Exception("radii cannot be a >1D array.")
+
     lib =  cluster_toolkit._lib
-    if type(radii) is list or type(radii) is np.ndarray:
-        xi1h = np.zeros_like(radii)
-        lib.xi_1h_at_r_arr(dc(radii), len(radii),
-                           Mass, conc, rt, beta, delta,
-                           Omega_m, dc(xi1h))
-        return xi1h
-    else:
-        return lib.xi_1h_at_r(radii, Mass, conc, rt, beta, delta, Omega_m)
+    xi1h = np.zeros_like(radii)
+    lib.xi_1h_at_r_arr(dc(radii), len(radii),
+                       Mass, conc, rt, beta, delta,
+                       Omega_m, dc(xi1h))
+    if scalar_input:
+        return np.squeeze(xi1h)
+    return xi1h
 
 def xi_2h_exclusion_at_r(radii, bias, ximm):
     """Halo-matter correlation function with halo exclusion incorporated,
@@ -92,19 +102,25 @@ def xi_2h_exclusion_at_r(radii, bias, ximm):
         float or array-like: 2-halo of the exclusion profile at each radii
 
     """
+    radii = np.asarray(radii)
+    ximm = np.asarray(ximm)
+    scalar_input = False
+    if radii.ndim == 0:
+        radii = radii[None] #makes r 1D
+        scalar_input = True
+    if radii.ndim > 1:
+        raise Exception("radii cannot be a >1D array.")
+
+    if len(radii) != len(ximm):
+        raise Exception("len(r) must equal len(ximm)")
 
     lib =  cluster_toolkit._lib
-    if type(radii) is list or type(radii) is np.ndarray:
-        xi2h = np.zeros_like(radii)
-        lib.xi_2h_at_r_arr(dc(radii), len(radii),
-                           bias, dc(ximm), dc(xi2h))
-        return xi2h
-    else:
-        r = np.array(radii)
-        xi2h = np.zeros_like(r)
-        if len(r) != len(np.atleast_1d(ximm)):
-            raise Exception("xi_2h_exclusion: Supply single xi_mm value for a single radii.")
-        return lib.xi_2h_at_r(dc(r), len(r), bias, dc(np.array(ximm)))
+    xi2h = np.zeros_like(radii)
+    lib.xi_2h_at_r_arr(dc(radii), len(radii),
+                       bias, dc(ximm), dc(xi2h))
+    if scalar_input:
+        return np.squeeze(xi2h)
+    return xi2h
 
 def xi_correction_at_r(radii, Mass, rt, Ma, ca, Mb, cb, bias, ximm,
                        Omega_m, delta=200, exclusion_scheme=0):
@@ -128,22 +144,27 @@ def xi_correction_at_r(radii, Mass, rt, Ma, ca, Mb, cb, bias, ximm,
         float or array-like: correction term for the exclusion profile at each radii
 
     """
+    radii = np.asarray(radii)
+    ximm = np.asarray(ximm)
+    scalar_input = False
+    if radii.ndim == 0:
+        radii = radii[None] #makes r 1D
+        scalar_input = True
+    if radii.ndim > 1:
+        raise Exception("radii cannot be a >1D array.")
+
+    if len(radii) != len(ximm):
+        raise Exception("len(r) must equal len(ximm)")
 
     if exclusion_scheme not in [0,1,2]:
         raise Exception("Halo exclusion_scheme must be in [0,1,2].")
     lib =  cluster_toolkit._lib
-    if type(radii) is list or type(radii) is np.ndarray:
-        xic = np.zeros_like(radii)
-        lib.xi_correction_at_r_arr(dc(radii), len(radii), Mass, rt, Ma, ca, Mb, cb,
-                                   bias, dc(ximm), delta, Omega_m, exclusion_scheme, dc(xic))
-        return xic
-    else:
-        r = np.array(radii)
-        xic = np.zeros_like(r)
-        if len(r) != len(np.atleast_1d(ximm)):
-            raise Exception("xi_correction_exclusion: Supply single xi_mm value for a single radii.")
-        return lib.xi_correction_at_r_arr(dc(r), len(r), Mass, rt, Ma, ca, Mb, cb,
-                                          bias, dc(ximm), delta, Omega_m, exclusion_scheme, dc(xic))
+    xic = np.zeros_like(radii)
+    lib.xi_correction_at_r_arr(dc(radii), len(radii), Mass, rt, Ma, ca, Mb, cb,
+                               bias, dc(ximm), delta, Omega_m, exclusion_scheme, dc(xic))
+    if scalar_input:
+        return np.squeeze(xic)
+    return xic
 
 def theta_at_r(radii, rt, beta):
     """Truncation function.
@@ -157,9 +178,16 @@ def theta_at_r(radii, rt, beta):
         float or array-like: Truncation function
 
     """
-    if type(radii) is list or type(radii) is np.ndarray:
-        th = np.zeros_like(radii)
-        cluster_toolkit._lib.theta_erfc_at_r_arr(dc(radii), len(radii), rt, beta, dc(th))
-        return th
-    else:
-        return cluster_toolkit._lib.theta_erfc_at_r(radii, rt, beta)
+    radii = np.asarray(radii)
+    scalar_input = False
+    if radii.ndim == 0:
+        radii = radii[None] #makes r 1D
+        scalar_input = True
+    if radii.ndim > 1:
+        raise Exception("radii cannot be a >1D array.")
+
+    th = np.zeros_like(radii)
+    cluster_toolkit._lib.theta_erfc_at_r_arr(dc(radii), len(radii), rt, beta, dc(th))
+    if scalar_input:
+        return np.squeeze(th)
+    return th

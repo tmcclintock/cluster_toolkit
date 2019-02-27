@@ -18,8 +18,8 @@
 #define sqrtPI   1.77245385091 //sqrt(M_PI), for speed
 #define pi6_64 61528.9083888 // pi^6 * 64
 #define pi4      12.5663706144 //pi*4
-#define Nk 3000 //number of wavenumbers
-#define Nrm 3000 //number of radial sampling points
+#define Nk 1000 //number of wavenumbers
+#define Nrm 1000 //number of radial sampling points
 #define rm_min 0.0001 //Mpc/h minimum of the radial splines
 #define rm_max 10000. //Mpc/h maximum of the radial splines
 
@@ -36,7 +36,7 @@ int xihm_exclusion_at_r_arr(double*r, int Nr, double M, double c,
   double*xi_ct2  = malloc(sizeof(double)*Nr);
   xi_1h_at_r_arr(r, Nr, M, c, rt, beta, delta, Omega_m, xi_1h);//Done
   xi_2h_at_r_arr(r, Nr, bias, ximm, xi_2h);//Done
-  xi_2hcorrection_at_r_arr(r, Nr, M, rt, Mb, cb, bias, delta, Omega_m, xi_2hc);
+  xi_2hcorrection_at_r_arr(r, Nr, M, rt, Mb, cb, Omega_m, xi_2hc);
   for(i = 0; i < Nr; i++){
     xi_2h[i] += xi_2hc[i]; //add on the first correction term
   }
@@ -129,8 +129,8 @@ int xi_2h_at_r_arr(double*r, int Nr, double bias, double*ximm, double*xi2h){
 }
 
 int xi_2hcorrection_at_r_arr(double*r, int Nr, double M1, double rt,
-			     double M2, double conc2, double bias,
-			     int delta, double Omega_m, double*xi_2hc){
+			     double M2, double conc2,
+			     double Omega_m, double*xi_2hc){
   double rhom = Omega_m * rhocrit; //SM h^2/Mpc^3 comoving
   int i;
   //Compute rt2
@@ -226,8 +226,8 @@ int xi_correction_at_r_arr(double*r, int Nr, double M1, double rt, double beta,
   theta_erfc_at_r_arr(rm, Nrm, re, beta, thetat);
 
   //Take fourier transforms of both utr and thetat
-  calc_xi_mm(k, Nk, rm, utr, Nrm, utr_k, 1500, 1e-7); //missing 8pi^3
-  calc_xi_mm(k, Nk, rm, thetat, Nrm, thetat_k, 1500, 1e-7); //missing 8pi^3
+  calc_xi_mm(k, Nk, rm, utr, Nrm, utr_k, 2000, 1e-7); //missing 8pi^3
+  calc_xi_mm(k, Nk, rm, thetat, Nrm, thetat_k, 2000, 1e-7); //missing 8pi^3
   for(i = 0; i < Nk; i++){
     utr_thetat_k[i] = pi6_64*utr_k[i]*thetat_k[i]; //pi6_64 = pi^6 * 64
   }
