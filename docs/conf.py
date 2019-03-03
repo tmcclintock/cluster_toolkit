@@ -36,7 +36,8 @@ if on_rtd:
         def __getattr__(cls, name):
             return MagicMock()
 
-    MOCK_MODULES = ['numpy','ctypes','cffi','ctypes.c_double','ctypes.c_int']
+    MOCK_MODULES = ['numpy','ctypes','cffi','ctypes.c_double','ctypes.c_int',
+                    '_cluster_toolkit.so']
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
