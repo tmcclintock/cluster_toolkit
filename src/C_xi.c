@@ -12,7 +12,6 @@
 #define rhomconst 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
 
-
 /** @brief The NFW correlation function profile.
  * 
  *  The NFW correlation function profile of a halo a distance r from the center,
@@ -178,15 +177,15 @@ int calc_xi_mm(double*r, int Nr, double*k, double*P, int Nk, double*xi, int N, d
 //////////////Xi(r) exact below //////////
 //////////////////////////////////////////
 
-#define workspace_size 8000
-#define workspace_num 100
+#define workspace_size 10000
+#define workspace_num 500
 #define ABSERR 0.0
-#define RELERR 1.8e-4
+#define RELERR 1e-3
+//#define RELERR 1.8e-4
 
 typedef struct integrand_params_xi_mm_exact{
   gsl_spline*spline;
   gsl_interp_accel*acc;
-  gsl_integration_workspace * workspace;
   double r; //3d r; Mpc/h, or inverse units of k
   double*kp; //pointer to wavenumbers
   double*Pp; //pointer to P(k) array
@@ -207,18 +206,21 @@ double integrand_xi_mm_exact(double k, void*params){
 }
 
 int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
-  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
-  gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  gsl_integration_qawo_table*wf;
-  integrand_params_xi_mm_exact*params=malloc(sizeof(integrand_params_xi_mm_exact));
   gsl_function F;
   double kmax = 4e3;
   double kmin = 5e-8;
   double result, err;
   int i;
   int status;
+
+  gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline, Nk);
+  gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_spline_init(Pspl, k, P, Nk);
+
+  gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
+  gsl_integration_qawo_table*wf;
+
+  integrand_params_xi_mm_exact*params=malloc(sizeof(integrand_params_xi_mm_exact));
   params->acc = acc;
   params->spline = Pspl;
   params->kp = k;
@@ -236,7 +238,8 @@ int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
       exit(-1);
     }
     params->r=r[i];
-    status = gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num, workspace, wf, &result, &err);
+    status = gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num,
+				  workspace, wf, &result, &err);
     if (status){
       printf("Error in calc_xi_mm_exact, second integral.\n");
       exit(-1);

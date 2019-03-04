@@ -95,6 +95,8 @@ def xi_mm_at_r(r, k, P, N=500, step=0.005, exact=False):
                                         _dcast(P), len(k), _dcast(xi),
                                         N, step)
     else:
+        if max(r) > 1e3:
+            raise Exception("max(r) cannot be >1e3 for numerical stability.")
         cluster_toolkit._lib.calc_xi_mm_exact(_dcast(r), len(r),
                                               _dcast(k), _dcast(P),
                                               len(k), _dcast(xi))

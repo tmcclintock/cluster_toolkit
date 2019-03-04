@@ -1,4 +1,3 @@
-
 import sys, os, glob
 import setuptools
 from setuptools import setup, Extension
