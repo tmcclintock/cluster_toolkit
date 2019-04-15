@@ -27,7 +27,7 @@ typedef struct integrand_params{
 //Redefined these, even though they appear in C_bias.c
 double M_to_R(double M, double Omega_m){
   //Lagrangian radius Mpc/h
-  return pow(M/(1.33333333333*M_PI*rhocrit*Omega_m),0.3333333333);
+  return pow(M/(1.33333333333*M_PI*rhocrit*Omega_m), 0.3333333333);
 }
 
 double R_to_M(double R, double Omega_m){
@@ -37,7 +37,8 @@ double R_to_M(double R, double Omega_m){
 
 double dRdM_at_M(double M, double Omega_m){
   //Derivative of Lagrangian radius w.r.t. Mass [Msun/h] in Mpc/Msun
-  return pow(36*M_PI*rhocrit*Omega_m,-0.33333333333)*pow(M,-0.6666666666666);
+  return pow(36*M_PI*rhocrit*Omega_m, -0.33333333333) *
+    pow(M,-0.6666666666666);
 }
 
 double sigma2_integrand(double lk, void*params){
@@ -60,7 +61,7 @@ double dsigma2dR_integrand(double lk, void*params){
   double sx = sin(x);
   double cx = cos(x);
   double w = (sx-x*cx)*3.0/(x*x*x); //Window function
-  double dwdR = k*3*((x*x-3)*sx + 3*x*cx)/(x*x*x*x);
+  double dwdR = k*3*((x*x-3)*sx + 3*x*cx)/(x*x*x*x); //Derivative of w
   return k*k*k*P*w*dwdR;
 }
 
@@ -108,7 +109,8 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   F.params = params;
   for(i = 0; i < NR; i++){
     params->r = R[i];
-    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &abserr);
+    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR,
+			workspace_size, KEY, workspace, &result, &abserr);
     s2[i] = result * denom_inv; //divide by 2pi^2
   }
   gsl_spline_free(spline);
@@ -118,11 +120,12 @@ int sigma2_at_R_arr(double*R, int NR,  double*k, double*P, int Nk, double*s2){
   return 0;
 }
 
-int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, double*s2){
+int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk,
+		    double Omega_m, double*s2){
   int i;
   double*R = (double*)malloc(sizeof(double)*NM);
   for(i = 0; i < NM; i++){
-    R[i] = M_to_R(M[i], om);
+    R[i] = M_to_R(M[i], Omega_m);
   }
   sigma2_at_R_arr(R, NM, k, P, Nk, s2);
   free(R);
@@ -132,7 +135,8 @@ int sigma2_at_M_arr(double*M, int NM,  double*k, double*P, int Nk, double om, do
 /* The derivative with respect to R of sigma^2. This is needed for the mass
  * function and replaces having to take a numerical derivative.
  */
-int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2dR){
+int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk,
+		       double*ds2dR){
   //Initialize GSL things and the integrand structure.
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,Nk);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
@@ -142,7 +146,10 @@ int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2d
   double lkmin = log(k[0]);
   double lkmax = log(k[Nk-1]);
   double result,abserr;
-  double denom_inv = 1./(2*M_PI*M_PI);
+  //Divide by 2pi^2, but note we pull a factor of 2
+  //out of the integrand because we take dw^2/dR
+  //We also pull a factor of 3 out of the integrand.
+  double denom_inv = 1./(M_PI*M_PI);
   int i;
   gsl_spline_init(spline,k,P,Nk);
   params->spline = spline;
@@ -154,14 +161,14 @@ int dsigma2dR_at_R_arr(double*R, int NR, double*k, double*P, int Nk, double*ds2d
   F.params = params;
   for(i = 0; i < NR; i++){
     params->r = R[i];
-    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR, workspace_size, KEY, workspace, &result, &abserr);
+    gsl_integration_qag(&F, lkmin, lkmax, ABSERR, RELERR,
+			workspace_size, KEY, workspace, &result, &abserr);
     ds2dR[i] = result * denom_inv; //divide by 2pi^2
   }
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
-  return 0;
   return 0;
 }
 
@@ -181,7 +188,8 @@ double dsigma2dR_at_R(double R, double*k, double*P, int Nk){
 /* The derivative with respect to M of sigma^2. This is needed for the mass
  * function and replaces having to take a numerical derivative.
  */
-int dsigma2dM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double Omega_m, double*ds2dM){
+int dsigma2dM_at_M_arr(double*M, int NM, double*k, double*P, int Nk,
+		       double Omega_m, double*ds2dM){
   int i;
   double*R = (double*)malloc(sizeof(double)*NM);
   double*dRdM = (double*)malloc(sizeof(double)*NM);
@@ -189,6 +197,7 @@ int dsigma2dM_at_M_arr(double*M, int NM, double*k, double*P, int Nk, double Omeg
     R[i] = M_to_R(M[i], Omega_m);
     dRdM[i] = dRdM_at_M(M[i], Omega_m);
   }
+  //Note: ds2dM holds ds2dR for now
   dsigma2dR_at_R_arr(R, NM, k, P, Nk, ds2dM);
   //Chain rule to convert dsigma2dR to dsigma2dM
   for(i = 0; i < NM; i++){

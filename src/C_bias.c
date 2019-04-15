@@ -99,7 +99,9 @@ int dbiasdnu_at_nu_arr(double*nu, int Nnu, int delta, double*deriv){
   double C = 0.019+0.107*y+0.19*xp, c = 2.4;
   int i;
   for(i = 0; i < Nnu; i++)
-    deriv[i] = a*A*pow(delta_c,a)*pow(nu[i],a-1)/pow(pow(nu[i],a)+pow(delta_c,a), 2) + B*b*pow(nu[i],b-1) + C*c*pow(nu[i],c-1);
+    deriv[i] = a*A*pow(delta_c, a) * pow(nu[i], a-1)*
+      pow(pow(nu[i], a) + pow(delta_c, a), -2) +
+      B*b*pow(nu[i], b-1) + C*c*pow(nu[i], c-1);
   return 0;
 }
 
@@ -121,8 +123,12 @@ int dbiasdM_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk,
   //Note: dnu/dsigma2 = -delta_c /(2*sigma^3)
   int i;
   for(i = 0; i < NM; i ++){
-    deriv[i] = -delta_c*0.5 * pow(sigma2[i], 1.5) * dbiasdnu[i] *
+    deriv[i] = -delta_c*0.5 * pow(sigma2[i], -1.5) * dbiasdnu[i] *
       dsigma2dM[i];
   }
+  free(nu);
+  free(dbiasdnu);
+  free(sigma2);
+  free(dsigma2dM);
   return 0;
 }

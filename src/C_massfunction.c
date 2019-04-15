@@ -59,7 +59,7 @@ int dndM_sigma2_precomputed(double*M, double*sigma2, double*dsigma2dM, int NM, d
   }
   G_at_sigma_arr(sigma, NM, d, e, f, g, Gsigma);
   for(i = 0; i < NM; i++){
-    dndM[i] = -rhom*Gsigma[i]*dsigma2dM[i]/(M[i]*sigma2[i]);
+    dndM[i] = -rhom*Gsigma[i]*dsigma2dM[i]/(2*M[i]*sigma2[i]);
   }
   free(sigma);
   free(Gsigma);

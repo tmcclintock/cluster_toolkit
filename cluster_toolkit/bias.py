@@ -115,9 +115,11 @@ def dbiasdM_at_M(M, k, P, Omega_m, delta=200):
     k = np.require(k, dtype=np.float64, requirements=["C"])
     P = np.require(P, dtype=np.float64, requirements=["C"])
     deriv = np.zeros_like(M)
-    cluster_toolkit._lib.dbiasdM_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), Omega_m, _dcast(deriv))
+    cluster_toolkit._lib.dbiasdM_at_M_arr(_dcast(M), len(M), delta, _dcast(k),
+                                          _dcast(P), len(k), Omega_m,
+                                          _dcast(deriv))
     if scalar_input:
-        return np.squeeze(biasderiv)
+        return np.squeeze(deriv)
     return deriv
 
 def _bias_at_nu_FREEPARAMS(nu, A, a, B, b, C, c, delta=200):

@@ -27,15 +27,23 @@ def test_exceptions_bias_at_M():
 
 def test_outputs_bias_at_M():
     #List vs. numpy.array
-    npt.assert_array_equal(bias.bias_at_M(Ma, klin, plin, Omega_m), bias.bias_at_M(Ma.tolist(), klin, plin, Omega_m))
+    npt.assert_array_equal(bias.bias_at_M(Ma, klin, plin, Omega_m),
+                           bias.bias_at_M(Ma.tolist(), klin, plin, Omega_m))
     #Single value vs numpy.array
     arrout = bias.bias_at_M(Ma, klin, plin, Omega_m)
     for i in range(len(Ma)):
         npt.assert_equal(bias.bias_at_M(Ma[i], klin, plin, Omega_m), arrout[i])
 
 def test_derivatives():
-    dbdM = bias.dbiasdM_at_M(Ma, klin, plin, Omega_m)
+    M = np.logspace(13, 14, 1000)
+    dbdM = bias.dbiasdM_at_M(M, klin, plin, Omega_m)
     npt.assert_equal(sorted(dbdM), dbdM[::-1])
+    b = bias.bias_at_M(M, klin, plin, Omega_m)
+    dM = M[1:] - M[:-1]
+    db = b[1:] - b[:-1]
+    deriv = db/dM
+    pd = dbdM[:-1] / deriv
+    npt.assert_array_almost_equal(pd, np.ones_like(pd), 1e-2)
     return
 
 def test_s2_and_nu_functions():

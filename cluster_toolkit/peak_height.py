@@ -85,7 +85,9 @@ def nu_at_R(R, k, P):
         return cluster_toolkit._lib.nu_at_R(R, _dcast(k), _dcast(P), len(k))
 
 def dsigma2dM_at_M(M, k, P, Omega_m):
-    """Derivative w.r.t. mass of RMS variance in top hat sphere of lagrangian radius R [Mpc/h comoving] corresponding to a mass M [Msun/h] of linear power spectrum.
+    """Derivative w.r.t. mass of RMS variance in top hat sphere of 
+    lagrangian radius R [Mpc/h comoving] corresponding to a mass 
+    M [Msun/h] of linear power spectrum.
 
     Args:
         M (float or array like): Mass in Msun/h.
@@ -99,16 +101,20 @@ def dsigma2dM_at_M(M, k, P, Omega_m):
     """
     if type(M) is list or type(M) is np.ndarray:
         ds2dM = np.zeros_like(M)
-        cluster_toolkit._lib.dsigma2dM_at_M_arr(_dcast(M), len(M), _dcast(k), _dcast(P), len(k), Omega_m, _dcast(ds2dM))
+        cluster_toolkit._lib.dsigma2dM_at_M_arr(_dcast(M), len(M), _dcast(k),
+                                                _dcast(P), len(k), Omega_m,
+                                                _dcast(ds2dM))
         return ds2dM
     else:
-        return cluster_toolkit._lib.dsigma2dM_at_M(M, _dcast(k), _dcast(P), len(k), Omega_m)
+        return cluster_toolkit._lib.dsigma2dM_at_M(M, _dcast(k), _dcast(P),
+                                                   len(k), Omega_m)
 
     return 0
 
     
 def _calc_sigma2_at_R(R, k, P, s2):
-    """Direct call to vectorized version of RMS variance in top hat sphere of radius R [Mpc/h comoving] of linear power spectrum.
+    """Direct call to vectorized version of RMS variance in top hat 
+    sphere of radius R [Mpc/h comoving] of linear power spectrum.
 
     """
     cluster_toolkit._lib.sigma2_at_R_arr(_dcast(R), len(R), _dcast(k), _dcast(P), len(k), _dcast(s2))

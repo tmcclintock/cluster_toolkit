@@ -37,3 +37,18 @@ def test_single_vs_array():
     a1 = peaks.sigma2_at_R(Ra, klin, plin)
     a2 = np.array([peaks.sigma2_at_R(Ri, klin, plin) for Ri in Ra])
     npt.assert_array_equal(a1, a2)
+
+def test_derivatives():
+    M = np.logspace(13, 14, 2000)
+    ds2dM = peaks.dsigma2dM_at_M(M, klin, plin, Omega_m)
+    s2 = peaks.sigma2_at_M(M, klin, plin, Omega_m)
+    dM = M[1:] - M[:-1]
+    ds2 = s2[1:] - s2[:-1]
+    deriv = ds2/dM
+    pd = ds2dM[:-1] / deriv
+    npt.assert_array_almost_equal(pd, np.ones_like(pd), 1e-3)
+    return
+
+if __name__ == "__main__":
+    #test_Cordering()
+    test_derivatives()
