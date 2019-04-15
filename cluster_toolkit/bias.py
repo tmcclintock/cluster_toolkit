@@ -90,10 +90,41 @@ def bias_at_nu(nu, delta=200):
         return np.squeeze(bias)
     return bias
 
-def _bias_at_nu_FREEPARAMS(nu,A,a,B,b,C,c, delta=200):
+def dbiasdM_at_M(M, k, P, Omega_m, delta=200):
+    """d/dM of Tinker et al. 2010 bais at mass M [Msun/h].
+
+    Args:
+        M (float or array like): Mass in Msun/h.
+        k (array like): Wavenumbers of power spectrum in h/Mpc comoving.
+        P (array like): Power spectrum in (Mpc/h)^3 comoving.
+        Omega_m (float): Matter density fraction.
+        delta (int; optional): Overdensity, default is 200.
+
+    Returns:
+        float or array like: Derivative of the halo bias.
+    
+    """
+    M = np.asarray(M)
+    scalar_input = False
+    if M.ndim == 0:
+        M = M[None] #makes M 1D
+        scalar_input = True
+    if M.ndim > 1:
+        raise Exception("M cannot be a >1D array.")
+    M = np.require(M, dtype=np.float64, requirements=["C"])
+    k = np.require(k, dtype=np.float64, requirements=["C"])
+    P = np.require(P, dtype=np.float64, requirements=["C"])
+    deriv = np.zeros_like(M)
+    cluster_toolkit._lib.dbiasdM_at_M_arr(_dcast(M), len(M), delta, _dcast(k), _dcast(P), len(k), Omega_m, _dcast(deriv))
+    if scalar_input:
+        return np.squeeze(biasderiv)
+    return deriv
+
+def _bias_at_nu_FREEPARAMS(nu, A, a, B, b, C, c, delta=200):
     """A special function used only for quickly computing best fit parameters
     for the halo bias models.
     """
     bias = np.zeros_like(nu)
-    cluster_toolkit._lib.bias_at_nu_arr_FREEPARAMS(_dcast(nu), len(nu), delta, A,a,B,b,C,c, _dcast(bias))
+    cluster_toolkit._lib.bias_at_nu_arr_FREEPARAMS(_dcast(nu), len(nu), delta,
+                                                   A, a, B, b, C, c, _dcast(bias))
     return bias

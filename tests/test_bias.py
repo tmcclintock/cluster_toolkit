@@ -33,6 +33,11 @@ def test_outputs_bias_at_M():
     for i in range(len(Ma)):
         npt.assert_equal(bias.bias_at_M(Ma[i], klin, plin, Omega_m), arrout[i])
 
+def test_derivatives():
+    dbdM = bias.dbiasdM_at_M(Ma, klin, plin, Omega_m)
+    npt.assert_equal(sorted(dbdM), dbdM[::-1])
+    return
+
 def test_s2_and_nu_functions():
     #Test the mass calls
     s2 = peaks.sigma2_at_M(Mass, klin, plin, Omega_m)
@@ -104,4 +109,5 @@ def test_Cordering():
     npt.assert_array_almost_equal(r, np.ones_like(r), decimal=3)
 
 if __name__ == "__main__":
-    test_Cordering()
+    #test_Cordering()
+    test_derivatives()

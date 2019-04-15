@@ -82,3 +82,47 @@ int bias_at_nu_arr_FREEPARAMS(double*nu, int Nnu, int delta,
     bias[i] = 1 - A*pow(nu[i],a)/(pow(nu[i],a)+pow(delta_c,a)) + B*pow(nu[i],b) + C*pow(nu[i],c);
   return 0;
 }
+
+/******
+Derivatives of the bias
+ *****/
+/**
+ * \brief Compute (d/dnu)bias for an array of peak heights.
+ *
+ * This is the Tinker et al. (2010) bias model.
+ */
+int dbiasdnu_at_nu_arr(double*nu, int Nnu, int delta, double*deriv){
+  double y = log10(delta);
+  double xp = exp(-1.0*pow(4./y,4.));
+  double A = 1.+0.24*y*xp, a = 0.44*y-0.88;
+  double B = 0.183, b = 1.5;
+  double C = 0.019+0.107*y+0.19*xp, c = 2.4;
+  int i;
+  for(i = 0; i < Nnu; i++)
+    deriv[i] = a*A*pow(delta_c,a)*pow(nu[i],a-1)/pow(pow(nu[i],a)+pow(delta_c,a), 2) + B*b*pow(nu[i],b-1) + C*c*pow(nu[i],c-1);
+  return 0;
+}
+
+/**
+ * \brief Compute (d/dnu)bias for an array of peak heights.
+ *
+ * This is the Tinker et al. (2010) bias model.
+ */
+int dbiasdM_at_M_arr(double*M, int NM, int delta, double*k, double*P, int Nk,
+		  double Omega_m, double*deriv){
+  double*nu = malloc(sizeof(double)*NM);
+  double*dbiasdnu = malloc(sizeof(double)*NM);
+  double*sigma2 = malloc(sizeof(double)*NM);
+  double*dsigma2dM = malloc(sizeof(double)*NM);
+  nu_at_M_arr(M, NM, k, P, Nk, Omega_m, nu);
+  dbiasdnu_at_nu_arr(nu, NM, delta, dbiasdnu);
+  sigma2_at_M_arr(M, NM, k, P, Nk, Omega_m, sigma2);
+  dsigma2dM_at_M_arr(M, NM, k, P, Nk, Omega_m, dsigma2dM);
+  //Note: dnu/dsigma2 = -delta_c /(2*sigma^3)
+  int i;
+  for(i = 0; i < NM; i ++){
+    deriv[i] = -delta_c*0.5 * pow(sigma2[i], 1.5) * dbiasdnu[i] *
+      dsigma2dM[i];
+  }
+  return 0;
+}
