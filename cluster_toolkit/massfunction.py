@@ -97,7 +97,7 @@ def G_at_sigma(sigma, d=1.97, e=1.0, f=0.51, g=1.228):
         g (float; optional): Fourth Tinker parameter. Default is 1.228.
 
     Returns:
-        float or array like: Halo multiplicity :math:`G(\sigma)`.
+        float or array like: Halo multiplicity G(sigma).
     """
     sigma = np.asarray(sigma)
     scalar_input = False
