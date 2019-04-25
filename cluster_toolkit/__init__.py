@@ -15,7 +15,9 @@ lib_file = os.path.join(cluster_toolkit_dir,'_cluster_toolkit.so')
 # Some installation (e.g. Travis with python 3.x)
 # name this e.g. _cluster_toolkit.cpython-34m.so,
 # so if the normal name doesn't exist, look for something else.
-if not os.path.exists(lib_file):
+# Note: we ignore this if we are building the docs on RTD
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if not os.path.exists(lib_file) and not on_rtd:
     alt_files = glob.glob(os.path.join(os.path.dirname(__file__),'_cluster_toolkit*.so'))
     if len(alt_files) == 0:
         raise IOError("No file '_cluster_toolkit.so' found in %s"%cluster_toolkit_dir)
