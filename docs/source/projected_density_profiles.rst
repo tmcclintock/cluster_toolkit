@@ -62,7 +62,7 @@ where :math:`\Sigma` is given above and
 
 .. math::
 
-   \bar{\Sigma}(<R) = \frac{2}{R^2}\int_0^R {\rm d}R'\ \Sigma(R'),
+   \bar{\Sigma}(<R) = \frac{2}{R^2}\int_0^R {\rm d}R'\ R'\Sigma(R'),
 
 or the average surface mass density within the circle of radius:math:`R`. To calculate this you would use
 
