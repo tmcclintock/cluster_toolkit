@@ -55,8 +55,9 @@ int calc_xi_nfw(double*r, int Nr, double Mass, double conc, int delta, double om
   return 0;
 }
 
-double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta, double om){
-  double rhom = om*rhomconst;//Msun h^2/Mpc^3
+double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta,
+			 double Omega_m){
+  double rhom = Omega_m*rhomconst;//Msun h^2/Mpc^3
   // rdelta in Mpc/h comoving
   double rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
   double rs = rdelta/conc; //Scale radius in Mpc/h
@@ -68,14 +69,15 @@ double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta, doub
   return num/den;
 }
 
-int calc_xi_einasto(double*r, int Nr, double Mass, double rhos, double conc, double alpha, int delta, double om, double*xi_einasto){
-  double rhom = om*rhomconst;//SM h^2/Mpc^3
+int calc_xi_einasto(double*r, int Nr, double Mass, double rhos, double conc,
+		    double alpha, int delta, double Omega_m, double*xi_einasto){
+  double rhom = Omega_m*rhomconst;//SM h^2/Mpc^3
   double rdelta = pow(Mass/(1.3333333333333*M_PI*rhom*delta), 0.333333333333);
   double rs = rdelta/conc; //Scale radius in Mpc/h
   double x;
   int i;
   if (rhos < 0)
-    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, om);
+    rhos = rhos_einasto_at_M(Mass, conc, alpha, delta, Omega_m);
   for(i = 0; i < Nr; i++){
     x = 2./alpha * pow(r[i]/rs, alpha);
     xi_einasto[i] = rhos/rhom * exp(-x) - 1;
