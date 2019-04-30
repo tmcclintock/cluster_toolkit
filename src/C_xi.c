@@ -63,7 +63,7 @@ double rhos_einasto_at_M(double Mass, double conc, double alpha, int delta,
   double rs = rdelta/conc; //Scale radius in Mpc/h
   double x = 2./alpha * pow(conc, alpha); //pow(rdelta/rs, alpha); 
   double a = 3./alpha;
-  double gam = gsl_sf_gamma(a) - gsl_sf_gamma_inc(a, x);
+  double gam = gsl_sf_gamma(a) * gsl_sf_gamma_inc_P(a, x);
   double num = delta * rhom * rdelta*rdelta*rdelta * alpha * pow(2./alpha, a);
   double den = 3. * rs*rs*rs * gam;
   return num/den;
