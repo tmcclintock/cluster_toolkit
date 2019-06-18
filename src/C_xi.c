@@ -27,15 +27,9 @@
  *  @return NFW halo correlation function.
  */
 double xi_nfw_at_r(double r, double Mass, double conc, int delta, double om){
-  double*rarr = (double*)malloc(sizeof(double));
-  double*xi  = (double*)malloc(sizeof(double));
-  double result;
-  rarr[0] = r;
-  calc_xi_nfw(rarr, 1, Mass, conc, delta, om, xi);
-  result = xi[0];
-  free(rarr);
-  free(xi);
-  return result;
+  double xi;
+  calc_xi_nfw(&r, 1, Mass, conc, delta, om, &xi);
+  return xi;
 }
 
 int calc_xi_nfw(double*r, int Nr, double Mass, double conc, int delta, double om, double*xi_nfw){
@@ -222,15 +216,15 @@ int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
   gsl_integration_qawo_table*wf;
 
-  integrand_params_xi_mm_exact*params=malloc(sizeof(integrand_params_xi_mm_exact));
-  params->acc = acc;
-  params->spline = Pspl;
-  params->kp = k;
-  params->Pp = P;
-  params->Nk = Nk;
+  integrand_params_xi_mm_exact params;
+  params.acc = acc;
+  params.spline = Pspl;
+  params.kp = k;
+  params.Pp = P;
+  params.Nk = Nk;
 
-  F.function=&integrand_xi_mm_exact;
-  F.params=params;
+  F.function = &integrand_xi_mm_exact;
+  F.params = &params;
 
   wf = gsl_integration_qawo_table_alloc(r[0], kmax-kmin, GSL_INTEG_SINE, (size_t)workspace_num);
   for(i = 0; i < Nr; i++){
@@ -239,7 +233,7 @@ int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
       printf("Error in calc_xi_mm_exact, first integral.\n");
       exit(-1);
     }
-    params->r=r[i];
+    params.r=r[i];
     status = gsl_integration_qawo(&F, kmin, ABSERR, RELERR, (size_t)workspace_num,
 				  workspace, wf, &result, &err);
     if (status){
@@ -250,7 +244,6 @@ int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
     xi[i] = result/(M_PI*M_PI*2);
   }
 
-  free(params);
   gsl_spline_free(Pspl);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
@@ -260,15 +253,9 @@ int calc_xi_mm_exact(double*r, int Nr, double*k, double*P, int Nk, double*xi){
 }
 
 double xi_mm_at_r_exact(double r, double*k, double*P, int Nk){
-  double*ra = malloc(sizeof(double));
-  double*xi = malloc(sizeof(double));
-  double result;
-  ra[0] = r;
-  calc_xi_mm_exact(ra, 1, k, P, Nk, xi);
-  result = xi[0];
-  free(ra);
-  free(xi);
-  return result;
+  double xi;
+  calc_xi_mm_exact(&r, 1, k, P, Nk, &xi);
+  return xi;
 }
 
 /*

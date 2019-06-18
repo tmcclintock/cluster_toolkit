@@ -111,38 +111,37 @@ int Sigma_mis_single_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   static gsl_spline*spline = NULL;
   static gsl_interp_accel*acc = NULL;
   static gsl_integration_workspace*workspace = NULL;
-  static integrand_params*params = NULL;
+  static integrand_params params;
   if (init_flag == 0){
     init_flag = 1;
     spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
     acc = gsl_interp_accel_alloc();
     workspace = gsl_integration_workspace_alloc(workspace_size);
-    params = malloc(sizeof(integrand_params));
   }
 
   gsl_spline_init(spline, lnRs, Sigma, Ns);
 
-  params->acc = acc;
-  params->spline = spline;
-  params->workspace = workspace;
-  params->M = M;
-  params->conc = conc;
-  params->delta = delta;
-  params->Omega_m = Omega_m;
-  params->Rmis = Rmis;
-  params->Rmis2 = Rmis*Rmis;
-  params->rmin = Rs[0];
-  params->rmax = Rs[Ns-1];
-  params->lrmin = log(Rs[0]);
-  params->lrmax = log(Rs[Ns-1]);
+  params.acc = acc;
+  params.spline = spline;
+  params.workspace = workspace;
+  params.M = M;
+  params.conc = conc;
+  params.delta = delta;
+  params.Omega_m = Omega_m;
+  params.Rmis = Rmis;
+  params.Rmis2 = Rmis*Rmis;
+  params.rmin = Rs[0];
+  params.rmax = Rs[Ns-1];
+  params.lrmin = log(Rs[0]);
+  params.lrmax = log(Rs[Ns-1]);
 
   //Angular integral
-  F.function=&single_angular_integrand;
-  F.params=params;
+  F.function = &single_angular_integrand;
+  F.params = &params;
   
   for(i = 0; i < NR; i++){
-    params->Rp  = R[i];
-    params->Rp2 = R[i] * R[i];
+    params.Rp  = R[i];
+    params.Rp2 = R[i] * R[i];
     gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size,
 			KEY, workspace, &result, &err);
     Sigma_mis[i] = result/M_PI;
@@ -272,32 +271,31 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   static gsl_interp_accel*acc = NULL;
   static gsl_integration_workspace*workspace = NULL;
   static gsl_integration_workspace*workspace2 = NULL;
-  static integrand_params*params = NULL;
+  static integrand_params params;
   if (init_flag == 0){
     init_flag = 1;
     spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
     acc = gsl_interp_accel_alloc();
     workspace = gsl_integration_workspace_alloc(workspace_size);
     workspace2 = gsl_integration_workspace_alloc(workspace_size);
-    params = malloc(sizeof(integrand_params));
   }
 
   gsl_spline_init(spline, lnRs, Sigma, Ns);
 
-  params->spline = spline;
-  params->acc = acc;
-  params->workspace = workspace;
-  params->workspace2 = workspace2;
-  params->M = M;
-  params->conc = conc;
-  params->delta = delta;
-  params->Omega_m = Omega_m;
-  params->Rmis = Rmis;
-  params->Rmis2 = Rmis*Rmis;
-  params->rmin = Rs[0];
-  params->rmax = Rs[Ns-1];
-  params->lrmin = log(Rs[0]);
-  params->lrmax = log(Rs[Ns-1]);
+  params.spline = spline;
+  params.acc = acc;
+  params.workspace = workspace;
+  params.workspace2 = workspace2;
+  params.M = M;
+  params.conc = conc;
+  params.delta = delta;
+  params.Omega_m = Omega_m;
+  params.Rmis = Rmis;
+  params.Rmis2 = Rmis*Rmis;
+  params.rmin = Rs[0];
+  params.rmax = Rs[Ns-1];
+  params.lrmin = log(Rs[0]);
+  params.lrmax = log(Rs[Ns-1]);
   
   //Angular integral
   F.function = &angular_integrand;
@@ -313,14 +311,14 @@ int Sigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns,
   }
   
   //Assign the params struct to the GSL functions.
-  F_radial.params = params;
-  params->F_radial = F_radial;
-  F.params = params;
+  F_radial.params = &params;
+  params.F_radial = F_radial;
+  F.params = &params;
   
   //Angular integral first
   for(i = 0; i < NR; i++){
-    params->Rp  = R[i];
-    params->Rp2 = R[i] * R[i]; //Optimization
+    params.Rp  = R[i];
+    params.Rp2 = R[i] * R[i]; //Optimization
     
     gsl_integration_qag(&F, 0, M_PI, ABSERR, RELERR, workspace_size,
 			KEY, workspace, &result, &err);
@@ -384,20 +382,19 @@ int DeltaSigma_mis_at_R_arr(double*R, int NR, double*Rs, double*Sigma_mis, int N
   static gsl_spline*spline = NULL;
   static gsl_interp_accel*acc = NULL;
   static gsl_integration_workspace*workspace = NULL;
-  static integrand_params*params = NULL;
+  static integrand_params params;
   if (init_flag == 0){
     init_flag = 1;
     spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
     acc = gsl_interp_accel_alloc();
     workspace = gsl_integration_workspace_alloc(workspace_size);
-    params = malloc(sizeof(integrand_params));
   }
 
   gsl_spline_init(spline, Rs, Sigma_mis, Ns);
   
-  params->spline = spline;
-  params->acc = acc;
-  F.params = params;
+  params.spline = spline;
+  params.acc = acc;
+  F.params = &params;
   F.function = &DS_mis_integrand;
 
   for(i = 0; i < NR; i++){
