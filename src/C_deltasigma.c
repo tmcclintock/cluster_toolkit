@@ -36,14 +36,8 @@
  * Note: all distances are comoving.
  */
 double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
-  double*Rs = (double*)malloc(sizeof(double));
-  double*Sigma = (double*)malloc(sizeof(double));
-  double result;
-  Rs[0] = R;
-  Sigma_nfw_at_R_arr(Rs, 1, M, c, delta, om, Sigma);
-  result = Sigma[0];
-  free(Rs);
-  free(Sigma);
+  double result = 0.0;
+  Sigma_nfw_at_R_arr(&R, 1, M, c, delta, om, &result);
   return result;
 }
 
@@ -152,7 +146,7 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
 
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params = malloc(sizeof(integrand_params));
+  integrand_params params;
   gsl_function F;
   double result1, err1, result2, err2;
   int i;
@@ -161,17 +155,17 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
     lnRxi[i] = log(Rxi[i]);
   }
   gsl_spline_init(spline, lnRxi, xi, Nxi);
-  params->acc = acc;
-  params->spline = spline;
-  params->M = M;
-  params->conc= conc;
-  params->delta = delta;
-  params->om = om;
-  F.params = params;
+  params.acc = acc;
+  params.spline = spline;
+  params.M = M;
+  params.conc= conc;
+  params.delta = delta;
+  params.om = om;
+  F.params = &params;
   int status;
   for(i = 0; i < NR; i++){
     ln_z_max = log(sqrt(Rxi_max*Rxi_max - R[i]*R[i])); //Max distance to integrate to
-    params->Rp = R[i];
+    params.Rp = R[i];
     if(R[i] < Rxi0){
       F.function = &integrand_small_scales;
       status = gsl_integration_qag(&F, log(Rxi0)-10, log(sqrt(Rxi0*Rxi0-R[i]*R[i])), ABSERR, RELERR, workspace_size, KEY, workspace, &result1, &err1);
@@ -193,7 +187,6 @@ int Sigma_at_R_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double M, d
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(lnRxi);
-  free(params);
   return 0;
 }
 
@@ -213,22 +206,21 @@ int Sigma_at_R_full_arr(double*R, int NR, double*Rxi, double*xi, int Nxi, double
   double ln_z_max;
   double result3, err3;
   gsl_integration_workspace*workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
+  integrand_params params;
   gsl_function F;
   int i;
   Sigma_at_R_arr(R, NR, Rxi, xi, Nxi, M, conc, delta, om, Sigma);
-  params->slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
-  params->intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params->slope);
-  F.params=params;
+  params.slope = log(xi[Nxi-1]/xi[Nxi-2])/log(Rxi[Nxi-1]/Rxi[Nxi-2]);
+  params.intercept = xi[Nxi-1]/pow(Rxi[Nxi-1], params.slope);
+  F.params = &params;
   F.function = &integrand_large_scales;
   for(i = 0; i < NR; i++){
     ln_z_max = log(sqrt(Rxi_max*Rxi_max - R[i]*R[i]));
-    params->Rp = R[i];
+    params.Rp = R[i];
     gsl_integration_qag(&F, ln_z_max, ln_z_max+ulim, ABSERR, RELERR, workspace_size, KEY, workspace, &result3, &err3);
     Sigma[i] += (result3*rhom*2);
   }
   gsl_integration_workspace_free(workspace);
-  free(params);
   return 0;
 }
 
@@ -255,7 +247,7 @@ int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, doubl
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, Ns);
   gsl_interp_accel*acc = gsl_interp_accel_alloc();
   gsl_integration_workspace* workspace = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
+  integrand_params params;
   double result1, result2, err1, err2;
   gsl_function F;
   int i;
@@ -264,13 +256,13 @@ int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, doubl
     lnRs[i] = log(Rs[i]);
   }
   gsl_spline_init(spline, lnRs, Sigma, Ns);
-  params->spline = spline;
-  params->acc = acc;
-  params->M = M;
-  params->conc = conc;
-  params->delta = delta;
-  params->om = om;
-  F.params = params;
+  params.spline = spline;
+  params.acc = acc;
+  params.M = M;
+  params.conc = conc;
+  params.delta = delta;
+  params.om = om;
+  F.params = &params;
   F.function = &DS_integrand_small_scales;
   gsl_integration_qag(&F, lrmin-10, lrmin, ABSERR, RELERR, workspace_size, KEY, workspace, &result1, &err1);
   F.function = &DS_integrand_medium_scales;
@@ -282,6 +274,5 @@ int DeltaSigma_at_R_arr(double*R, int NR, double*Rs, double*Sigma, int Ns, doubl
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(lnRs);
-  free(params);
   return 0;
 }

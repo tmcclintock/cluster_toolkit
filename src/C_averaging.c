@@ -37,23 +37,22 @@ double ave_integrand(double lR, void*params){
 
 int average_profile_in_bins(double*Redges, int Nedges, double*R, int NR,
 			    double*profile, double*ave_profile){
-  int i;
-  gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline, NR);
-  gsl_interp_accel*acc= gsl_interp_accel_alloc();
-  gsl_integration_workspace * ws = gsl_integration_workspace_alloc(workspace_size);
-  integrand_params*params=malloc(sizeof(integrand_params));
+  gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, NR);
+  gsl_interp_accel *acc = gsl_interp_accel_alloc();
+  gsl_integration_workspace *ws = gsl_integration_workspace_alloc(workspace_size);
   gsl_function F;
   double result, err;
 
   gsl_spline_init(spline, R, profile, NR);
 
-  params->acc = acc;
-  params->spline = spline;
-  F.params = params;
+  integrand_params params;
+  params.acc = acc;
+  params.spline = spline;
+  F.params = &params;
   F.function = &ave_integrand;
 
   //Loop over bins and compute the average
-  for(i = 0; i < Nedges-1; i++){
+  for(int i = 0; i < Nedges-1; i++){
     gsl_integration_qag(&F, log(Redges[i]), log(Redges[i+1]), ABSERR, RELERR,
 			workspace_size, 6, ws, &result, &err);
     ave_profile[i] = 2*result/(Redges[i+1]*Redges[i+1]-Redges[i]*Redges[i]);
@@ -63,6 +62,5 @@ int average_profile_in_bins(double*Redges, int Nedges, double*R, int NR,
   gsl_spline_free(spline);
   gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(ws);
-  free(params);
   return 0;
 }
