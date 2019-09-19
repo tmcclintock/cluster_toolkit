@@ -1,4 +1,6 @@
 import pytest
+import cluster_toolkit as ct
+from cluster_toolkit import deltasigma as ds
 from cluster_toolkit import triaxiality as tr
 from os.path import dirname, join
 import numpy as np
@@ -27,3 +29,26 @@ def test_mapped_r():
     npt.assert_equal(len(zs)**4, mapped_r.size)
 
     return
+
+def FAILING_test_single_halo_NFW():
+    R = np.logspace(-1, 2, num = 100)
+    M = 1e14
+    c = 5
+    Omega_m = 0.3
+
+    r = np.logspace(-2, 3, 1000)
+    xi = ct.xi.xi_nfw_at_r(r, M, c, Omega_m)
+    import matplotlib.pyplot as plt
+    plt.loglog(r, xi)
+    plt.show()
+    arr1 = ds.Sigma_at_R(R, r, xi, M, c, Omega_m)
+    arr2 = tr.Ellipsoidal_Sigma_nfw_single_halo(R, M, c, 0, 1, 1, Omega_m)
+    plt.loglog(R, arr2)
+    plt.loglog(R, arr1)
+    plt.yscale("symlog")
+    plt.show()
+
+    npt.assert_equal(arr1, arr2)
+    return
+
+#test_single_halo_NFW()

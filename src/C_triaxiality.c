@@ -24,7 +24,7 @@
 #define ulim 5.0
 #define rhocrit 2.77533742639e+11
 //1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
-#define KEY 3 //Used for GSL QAG function
+#define KEY 5 //Used for GSL QAG function
 
 typedef struct integrand_params{
   gsl_integration_workspace*workspace;
@@ -63,34 +63,44 @@ double azimuthal_integrand_Sigma_nfw(double phi, void*params){
   double cos_phi = cos(phi);
   double r = mapped_radii(pars.z, pars.R, pars.sin_i, pars.cos_i,
 			  sin_phi, cos_phi, pars.q, pars.s);
-  return xi_nfw_at_r(r, pars.M, pars.conc, pars.delta, pars.Omega_m);
+  double xi = xi_nfw_at_r(r, pars.M, pars.conc, pars.delta, pars.Omega_m);
+  //printf("(%.2e  %.2e  %.2e %.2e %.2e %.2e  r=%.2e  xi=%.2e)\n", pars.z, pars.R, pars.sin_i, pars.cos_i, pars.q, pars.s, r, xi);
+  //exit(1);
+
+  return xi;
 }
 
 double LOS_integrand_Sigma_nfw(double ln_z, void*params){
   double result, err;
+  double z = exp(ln_z);
   integrand_params pars=*(integrand_params*)params;
-  pars.z = exp(ln_z);
+  pars.z = z;
   gsl_integration_qag(&pars.F_azimuthal, 0, M_PI,
 		      ABSERR, RELERR, workspace_size,
 		      KEY, pars.workspace2, &result, &err);
-  return result;
+  //printf("%e\n",result / );
+  return z * result;
 }
 
 /**
  * \brief Surface mass density of an ellipsoidal NFW halo.
  * Units are hMsun/pc^2 comoving.
  */
-double Ellipsoidal_Sigma_nfw_at_R(double R, double M, double c, double i,
-				  double q, double s,
-				  double delta, double Omega_m){
+double Ellipsoidal_Sigma_nfw_single_halo_at_R(double R, double M,
+					      double c, double i,
+					      double q, double s,
+					      double delta, double Omega_m){
   double result = 0;
-  Ellipsoidal_Sigma_nfw_at_R_arr(&R, 1, M, c, i, q, s, delta, Omega_m, &result);
-  return 0;
+  Ellipsoidal_Sigma_nfw_single_halo_at_R_arr(&R, 1, M, c, i, q,
+					     s, delta, Omega_m, &result);
+  return result;
 }
 
-int Ellipsoidal_Sigma_nfw_at_R_arr(double*R, int NR, double M, double conc,
-				   double i, double q, double s,
-				   double delta, double Omega_m, double*Sigma){
+int Ellipsoidal_Sigma_nfw_single_halo_at_R_arr(double*R, int NR,
+					       double M, double conc,
+					       double i, double q, double s,
+					       double delta, double Omega_m,
+					       double*Sigma){
 
   //h^2Msun/pc^2/Mpc; integral is over Mpc/h
   double rhom = Omega_m*rhocrit*1e-12; 
@@ -100,10 +110,6 @@ int Ellipsoidal_Sigma_nfw_at_R_arr(double*R, int NR, double M, double conc,
   double result, err;
   gsl_function F;
   gsl_function F_azimuthal;
-
-  //Precomputing to save time
-  double ln_Rmin = log(R[0]) - 10;
-  double ln_Rmax = log(R[NR-1]);
 
   //Allocate things
   static int init_flag = 0;
@@ -117,6 +123,7 @@ int Ellipsoidal_Sigma_nfw_at_R_arr(double*R, int NR, double M, double conc,
   }
 
   //Set integrand parameters
+  printf("%e %e %e  %e  %e   %e\n",M, conc, i, q, s, Omega_m);
   params.workspace = workspace;
   params.workspace2 = workspace2;
   params.M = M;
@@ -135,7 +142,7 @@ int Ellipsoidal_Sigma_nfw_at_R_arr(double*R, int NR, double M, double conc,
 
   for(j = 0; j < NR; j++){
     params.R = R[j];
-    gsl_integration_qag(&F, ln_Rmin, ln_Rmax,
+    gsl_integration_qag(&F, -7, 7,
 			ABSERR, RELERR, workspace_size,
 			KEY, workspace, &result, &err);
     Sigma[j] = result * 2 * rhom / M_PI;

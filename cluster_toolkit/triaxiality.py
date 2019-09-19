@@ -71,3 +71,42 @@ def mapped_radii(z, R, i, phi, q, s):
         return np.squeeze(mapped_r, tuple(squeezed_dims))
     return mapped_r
 
+def Ellipsoidal_Sigma_nfw_single_halo(R, mass, concentration, i,
+                                      q, s, Omega_m, delta=200.):
+    """Projected surface mass density of an ellipsoidal NFW profile.
+    Units are hMsun/pc^2 comoving and all distances are Mpc/h comoving.
+
+    Args:
+        R (float or array like): Projected radial distance
+        mass (float): Halo mass
+        concentration (float): Halo concentration
+        i (float): Orientation angle in radians
+        q (float): Minor-to-major axis ratio
+        s (float): Intermediate-to-major axis ratio
+        Omega_m (float): Matter density fraction
+        delta (float; optional): Overdensityl; default is 200
+
+    Returns:
+        float or array like
+
+    """
+    if q < 0 or q > 1:
+        raise Exception("q must be > 0 and <= 1.")
+
+    if s < q or s > 1:
+        raise Exception("s must be >= q and <= 1.")
+
+    R = np.asarray(R)
+    scalar_input = False
+    if R.ndim == 0:
+        R = R[None]
+        scalar_input = True
+    if R.ndim > 1:
+        raise Exception("R cannot be a >1D array.")
+
+    Sigma = np.zeros_like(R)
+    cluster_toolkit._lib.Ellipsoidal_Sigma_nfw_single_halo_at_R_arr(_dcast(R), len(R), mass, concentration, i, q, s, delta, Omega_m, _dcast(Sigma))
+    
+    if scalar_input:
+        return np.squeeze(Sigma)
+    return Sigma

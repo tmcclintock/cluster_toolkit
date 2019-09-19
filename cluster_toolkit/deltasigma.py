@@ -16,7 +16,7 @@ def Sigma_nfw_at_R(R, mass, concentration, Omega_m, delta=200):
         delta (int; optional): Overdensity, default is 200.
 
     Returns:
-        float or array like: Surface mass density Msun h/pc^2 comoving.
+        float or array like
 
     """
     R = np.asarray(R)
