@@ -224,7 +224,8 @@ double angular_integrand(double theta, void*params){
   integrand_params*pars = (integrand_params*)params;
   pars->Rp_cos_theta_2 = pars->Rp*cos(theta)*2;
   //\int_0^\inf dRc p(Rc|Rmis) Sigma_mis(R, Rc, Rmis)
-  gsl_integration_qag(&pars->F_radial, pars->lrmin-10, pars->lrmax, ABSERR, RELERR, workspace_size,
+  gsl_integration_qag(&pars->F_radial, pars->lrmin-10, pars->lrmax,
+		      ABSERR, RELERR, workspace_size,
 		      KEY, pars->workspace2, &result, &err);
   return result;
 }

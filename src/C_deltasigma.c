@@ -36,7 +36,7 @@
  * Note: all distances are comoving.
  */
 double Sigma_nfw_at_R(double R, double M, double c, int delta, double om){
-  double result = 0.0;
+  double result = 0;
   Sigma_nfw_at_R_arr(&R, 1, M, c, delta, om, &result);
   return result;
 }
